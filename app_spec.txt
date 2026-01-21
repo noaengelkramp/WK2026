@@ -1,0 +1,841 @@
+# World Cup 2026 Prediction Game - Application Specification
+
+## Objective
+
+Develop an interactive web application for a company's employees to predict the outcomes of the FIFA World Cup 2026. The app should allow users to register, submit score predictions for all group and knockout matches, answer bonus questions, and compete on leaderboards by individual and department. The site must update automatically when real match results are available via external football data APIs.
+
+## Tournament Structure
+
+**FIFA World Cup 2026:**
+- 48 teams (expanded from 32)
+- 12 groups (A through L) with 4 teams each
+- Group stage: 48 matches (2 matches per group × 12 groups × 2 rounds, plus final group matches)
+- Knockout stage: 56 matches
+  - Round of 32: 16 matches
+  - Round of 16: 8 matches
+  - Quarter-finals: 4 matches
+  - Semi-finals: 2 matches
+  - Third-place playoff: 1 match
+  - Final: 1 match
+- **Total: 104 matches**
+- Host countries: USA, Canada, Mexico
+- Tournament dates: June 11 - July 19, 2026
+
+## Required Pages & Features
+
+### 1. HOME PAGE
+**URL:** `/`
+
+**Features:**
+- Display the next scheduled match with date, time, teams, and venue
+- Mini leaderboard showing top 5 individual players
+- Mini leaderboard showing top 5 departments
+- Promotional banner highlighting prizes
+- Sponsor logos display
+- Quick navigation links to all major sections
+- Countdown timer to prediction deadline (June 11, 2026 23:00)
+- Responsive design for mobile, tablet, desktop
+
+**Design inspiration:** wk-pronostiek-2026-demo.toernooivoetbal.be
+
+### 2. STANDINGS (INDIVIDUAL)
+**URL:** `/standings/individual`
+
+**Features:**
+- Searchable table ranking all participants by points
+- Columns: Rank, Name, Department, Total Points, Correct Scores, Correct Winners, Predictions Made
+- Search by name functionality
+- Pagination (50 users per page)
+- Real-time updates when matches finish
+- Highlight current user's position
+- Export to CSV/PDF
+- Filter by department
+- Sort by any column
+
+**Tie-breaking rules:**
+1. Total points
+2. Number of exact scores
+3. Number of correct winners
+4. Champion prediction correct
+5. Earlier registration date
+
+### 3. STANDINGS (DEPARTMENTS)
+**URL:** `/standings/departments`
+
+**Features:**
+- Ranking table of all departments
+- Columns: Rank, Department Name, Total Points, Average Points per Member, Member Count
+- Show department logos
+- Real-time updates
+- Click department to see members
+- Export functionality
+
+**Calculation:** Department total = sum of all member points; Department average = total / member count
+
+### 4. MATCHES PAGE
+**URL:** `/matches`
+
+**Features:**
+- List all 104 matches organized by stage
+- Tabs: All | Group Stage | Round of 32 | Round of 16 | Quarter-finals | Semi-finals | Final
+- For each match show:
+  - Match number
+  - Date and time (local timezone)
+  - Venue and city
+  - Home team with flag
+  - Away team with flag
+  - Match status (Scheduled / Live / Finished)
+  - Final score (if finished)
+- Filter by date range
+- Filter by team
+- Link to knockout bracket view
+- Link to group-specific standings
+
+### 5. GROUPS PAGE
+**URL:** `/groups`
+
+**Features:**
+- Display all 12 groups (A through L)
+- Tabs or grid for each group
+- For each group show standings table:
+  - Position
+  - Team name with flag
+  - Played (games)
+  - Won
+  - Drawn
+  - Lost
+  - Goals For
+  - Goals Against
+  - Goal Difference
+  - Points
+  - Form (last 5 matches: W/D/L indicators)
+- Show group stage fixtures
+- Update in real-time as matches complete
+- Qualification rules displayed (top 2 advance, plus best 3rd-place teams)
+
+**Group stage rules:**
+- Win = 3 points
+- Draw = 1 point
+- Loss = 0 points
+- Ranking: Points → Goal difference → Goals scored → Head-to-head
+
+### 6. RULES PAGE
+**URL:** `/rules`
+
+**Features:**
+- Explain how the game works
+- Scoring system with clear examples:
+  - Group stage: 5 points exact score, 3 points correct winner
+  - Knockout rounds: Progressive points (higher in later rounds)
+  - Champion prediction: 30 points
+  - Bonus questions: 10-15 points each
+- How to submit predictions
+- Prediction deadline (June 11, 2026 23:00)
+- How to change predictions before deadline
+- Real-time scoring updates after matches
+- Tie-breaking rules
+- Prize distribution
+
+### 7. STATISTICS PAGE
+**URL:** `/statistics`
+
+**Features:**
+- Tournament statistics summary:
+  - Total goals scored
+  - Total yellow/red cards
+  - Average goals per match
+  - Most goals in a single match
+  - Highest-scoring team
+- Prediction accuracy charts:
+  - Bar chart: Predicted outcomes vs actual outcomes
+  - Pie chart: Exact scores vs correct winners vs incorrect
+  - Top predicted teams vs actual qualifiers
+- Tabs:
+  - **Group Stage Stats:** Group-by-group analysis
+  - **Knockout Stats:** Round-by-round analysis
+  - **Champion Predictions:** Breakdown of who users predicted to win
+  - **Bonus Questions:** Results for top scorer, etc.
+- Visualizations using Chart.js
+- Export statistics to PDF
+
+**Design inspiration:** wk-pronostiek-2026-demo.toernooivoetbal.be/statistics
+
+### 8. PRIZES PAGE
+**URL:** `/prizes`
+
+**Features:**
+- Showcase all prizes with images and descriptions
+- Example prizes:
+  - 1st place: Foosball table
+  - 2nd place: Smart TV
+  - 3rd place: Tablet
+  - Department winner: Team dinner voucher
+- Prize eligibility rules
+- Winner announcement date (after tournament ends)
+
+**Design inspiration:** wk-pronostiek-2026-demo.toernooivoetbal.be/prizes
+
+### 9. MY PREDICTION PAGE (CORE FEATURE)
+**URL:** `/my-prediction`
+
+**Authentication:** Required
+
+**Features:**
+
+**A. Deadline Notice (Prominent)**
+- Large banner: "Predictions must be submitted before June 11, 2026 at 23:00"
+- Countdown timer
+- After deadline: "Predictions are now locked"
+
+**B. Progress Indicator**
+- Show completion percentage: "You have completed 45/104 matches and 2/5 bonus questions"
+- Visual progress bar
+
+**C. Group Stage Predictions**
+- Organized by groups A-L
+- For each match:
+  - Show match number, date, time
+  - Home team vs Away team with flags
+  - Dropdown selectors for predicted goals (0-9, 10+)
+  - Example: [Brazil 🇧🇷] [2 ▼] - [1 ▼] [Argentina 🇦🇷]
+- Auto-save on change (with visual confirmation)
+- Show which matches are already completed (greyed out, locked)
+
+**D. Knockout Stage Predictions**
+- Visual bracket display (tournament tree)
+- **Auto-population:** Based on predicted group standings, automatically populate Round of 32 matchups
+- Allow manual override of qualifiers
+- For each knockout match:
+  - Select which team advances
+  - Predict score after 90 minutes
+  - System calculates bracket progression
+- Rounds: Round of 32 → Round of 16 → Quarter-finals → Semi-finals → Third Place → Final
+
+**Design inspiration:** 
+- wk-pronostiek-2026-demo.toernooivoetbal.be/my-prediction
+- wk-pronostiek-2026-demo.toernooivoetbal.be/knockout-bracket
+
+**E. Champion Selection**
+- Dropdown: "Who will win the World Cup 2026?"
+- List all 48 teams with flags
+- Can select any team (even if eliminated in your predictions)
+
+**F. Bonus Questions**
+- "Who will be the tournament's top scorer?" - Select from player list
+- "Which team will score the most goals?" - Select from team list
+- "How many total goals in the tournament?" - Number input
+- "Which team will receive the most yellow cards?" - Select from team list
+- Custom questions added by admin
+
+**G. Save & Submit**
+- "Save Draft" button (can edit later)
+- "Submit Final Predictions" button (locks predictions before deadline)
+- Validation: Warn if incomplete
+- Confirmation modal before final submit
+
+### 10. ADMIN PANEL
+**URL:** `/admin`
+
+**Authentication:** Admin role required
+
+**Features:**
+
+**A. Dashboard**
+- Overview statistics
+- Pending tasks
+- API sync status
+- Recent activity log
+
+**B. User Management**
+- View all users (table with search/filter)
+- Create new user
+- Edit user (name, email, department, role)
+- Delete user
+- Reset user password
+- Bulk import users (CSV)
+
+**C. Department Management**
+- Create/edit/delete departments
+- Assign users to departments
+- Upload department logos
+
+**D. Match Management**
+- View all 104 matches
+- Edit match details (date, time, venue)
+- **Enter match results manually:**
+  - Home score
+  - Away score
+  - Match status
+- Trigger scoring recalculation
+- Import fixtures from API
+
+**E. Team Management**
+- View all 48 teams
+- Edit team details
+- Upload team flags
+- Sync from API
+
+**F. Scoring Rules Configuration**
+- Set points for each scenario:
+  - Group exact score
+  - Group correct winner
+  - Knockout exact score (by round)
+  - Knockout correct qualifier
+  - Champion prediction
+  - Bonus question points
+- Save and apply new rules
+
+**G. Prize Management**
+- Add/edit/delete prizes
+- Upload prize images
+- Set prize eligibility rules
+
+**H. Bonus Questions Management**
+- Create bonus questions
+- Set question type (top scorer, champion, etc.)
+- Define answer options
+- Set point values
+- Set correct answers after tournament
+
+**I. Settings**
+- Set prediction deadline
+- Set tournament start/end dates
+- Configure API keys
+- Enable/disable features
+- Maintenance mode
+
+**J. API Integration**
+- Manual trigger: "Sync fixtures from API"
+- Manual trigger: "Update live scores"
+- View API call logs
+- Configure API endpoints
+
+## External API Integration
+
+### Primary API: Live-Score API
+**Website:** https://live-score-api.com
+**Documentation:** https://www.livescore-api.com/documentation/
+
+**Required Endpoints:**
+
+1. **Get Teams/Participants:**
+```
+GET https://livescore-api.com/api-client/competitions/participants.json?competition_id=362&season=2026
+Headers: key: YOUR_API_KEY, secret: YOUR_API_SECRET
+```
+Returns: Array of all 48 World Cup teams with IDs, names, country codes
+
+2. **Get Group Standings:**
+```
+GET https://livescore-api.com/api-client/leagues/table.json?competition_id=362&group=A
+```
+Repeat for groups B through L
+Returns: Current group standings with W/D/L, GF, GA, GD, Pts
+
+3. **Get Fixtures:**
+```
+GET https://livescore-api.com/api-client/fixtures/matches.json?competition_id=362&group_id=4286
+```
+Returns: Match schedule with IDs, teams, dates, venues, scores
+
+4. **Get Live Scores:**
+Poll the fixtures endpoint every 5 minutes during match days to get updated scores
+
+**Integration Requirements:**
+- Store API responses in database (caching)
+- Scheduled job: Update fixtures daily
+- Scheduled job: Update scores every 5 minutes during matches
+- When match finishes → trigger point calculation
+- After point calculation → update leaderboards
+- Handle API errors gracefully (use cached data)
+- Admin override for manual result entry
+
+### Alternative APIs:
+- **Statorium World Cup API:** https://statorium.com/fifa-world-cup-2026-api
+- **Sportmonks Football API:** https://www.sportmonks.com/football-api/world-cup-api/world-cup-2026/
+
+## Scoring System (Detailed)
+
+### Group Stage (48 matches)
+- **Exact score:** 5 points
+  - Example: Predict Brazil 2-1 Argentina, actual is Brazil 2-1 Argentina
+- **Correct winner (wrong score):** 3 points
+  - Example: Predict Brazil 2-1 Argentina, actual is Brazil 3-0 Argentina
+- **Correct draw:** 3 points
+  - Example: Predict 1-1 draw, actual is 2-2 draw
+- **Wrong prediction:** 0 points
+
+### Round of 32 (16 matches)
+- **Exact score:** 7 points
+- **Correct qualifier + correct score after 90 min:** 5 points
+- **Correct qualifier only:** 3 points
+- **Wrong qualifier:** 0 points
+
+*Note: Knockout matches can go to extra time and penalties. Score for prediction purposes is after 90 minutes.*
+
+### Round of 16 (8 matches)
+- **Exact score:** 9 points
+- **Correct qualifier + correct score:** 6 points
+- **Correct qualifier only:** 4 points
+
+### Quarter-finals (4 matches)
+- **Exact score:** 11 points
+- **Correct qualifier + correct score:** 7 points
+- **Correct qualifier only:** 5 points
+
+### Semi-finals (2 matches)
+- **Exact score:** 13 points
+- **Correct qualifier + correct score:** 9 points
+- **Correct qualifier only:** 6 points
+
+### Third-Place Match (1 match)
+- **Exact score:** 10 points
+- **Correct winner:** 5 points
+
+### Final (1 match)
+- **Exact score:** 20 points
+- **Correct winner + correct score:** 15 points
+- **Correct winner only:** 10 points
+
+### Champion Prediction
+- **Correct champion:** 30 points
+- **Wrong champion:** 0 points
+
+### Bonus Questions
+- **Top scorer (correct player):** 15 points
+- **Highest scoring team (correct):** 10 points
+- **Total goals (within ±5):** 10 points
+- **Most yellow cards team (correct):** 10 points
+
+**Maximum possible points:** ~1,200 points (if everything is predicted perfectly)
+
+## Technical Requirements
+
+### Frontend
+- **Framework:** React 18+ with TypeScript
+- **UI Library:** Material-UI (MUI) for components
+- **Routing:** React Router v6
+- **State Management:** React Context API + hooks
+- **Charts:** Chart.js with react-chartjs-2
+- **Internationalization:** i18next (English and Dutch)
+- **HTTP Client:** Axios
+- **Form Handling:** React Hook Form
+- **Styling:** CSS Modules or styled-components
+- **Build Tool:** Vite or Create React App
+
+**Responsive Design:**
+- Mobile-first approach
+- Breakpoints: Mobile (<768px), Tablet (768-1024px), Desktop (>1024px)
+- Touch-friendly UI elements
+- Fast loading (<3 seconds)
+
+**Accessibility:**
+- WCAG 2.1 AA compliance
+- Keyboard navigation
+- Screen reader support
+- High contrast mode
+- Alt text for images
+
+### Backend
+- **Runtime:** Node.js 18+
+- **Framework:** Express.js with TypeScript
+- **Database:** PostgreSQL 14+
+- **ORM:** Sequelize or Prisma
+- **Authentication:** JWT (JSON Web Tokens)
+- **Password Hashing:** bcrypt (12 rounds)
+- **Validation:** Joi or express-validator
+- **Logging:** Winston or Pino
+- **Task Scheduling:** node-cron
+- **API Documentation:** Swagger/OpenAPI
+
+### Database Schema
+
+**Tables:**
+
+1. **users**
+   - id (UUID, PK)
+   - email (unique, indexed)
+   - password_hash
+   - first_name
+   - last_name
+   - department_id (FK)
+   - is_admin (boolean)
+   - language_preference (en/nl)
+   - created_at
+   - updated_at
+
+2. **departments**
+   - id (UUID, PK)
+   - name (unique)
+   - description
+   - logo_url
+   - created_at
+   - updated_at
+
+3. **teams**
+   - id (UUID, PK)
+   - name
+   - country_code (ISO 3166-1 alpha-3)
+   - flag_url
+   - group_letter (A-L)
+   - fifa_rank
+   - api_team_id
+   - created_at
+   - updated_at
+
+4. **matches**
+   - id (UUID, PK)
+   - match_number (1-104)
+   - stage (group/round32/round16/quarter/semi/final/third_place)
+   - home_team_id (FK, nullable for TBD knockout matches)
+   - away_team_id (FK, nullable)
+   - venue
+   - city
+   - match_date (timestamp)
+   - home_score (nullable)
+   - away_score (nullable)
+   - status (scheduled/live/finished)
+   - group_letter (nullable, only for group matches)
+   - api_match_id
+   - created_at
+   - updated_at
+
+5. **predictions**
+   - id (UUID, PK)
+   - user_id (FK)
+   - match_id (FK)
+   - predicted_home_score
+   - predicted_away_score
+   - points_earned (calculated after match)
+   - is_locked (boolean)
+   - created_at
+   - updated_at
+   - UNIQUE(user_id, match_id)
+
+6. **bonus_questions**
+   - id (UUID, PK)
+   - question_text
+   - question_type (top_scorer/champion/total_goals/custom)
+   - options (JSON array)
+   - correct_answer (nullable, set after tournament)
+   - points_value
+   - deadline (timestamp)
+   - created_at
+   - updated_at
+
+7. **bonus_answers**
+   - id (UUID, PK)
+   - user_id (FK)
+   - bonus_question_id (FK)
+   - answer
+   - points_earned
+   - created_at
+   - updated_at
+   - UNIQUE(user_id, bonus_question_id)
+
+8. **prizes**
+   - id (UUID, PK)
+   - rank (1, 2, 3, etc.)
+   - prize_name
+   - description
+   - image_url
+   - created_at
+   - updated_at
+
+9. **scoring_rules**
+   - id (UUID, PK)
+   - rule_type (group_exact/group_winner/knockout_exact/etc.)
+   - stage (group/round32/round16/etc.)
+   - points_value
+   - description
+   - created_at
+   - updated_at
+
+10. **user_statistics** (computed, cached)
+    - id (UUID, PK)
+    - user_id (FK, unique)
+    - total_points
+    - rank
+    - correct_scores
+    - correct_winners
+    - predictions_made
+    - champion_prediction_id (FK to teams)
+    - last_updated
+
+11. **department_statistics** (computed, cached)
+    - id (UUID, PK)
+    - department_id (FK, unique)
+    - total_points
+    - average_points
+    - rank
+    - member_count
+    - last_updated
+
+12. **app_settings**
+    - id (UUID, PK)
+    - key (unique)
+    - value
+    - description
+    - created_at
+    - updated_at
+
+13. **api_logs**
+    - id (UUID, PK)
+    - endpoint
+    - status_code
+    - response_time
+    - error_message
+    - created_at
+
+### Security
+
+**Authentication & Authorization:**
+- JWT tokens with 7-day expiry
+- Refresh tokens for extended sessions
+- HTTP-only cookies for token storage
+- Role-based access control (user/admin)
+- Protected routes on frontend and backend
+
+**Input Validation:**
+- Validate all inputs on backend
+- Sanitize HTML inputs
+- Parameterized SQL queries (ORM handles this)
+- Rate limiting (100 req/15min per IP)
+- CORS configuration
+
+**Data Protection:**
+- HTTPS only in production
+- HSTS headers
+- Secure cookie flags
+- XSS prevention
+- CSRF tokens for state-changing operations
+
+**GDPR Compliance:**
+- Privacy policy and terms of service
+- Cookie consent banner
+- Data export endpoint (user can download their data)
+- Data deletion endpoint (right to be forgotten)
+- Minimal data collection
+- Secure data storage
+
+### Performance
+
+**Backend:**
+- Database indexing on foreign keys and frequently queried fields
+- Redis caching for leaderboards and statistics
+- Pagination for large datasets
+- Database connection pooling
+- Optimize N+1 queries
+
+**Frontend:**
+- Code splitting by route
+- Lazy loading for images
+- Debounced search inputs
+- Memoized components
+- Service worker for offline access
+
+**API Integration:**
+- Cache API responses (5-15 minutes TTL)
+- Batch API requests
+- Exponential backoff for retries
+- Fallback to cached data on API failure
+
+### Deployment
+
+**Environment Variables:**
+```
+DATABASE_URL=postgresql://user:pass@host:5432/wk2026
+JWT_SECRET=your-secret-key
+JWT_EXPIRES_IN=7d
+LIVESCORE_API_KEY=your-key
+LIVESCORE_API_SECRET=your-secret
+NODE_ENV=production
+PORT=5000
+CLIENT_URL=https://your-domain.com
+PREDICTION_DEADLINE=2026-06-11T23:00:00Z
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email
+SMTP_PASSWORD=your-password
+```
+
+**Hosting Recommendations:**
+- Frontend: Vercel, Netlify, or AWS S3 + CloudFront
+- Backend: AWS EC2, Heroku, Railway, or DigitalOcean
+- Database: AWS RDS PostgreSQL, Heroku Postgres, or Supabase
+- Redis: Redis Cloud or AWS ElastiCache
+- File Storage (for images): AWS S3 or Cloudinary
+
+**CI/CD:**
+- GitHub Actions for automated testing
+- Automated deployment on merge to main
+- Staging environment for testing
+- Database migration automation
+
+## User Experience Flows
+
+### New User Journey
+1. Visit homepage → see promotional content
+2. Click "Register" → fill form (name, email, password, department)
+3. Receive welcome email
+4. Login → redirected to My Prediction page
+5. See tutorial/guide overlay
+6. Start filling predictions
+7. Save draft → come back later
+8. Complete all predictions before deadline
+9. Submit final predictions
+10. Watch leaderboard as tournament progresses
+
+### Returning User Journey
+1. Login → see home dashboard
+2. Check next match
+3. View current ranking
+4. Update predictions (if before deadline)
+5. After matches, see points earned
+6. Check statistics to see how predictions compare
+7. View department standings
+8. Engage with colleagues
+
+### Admin Journey
+1. Login to admin panel
+2. Import users from CSV
+3. Create departments
+4. Verify match schedule imported from API
+5. Set prediction deadline
+6. Configure scoring rules
+7. Add prizes with images
+8. Create bonus questions
+9. During tournament: Monitor API sync
+10. Manually enter results if API fails
+11. After tournament: Set bonus question answers
+12. Announce winners
+
+## Internationalization (i18n)
+
+**Supported Languages:**
+- English (en)
+- Dutch (nl)
+
+**Translation Coverage:**
+- All UI text
+- Button labels
+- Form labels and placeholders
+- Error messages
+- Email templates
+- Date/time formatting
+- Number formatting
+- Currency (for prizes)
+
+**Implementation:**
+- Use i18next library
+- JSON translation files: `/public/locales/{en,nl}/translation.json`
+- Language selector in navigation bar
+- Persist language choice in localStorage
+- Default to browser language
+
+## Testing Requirements
+
+**Unit Tests:**
+- Scoring calculation functions
+- Authentication logic
+- Data validation functions
+- API integration services
+- Target: >80% code coverage
+
+**Integration Tests:**
+- API endpoints
+- Database operations
+- Authentication flows
+- Prediction submission
+- Leaderboard calculation
+
+**End-to-End Tests:**
+- User registration and login
+- Complete prediction workflow
+- Admin panel operations
+- Leaderboard updates
+- Use Playwright or Cypress
+
+**Manual Testing:**
+- Cross-browser (Chrome, Firefox, Safari, Edge)
+- Mobile devices (iOS, Android)
+- Accessibility testing
+- Performance testing
+
+## Success Metrics
+
+**User Engagement:**
+- 90%+ of employees register
+- 80%+ submit complete predictions
+- 60%+ daily active users during tournament
+- Average session duration >5 minutes
+
+**Technical Performance:**
+- Page load time <3 seconds
+- API response time <500ms
+- 99.9% uptime during tournament
+- Zero data loss incidents
+
+**User Satisfaction:**
+- Post-tournament survey >4.0/5.0
+- <5% support tickets per user
+- Positive feedback on UX
+
+## Timeline
+
+**Pre-Tournament (Now - June 11, 2026):**
+- Development and testing
+- User registration and onboarding
+- Prediction submission period
+- Marketing and promotion
+
+**During Tournament (June 11 - July 19, 2026):**
+- Real-time score updates
+- Daily leaderboard engagement
+- Match notifications
+- Live support
+
+**Post-Tournament (July 20, 2026+):**
+- Final scoring and ranking
+- Winner announcement
+- Prize distribution
+- Retrospective and analytics
+- Archive for next tournament
+
+## Nice-to-Have Features (Future Enhancements)
+
+- Push notifications for match starts and results
+- Social sharing of predictions
+- Private leagues within company
+- Match prediction reminders via email
+- Live chat/comments during matches
+- Mobile app (iOS/Android)
+- Match highlights integration
+- Player cards and stats
+- Historical World Cup data
+- AI-powered prediction suggestions
+- WebSocket for real-time leaderboard updates
+- Gamification badges and achievements
+
+---
+
+## Reference URLs
+
+**Demo Site:** wk-pronostiek-2026-demo.toernooivoetbal.be
+
+**API Documentation:**
+- Live-Score API: https://live-score-api.com
+- Statorium API: https://statorium.com/fifa-world-cup-2026-api
+- Sportmonks API: https://www.sportmonks.com/football-api/world-cup-api/world-cup-2026/
+
+**Design Inspiration:**
+- Matches: wk-pronostiek-2026-demo.toernooivoetbal.be/matches
+- Groups: wk-pronostiek-2026-demo.toernooivoetbal.be/groups
+- Statistics: wk-pronostiek-2026-demo.toernooivoetbal.be/statistics
+- Prizes: wk-pronostiek-2026-demo.toernooivoetbal.be/prizes
+- My Prediction: wk-pronostiek-2026-demo.toernooivoetbal.be/my-prediction
+- Bracket: wk-pronostiek-2026-demo.toernooivoetbal.be/knockout-bracket
+
+---
+
+**END OF SPECIFICATION**

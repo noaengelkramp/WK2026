@@ -1,0 +1,3072 @@
+{
+  "project": "World Cup 2026 Prediction Game",
+  "version": "1.0.0",
+  "total_features": 255,
+  "last_updated": "2026-01-21",
+  "categories": {
+    "Authentication": 20,
+    "Home Page": 15,
+    "Prediction System": 40,
+    "Standings": 20,
+    "Matches & Groups": 25,
+    "Statistics": 20,
+    "Admin Panel": 30,
+    "API Integration": 15,
+    "Security": 10,
+    "Responsive Design": 15,
+    "Internationalization": 5,
+    "Email & Notifications": 15,
+    "Flexible Participation": 10,
+    "Admin Insights": 15
+  },
+  "features": [
+    {
+      "id": 1,
+      "category": "Authentication",
+      "description": "User can register with email, password, first name, last name, and department",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /register",
+        "Fill in email, password, name, department",
+        "Click Register",
+        "Verify redirect to login page",
+        "Verify success message"
+      ],
+      "passes": false
+    },
+    {
+      "id": 2,
+      "category": "Authentication",
+      "description": "User cannot register with duplicate email",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /register",
+        "Enter already registered email",
+        "Verify error message appears"
+      ],
+      "passes": false
+    },
+    {
+      "id": 3,
+      "category": "Authentication",
+      "description": "User can login with valid credentials",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /login",
+        "Enter valid email and password",
+        "Click Login",
+        "Verify redirect to home page",
+        "Verify user menu shows name"
+      ],
+      "passes": false
+    },
+    {
+      "id": 4,
+      "category": "Authentication",
+      "description": "User cannot login with invalid credentials",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /login",
+        "Enter invalid password",
+        "Verify error message displayed"
+      ],
+      "passes": false
+    },
+    {
+      "id": 5,
+      "category": "Authentication",
+      "description": "User can logout successfully",
+      "priority": "medium",
+      "test_steps": [
+        "Login as user",
+        "Click logout button",
+        "Verify redirect to login page",
+        "Verify cannot access protected routes"
+      ],
+      "passes": false
+    },
+    {
+      "id": 6,
+      "category": "Authentication",
+      "description": "User can view their profile",
+      "priority": "medium",
+      "test_steps": [
+        "Login as user",
+        "Navigate to /profile",
+        "Verify name, email, department displayed"
+      ],
+      "passes": false
+    },
+    {
+      "id": 7,
+      "category": "Authentication",
+      "description": "User can edit their profile information",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /profile",
+        "Change first name",
+        "Click Save",
+        "Verify success message",
+        "Verify change persisted"
+      ],
+      "passes": false
+    },
+    {
+      "id": 8,
+      "category": "Authentication",
+      "description": "User can change their password",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /profile",
+        "Enter current password and new password",
+        "Click Change Password",
+        "Verify can login with new password"
+      ],
+      "passes": false
+    },
+    {
+      "id": 9,
+      "category": "Authentication",
+      "description": "User can request password reset",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /forgot-password",
+        "Enter email",
+        "Verify email sent message",
+        "Check email for reset link"
+      ],
+      "passes": false
+    },
+    {
+      "id": 10,
+      "category": "Authentication",
+      "description": "User can reset password with valid token",
+      "priority": "medium",
+      "test_steps": [
+        "Click password reset link from email",
+        "Enter new password",
+        "Submit",
+        "Verify can login with new password"
+      ],
+      "passes": false
+    },
+    {
+      "id": 11,
+      "category": "Authentication",
+      "description": "User cannot access admin panel without admin role",
+      "priority": "high",
+      "test_steps": [
+        "Login as regular user",
+        "Navigate to /admin",
+        "Verify access denied message"
+      ],
+      "passes": false
+    },
+    {
+      "id": 12,
+      "category": "Authentication",
+      "description": "Admin can access admin panel",
+      "priority": "high",
+      "test_steps": [
+        "Login as admin",
+        "Navigate to /admin",
+        "Verify admin dashboard loads"
+      ],
+      "passes": false
+    },
+    {
+      "id": 13,
+      "category": "Authentication",
+      "description": "Password must meet strength requirements",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /register",
+        "Enter weak password (e.g., '123')",
+        "Verify validation error"
+      ],
+      "passes": false
+    },
+    {
+      "id": 14,
+      "category": "Authentication",
+      "description": "Email validation works correctly",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /register",
+        "Enter invalid email format",
+        "Verify validation error"
+      ],
+      "passes": false
+    },
+    {
+      "id": 15,
+      "category": "Authentication",
+      "description": "User session persists on page reload",
+      "priority": "medium",
+      "test_steps": [
+        "Login as user",
+        "Reload page",
+        "Verify still logged in"
+      ],
+      "passes": false
+    },
+    {
+      "id": 16,
+      "category": "Authentication",
+      "description": "User session expires after JWT expiry",
+      "priority": "low",
+      "test_steps": [
+        "Login as user",
+        "Wait for token expiry or manipulate token",
+        "Verify forced to login again"
+      ],
+      "passes": false
+    },
+    {
+      "id": 17,
+      "category": "Authentication",
+      "description": "User can select language preference (EN/NL)",
+      "priority": "medium",
+      "test_steps": [
+        "Login as user",
+        "Navigate to /profile",
+        "Change language to Dutch",
+        "Verify UI updates to Dutch"
+      ],
+      "passes": false
+    },
+    {
+      "id": 18,
+      "category": "Authentication",
+      "description": "Registration form validates required fields",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /register",
+        "Submit empty form",
+        "Verify all required field errors shown"
+      ],
+      "passes": false
+    },
+    {
+      "id": 19,
+      "category": "Authentication",
+      "description": "User cannot register with password shorter than 8 characters",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /register",
+        "Enter 6-character password",
+        "Verify error message"
+      ],
+      "passes": false
+    },
+    {
+      "id": 20,
+      "category": "Authentication",
+      "description": "User can export their personal data (GDPR)",
+      "priority": "low",
+      "test_steps": [
+        "Login as user",
+        "Navigate to /profile/data",
+        "Click Export Data",
+        "Verify JSON file downloads with user predictions"
+      ],
+      "passes": false
+    },
+    {
+      "id": 21,
+      "category": "Home Page",
+      "description": "Home page displays next scheduled match",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /",
+        "Verify next match card shows teams, date, time, venue"
+      ],
+      "passes": false
+    },
+    {
+      "id": 22,
+      "category": "Home Page",
+      "description": "Home page shows mini individual leaderboard (top 5)",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /",
+        "Verify top 5 users displayed with names, points, ranks"
+      ],
+      "passes": false
+    },
+    {
+      "id": 23,
+      "category": "Home Page",
+      "description": "Home page shows mini department leaderboard (top 5)",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /",
+        "Verify top 5 departments with names, total points"
+      ],
+      "passes": false
+    },
+    {
+      "id": 24,
+      "category": "Home Page",
+      "description": "Home page displays countdown to prediction deadline",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /",
+        "Verify countdown timer shows days, hours, minutes, seconds"
+      ],
+      "passes": false
+    },
+    {
+      "id": 25,
+      "category": "Home Page",
+      "description": "Home page shows sponsor logos",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /",
+        "Verify sponsor logo section displays images"
+      ],
+      "passes": false
+    },
+    {
+      "id": 26,
+      "category": "Home Page",
+      "description": "Home page has working navigation to all major pages",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /",
+        "Click each nav link (Standings, Matches, Groups, etc.)",
+        "Verify correct page loads"
+      ],
+      "passes": false
+    },
+    {
+      "id": 27,
+      "category": "Home Page",
+      "description": "Home page is responsive on mobile",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to / on mobile viewport (375px width)",
+        "Verify layout stacks vertically",
+        "Verify no horizontal scroll"
+      ],
+      "passes": false
+    },
+    {
+      "id": 28,
+      "category": "Home Page",
+      "description": "Home page is responsive on tablet",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to / on tablet viewport (768px width)",
+        "Verify layout adjusts properly"
+      ],
+      "passes": false
+    },
+    {
+      "id": 29,
+      "category": "Home Page",
+      "description": "Home page is responsive on desktop",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to / on desktop viewport (1920px width)",
+        "Verify layout uses full width appropriately"
+      ],
+      "passes": false
+    },
+    {
+      "id": 30,
+      "category": "Home Page",
+      "description": "Navigation menu works on mobile (hamburger)",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to / on mobile",
+        "Click hamburger menu",
+        "Verify menu opens",
+        "Click menu item",
+        "Verify navigation works"
+      ],
+      "passes": false
+    },
+    {
+      "id": 31,
+      "category": "Home Page",
+      "description": "User menu shows correct user name when logged in",
+      "priority": "medium",
+      "test_steps": [
+        "Login as user",
+        "Navigate to /",
+        "Click user menu",
+        "Verify name displayed correctly"
+      ],
+      "passes": false
+    },
+    {
+      "id": 32,
+      "category": "Home Page",
+      "description": "Language switcher changes UI language",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /",
+        "Click language switcher to NL",
+        "Verify text changes to Dutch",
+        "Switch to EN",
+        "Verify text changes to English"
+      ],
+      "passes": false
+    },
+    {
+      "id": 33,
+      "category": "Home Page",
+      "description": "Home page loads within 3 seconds",
+      "priority": "low",
+      "test_steps": [
+        "Navigate to /",
+        "Measure load time",
+        "Verify complete page load < 3 seconds"
+      ],
+      "passes": false
+    },
+    {
+      "id": 34,
+      "category": "Home Page",
+      "description": "Home page displays prize promotion banner",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /",
+        "Verify prize banner visible",
+        "Click banner",
+        "Verify navigates to /prizes"
+      ],
+      "passes": false
+    },
+    {
+      "id": 35,
+      "category": "Home Page",
+      "description": "Footer contains links to Rules, Privacy Policy, Terms",
+      "priority": "low",
+      "test_steps": [
+        "Navigate to /",
+        "Scroll to footer",
+        "Verify links present",
+        "Click Rules link",
+        "Verify navigates to /rules"
+      ],
+      "passes": false
+    },
+    {
+      "id": 36,
+      "category": "Prediction System",
+      "description": "My Prediction page requires authentication",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /my-prediction without login",
+        "Verify redirect to /login"
+      ],
+      "passes": false
+    },
+    {
+      "id": 37,
+      "category": "Prediction System",
+      "description": "My Prediction page displays deadline notice prominently",
+      "priority": "high",
+      "test_steps": [
+        "Login and navigate to /my-prediction",
+        "Verify deadline banner with date/time visible"
+      ],
+      "passes": false
+    },
+    {
+      "id": 38,
+      "category": "Prediction System",
+      "description": "My Prediction page shows completion progress",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /my-prediction",
+        "Verify progress bar shows X/104 matches and Y/5 bonus questions"
+      ],
+      "passes": false
+    },
+    {
+      "id": 39,
+      "category": "Prediction System",
+      "description": "User can predict score for group stage match",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /my-prediction",
+        "Find match in Group A",
+        "Select home score (e.g., 2) and away score (e.g., 1)",
+        "Verify selection saved"
+      ],
+      "passes": false
+    },
+    {
+      "id": 40,
+      "category": "Prediction System",
+      "description": "Predictions auto-save on change",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /my-prediction",
+        "Change a score",
+        "Verify save indicator shows",
+        "Reload page",
+        "Verify change persisted"
+      ],
+      "passes": false
+    },
+    {
+      "id": 41,
+      "category": "Prediction System",
+      "description": "User can see all 48 group stage matches",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /my-prediction",
+        "Scroll through groups A-L",
+        "Verify 48 matches listed"
+      ],
+      "passes": false
+    },
+    {
+      "id": 42,
+      "category": "Prediction System",
+      "description": "Group stage matches are organized by groups",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /my-prediction",
+        "Verify matches grouped under Group A, B, C...L headings"
+      ],
+      "passes": false
+    },
+    {
+      "id": 43,
+      "category": "Prediction System",
+      "description": "Each match shows team flags",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /my-prediction",
+        "Verify each team has flag icon displayed"
+      ],
+      "passes": false
+    },
+    {
+      "id": 44,
+      "category": "Prediction System",
+      "description": "Score dropdowns offer 0-10+ options",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /my-prediction",
+        "Click score dropdown",
+        "Verify options 0,1,2...9,10+"
+      ],
+      "passes": false
+    },
+    {
+      "id": 45,
+      "category": "Prediction System",
+      "description": "Completed matches are greyed out and locked",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /my-prediction after a match finishes",
+        "Verify completed match shows actual score",
+        "Verify cannot edit prediction"
+      ],
+      "passes": false
+    },
+    {
+      "id": 46,
+      "category": "Prediction System",
+      "description": "Knockout bracket auto-populates based on group predictions",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /my-prediction",
+        "Complete group stage predictions",
+        "View knockout bracket",
+        "Verify Round of 32 matchups populated with predicted group winners"
+      ],
+      "passes": false
+    },
+    {
+      "id": 47,
+      "category": "Prediction System",
+      "description": "User can manually override knockout qualifiers",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /my-prediction knockout section",
+        "Click Edit Qualifiers",
+        "Change a team",
+        "Verify bracket updates"
+      ],
+      "passes": false
+    },
+    {
+      "id": 48,
+      "category": "Prediction System",
+      "description": "User can predict knockout match scores",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to knockout bracket",
+        "Select a Round of 32 match",
+        "Predict score",
+        "Verify saved"
+      ],
+      "passes": false
+    },
+    {
+      "id": 49,
+      "category": "Prediction System",
+      "description": "Knockout bracket displays as visual tree",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to knockout bracket",
+        "Verify visual representation of Round 32 -> Round 16 -> Quarter -> Semi -> Final"
+      ],
+      "passes": false
+    },
+    {
+      "id": 50,
+      "category": "Prediction System",
+      "description": "User can select World Cup champion from dropdown",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /my-prediction",
+        "Scroll to Champion selection",
+        "Select team from dropdown",
+        "Verify saved"
+      ],
+      "passes": false
+    },
+    {
+      "id": 51,
+      "category": "Prediction System",
+      "description": "Champion dropdown lists all 48 teams",
+      "priority": "medium",
+      "test_steps": [
+        "Click champion dropdown",
+        "Verify all teams listed with flags"
+      ],
+      "passes": false
+    },
+    {
+      "id": 52,
+      "category": "Prediction System",
+      "description": "User can answer bonus question: Top Scorer",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /my-prediction bonus questions",
+        "Select player from top scorer dropdown",
+        "Verify saved"
+      ],
+      "passes": false
+    },
+    {
+      "id": 53,
+      "category": "Prediction System",
+      "description": "User can answer bonus question: Highest scoring team",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to bonus questions",
+        "Select team",
+        "Verify saved"
+      ],
+      "passes": false
+    },
+    {
+      "id": 54,
+      "category": "Prediction System",
+      "description": "User can answer bonus question: Total goals in tournament",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to bonus questions",
+        "Enter number (e.g., 150)",
+        "Verify saved"
+      ],
+      "passes": false
+    },
+    {
+      "id": 55,
+      "category": "Prediction System",
+      "description": "User can answer bonus question: Most yellow cards team",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to bonus questions",
+        "Select team",
+        "Verify saved"
+      ],
+      "passes": false
+    },
+    {
+      "id": 56,
+      "category": "Prediction System",
+      "description": "Save Draft button saves all predictions",
+      "priority": "medium",
+      "test_steps": [
+        "Make several predictions",
+        "Click Save Draft",
+        "Verify success message",
+        "Reload",
+        "Verify all predictions persisted"
+      ],
+      "passes": false
+    },
+    {
+      "id": 57,
+      "category": "Prediction System",
+      "description": "Submit Final button locks all predictions",
+      "priority": "high",
+      "test_steps": [
+        "Complete predictions",
+        "Click Submit Final",
+        "Confirm in modal",
+        "Verify predictions locked",
+        "Verify cannot edit"
+      ],
+      "passes": false
+    },
+    {
+      "id": 58,
+      "category": "Prediction System",
+      "description": "Submit Final shows confirmation modal",
+      "priority": "medium",
+      "test_steps": [
+        "Click Submit Final",
+        "Verify modal appears asking for confirmation",
+        "Click Cancel",
+        "Verify can still edit"
+      ],
+      "passes": false
+    },
+    {
+      "id": 59,
+      "category": "Prediction System",
+      "description": "Incomplete predictions warning on submit",
+      "priority": "medium",
+      "test_steps": [
+        "Leave some predictions empty",
+        "Click Submit Final",
+        "Verify warning message about incomplete predictions"
+      ],
+      "passes": false
+    },
+    {
+      "id": 60,
+      "category": "Prediction System",
+      "description": "Predictions cannot be submitted after deadline",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /my-prediction after deadline",
+        "Verify all fields disabled",
+        "Verify submit button disabled"
+      ],
+      "passes": false
+    },
+    {
+      "id": 61,
+      "category": "Prediction System",
+      "description": "Deadline countdown shows on My Prediction page",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /my-prediction before deadline",
+        "Verify countdown timer visible"
+      ],
+      "passes": false
+    },
+    {
+      "id": 62,
+      "category": "Prediction System",
+      "description": "After deadline, page shows 'Locked' status",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /my-prediction after deadline",
+        "Verify banner says 'Predictions are now locked'"
+      ],
+      "passes": false
+    },
+    {
+      "id": 63,
+      "category": "Prediction System",
+      "description": "User can view their previous predictions",
+      "priority": "medium",
+      "test_steps": [
+        "Login as user who submitted predictions",
+        "Navigate to /my-prediction",
+        "Verify all previous predictions displayed"
+      ],
+      "passes": false
+    },
+    {
+      "id": 64,
+      "category": "Prediction System",
+      "description": "Predictions show points earned after matches complete",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /my-prediction after match completes",
+        "Verify points displayed next to prediction"
+      ],
+      "passes": false
+    },
+    {
+      "id": 65,
+      "category": "Prediction System",
+      "description": "Round of 16 bracket updates after Round of 32",
+      "priority": "medium",
+      "test_steps": [
+        "After Round of 32 completes",
+        "Navigate to knockout bracket",
+        "Verify Round of 16 shows actual qualifiers"
+      ],
+      "passes": false
+    },
+    {
+      "id": 66,
+      "category": "Prediction System",
+      "description": "Quarter-finals bracket updates correctly",
+      "priority": "medium",
+      "test_steps": [
+        "After Round of 16 completes",
+        "Verify quarter-final matchups show actual teams"
+      ],
+      "passes": false
+    },
+    {
+      "id": 67,
+      "category": "Prediction System",
+      "description": "Semi-finals bracket updates correctly",
+      "priority": "medium",
+      "test_steps": [
+        "After quarter-finals complete",
+        "Verify semi-finals show correct teams"
+      ],
+      "passes": false
+    },
+    {
+      "id": 68,
+      "category": "Prediction System",
+      "description": "Final match shows in bracket",
+      "priority": "high",
+      "test_steps": [
+        "After semi-finals",
+        "Verify final match displayed with correct teams"
+      ],
+      "passes": false
+    },
+    {
+      "id": 69,
+      "category": "Prediction System",
+      "description": "Third-place match is shown separately",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to knockout bracket",
+        "Verify third-place playoff match displayed"
+      ],
+      "passes": false
+    },
+    {
+      "id": 70,
+      "category": "Prediction System",
+      "description": "User can filter predictions by status (pending/completed)",
+      "priority": "low",
+      "test_steps": [
+        "Navigate to /my-prediction",
+        "Click filter: Show Only Completed",
+        "Verify only completed matches shown"
+      ],
+      "passes": false
+    },
+    {
+      "id": 71,
+      "category": "Prediction System",
+      "description": "Mobile view of predictions is usable",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /my-prediction on mobile",
+        "Verify dropdowns easy to tap",
+        "Verify layout readable"
+      ],
+      "passes": false
+    },
+    {
+      "id": 72,
+      "category": "Prediction System",
+      "description": "Validation prevents selecting same team twice in bracket",
+      "priority": "low",
+      "test_steps": [
+        "In knockout bracket",
+        "Try to select same team for both sides",
+        "Verify validation error"
+      ],
+      "passes": false
+    },
+    {
+      "id": 73,
+      "category": "Prediction System",
+      "description": "Progress percentage calculates correctly",
+      "priority": "medium",
+      "test_steps": [
+        "Make 52 predictions (50% of 104)",
+        "Verify progress shows 50%"
+      ],
+      "passes": false
+    },
+    {
+      "id": 74,
+      "category": "Prediction System",
+      "description": "Bonus questions have deadlines displayed",
+      "priority": "low",
+      "test_steps": [
+        "Navigate to bonus questions",
+        "Verify each question shows deadline"
+      ],
+      "passes": false
+    },
+    {
+      "id": 75,
+      "category": "Prediction System",
+      "description": "Can save partial predictions and return later",
+      "priority": "high",
+      "test_steps": [
+        "Make 10 predictions",
+        "Logout",
+        "Login again",
+        "Navigate to /my-prediction",
+        "Verify 10 predictions saved"
+      ],
+      "passes": false
+    },
+    {
+      "id": 76,
+      "category": "Standings",
+      "description": "Individual standings page displays all users",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /standings/individual",
+        "Verify table shows all registered users"
+      ],
+      "passes": false
+    },
+    {
+      "id": 77,
+      "category": "Standings",
+      "description": "Individual standings show rank, name, department, points",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /standings/individual",
+        "Verify columns: Rank, Name, Department, Total Points"
+      ],
+      "passes": false
+    },
+    {
+      "id": 78,
+      "category": "Standings",
+      "description": "Individual standings include correct scores count",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /standings/individual",
+        "Verify 'Correct Scores' column displays"
+      ],
+      "passes": false
+    },
+    {
+      "id": 79,
+      "category": "Standings",
+      "description": "Individual standings include correct winners count",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /standings/individual",
+        "Verify 'Correct Winners' column displays"
+      ],
+      "passes": false
+    },
+    {
+      "id": 80,
+      "category": "Standings",
+      "description": "Individual standings include predictions made count",
+      "priority": "low",
+      "test_steps": [
+        "Navigate to /standings/individual",
+        "Verify 'Predictions Made' column"
+      ],
+      "passes": false
+    },
+    {
+      "id": 81,
+      "category": "Standings",
+      "description": "Individual standings have search functionality",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /standings/individual",
+        "Enter name in search box",
+        "Verify filtered results"
+      ],
+      "passes": false
+    },
+    {
+      "id": 82,
+      "category": "Standings",
+      "description": "Search works case-insensitive",
+      "priority": "medium",
+      "test_steps": [
+        "Search for 'john'",
+        "Verify finds 'John', 'JOHN', 'john'"
+      ],
+      "passes": false
+    },
+    {
+      "id": 83,
+      "category": "Standings",
+      "description": "Individual standings are paginated (50 per page)",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /standings/individual",
+        "Verify pagination controls",
+        "Click page 2",
+        "Verify shows next 50 users"
+      ],
+      "passes": false
+    },
+    {
+      "id": 84,
+      "category": "Standings",
+      "description": "Current user's position is highlighted",
+      "priority": "medium",
+      "test_steps": [
+        "Login as user",
+        "Navigate to /standings/individual",
+        "Verify own row highlighted in different color"
+      ],
+      "passes": false
+    },
+    {
+      "id": 85,
+      "category": "Standings",
+      "description": "Individual standings update in real-time after match",
+      "priority": "high",
+      "test_steps": [
+        "After match completes and scoring runs",
+        "Navigate to /standings/individual",
+        "Verify points updated"
+      ],
+      "passes": false
+    },
+    {
+      "id": 86,
+      "category": "Standings",
+      "description": "Can filter standings by department",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /standings/individual",
+        "Select department filter",
+        "Verify only users from that department shown"
+      ],
+      "passes": false
+    },
+    {
+      "id": 87,
+      "category": "Standings",
+      "description": "Can sort standings by any column",
+      "priority": "medium",
+      "test_steps": [
+        "Click 'Correct Scores' header",
+        "Verify sorted by that column",
+        "Click again",
+        "Verify reverse sort"
+      ],
+      "passes": false
+    },
+    {
+      "id": 88,
+      "category": "Standings",
+      "description": "Department standings page displays all departments",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /standings/departments",
+        "Verify all departments listed"
+      ],
+      "passes": false
+    },
+    {
+      "id": 89,
+      "category": "Standings",
+      "description": "Department standings show rank, name, total points, avg points",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /standings/departments",
+        "Verify columns correct"
+      ],
+      "passes": false
+    },
+    {
+      "id": 90,
+      "category": "Standings",
+      "description": "Department standings show member count",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /standings/departments",
+        "Verify member count column"
+      ],
+      "passes": false
+    },
+    {
+      "id": 91,
+      "category": "Standings",
+      "description": "Department total points calculated correctly",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /standings/departments",
+        "Take department A total",
+        "Click department",
+        "Verify sum of member points equals total"
+      ],
+      "passes": false
+    },
+    {
+      "id": 92,
+      "category": "Standings",
+      "description": "Department average points calculated correctly",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /standings/departments",
+        "Verify avg = total / member count"
+      ],
+      "passes": false
+    },
+    {
+      "id": 93,
+      "category": "Standings",
+      "description": "Can click department to see members",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /standings/departments",
+        "Click department row",
+        "Verify modal/page shows all members with individual points"
+      ],
+      "passes": false
+    },
+    {
+      "id": 94,
+      "category": "Standings",
+      "description": "Tie-breaking works correctly in individual standings",
+      "priority": "medium",
+      "test_steps": [
+        "Create scenario with tied users",
+        "Verify user with more exact scores ranks higher"
+      ],
+      "passes": false
+    },
+    {
+      "id": 95,
+      "category": "Standings",
+      "description": "Export standings to CSV works",
+      "priority": "low",
+      "test_steps": [
+        "Navigate to /standings/individual",
+        "Click Export CSV",
+        "Verify CSV file downloads with correct data"
+      ],
+      "passes": false
+    },
+    {
+      "id": 96,
+      "category": "Matches & Groups",
+      "description": "Matches page displays all 104 matches",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /matches",
+        "Scroll through all matches",
+        "Verify count is 104"
+      ],
+      "passes": false
+    },
+    {
+      "id": 97,
+      "category": "Matches & Groups",
+      "description": "Matches page has tabs for different stages",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /matches",
+        "Verify tabs: All, Group Stage, Round of 32, Round of 16, Quarter, Semi, Final"
+      ],
+      "passes": false
+    },
+    {
+      "id": 98,
+      "category": "Matches & Groups",
+      "description": "All tab shows all matches",
+      "priority": "medium",
+      "test_steps": [
+        "Click All tab",
+        "Verify 104 matches shown"
+      ],
+      "passes": false
+    },
+    {
+      "id": 99,
+      "category": "Matches & Groups",
+      "description": "Group Stage tab shows 48 matches",
+      "priority": "high",
+      "test_steps": [
+        "Click Group Stage tab",
+        "Verify 48 matches shown"
+      ],
+      "passes": false
+    },
+    {
+      "id": 100,
+      "category": "Matches & Groups",
+      "description": "Round of 32 tab shows 16 matches",
+      "priority": "medium",
+      "test_steps": [
+        "Click Round of 32 tab",
+        "Verify 16 matches"
+      ],
+      "passes": false
+    },
+    {
+      "id": 101,
+      "category": "Matches & Groups",
+      "description": "Each match shows match number, date, time",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /matches",
+        "Verify each match card shows match #, date, time"
+      ],
+      "passes": false
+    },
+    {
+      "id": 102,
+      "category": "Matches & Groups",
+      "description": "Each match shows venue and city",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /matches",
+        "Verify venue name and city displayed"
+      ],
+      "passes": false
+    },
+    {
+      "id": 103,
+      "category": "Matches & Groups",
+      "description": "Each match shows team flags",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /matches",
+        "Verify home and away team flags displayed"
+      ],
+      "passes": false
+    },
+    {
+      "id": 104,
+      "category": "Matches & Groups",
+      "description": "Match status shows Scheduled/Live/Finished",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /matches",
+        "Verify status badge on each match"
+      ],
+      "passes": false
+    },
+    {
+      "id": 105,
+      "category": "Matches & Groups",
+      "description": "Finished matches display final score",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /matches",
+        "Find finished match",
+        "Verify score displayed (e.g., 2-1)"
+      ],
+      "passes": false
+    },
+    {
+      "id": 106,
+      "category": "Matches & Groups",
+      "description": "Live matches show live indicator",
+      "priority": "medium",
+      "test_steps": [
+        "During live match",
+        "Navigate to /matches",
+        "Verify live badge/animation"
+      ],
+      "passes": false
+    },
+    {
+      "id": 107,
+      "category": "Matches & Groups",
+      "description": "Can filter matches by date range",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /matches",
+        "Select date range filter",
+        "Verify only matches in range shown"
+      ],
+      "passes": false
+    },
+    {
+      "id": 108,
+      "category": "Matches & Groups",
+      "description": "Can filter matches by team",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /matches",
+        "Search for 'Brazil'",
+        "Verify only Brazil matches shown"
+      ],
+      "passes": false
+    },
+    {
+      "id": 109,
+      "category": "Matches & Groups",
+      "description": "Link to knockout bracket view works",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /matches",
+        "Click 'View Bracket'",
+        "Verify bracket visualization loads"
+      ],
+      "passes": false
+    },
+    {
+      "id": 110,
+      "category": "Matches & Groups",
+      "description": "Groups page displays all 12 groups",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /groups",
+        "Verify groups A through L displayed"
+      ],
+      "passes": false
+    },
+    {
+      "id": 111,
+      "category": "Matches & Groups",
+      "description": "Groups page has tabs for each group",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /groups",
+        "Verify tabs A, B, C...L"
+      ],
+      "passes": false
+    },
+    {
+      "id": 112,
+      "category": "Matches & Groups",
+      "description": "Each group shows standings table",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /groups",
+        "Select Group A",
+        "Verify standings table with 4 teams"
+      ],
+      "passes": false
+    },
+    {
+      "id": 113,
+      "category": "Matches & Groups",
+      "description": "Group standings show W/D/L columns",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /groups Group A",
+        "Verify columns: Played, Won, Drawn, Lost"
+      ],
+      "passes": false
+    },
+    {
+      "id": 114,
+      "category": "Matches & Groups",
+      "description": "Group standings show goals for/against/difference",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /groups Group A",
+        "Verify GF, GA, GD columns"
+      ],
+      "passes": false
+    },
+    {
+      "id": 115,
+      "category": "Matches & Groups",
+      "description": "Group standings show points",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /groups Group A",
+        "Verify Points column"
+      ],
+      "passes": false
+    },
+    {
+      "id": 116,
+      "category": "Matches & Groups",
+      "description": "Group standings show form (last 5 matches)",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /groups Group A",
+        "Verify Form column with W/D/L indicators"
+      ],
+      "passes": false
+    },
+    {
+      "id": 117,
+      "category": "Matches & Groups",
+      "description": "Group standings update after each match",
+      "priority": "high",
+      "test_steps": [
+        "After group match completes",
+        "Navigate to /groups",
+        "Verify standings updated"
+      ],
+      "passes": false
+    },
+    {
+      "id": 118,
+      "category": "Matches & Groups",
+      "description": "Groups page shows group fixtures",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /groups Group A",
+        "Verify list of group matches below standings"
+      ],
+      "passes": false
+    },
+    {
+      "id": 119,
+      "category": "Matches & Groups",
+      "description": "Click team in group standings shows team details",
+      "priority": "low",
+      "test_steps": [
+        "Navigate to /groups",
+        "Click team name",
+        "Verify team info modal/page"
+      ],
+      "passes": false
+    },
+    {
+      "id": 120,
+      "category": "Matches & Groups",
+      "description": "Qualification rules displayed on Groups page",
+      "priority": "low",
+      "test_steps": [
+        "Navigate to /groups",
+        "Verify text explaining 'Top 2 + best 3rd place teams qualify'"
+      ],
+      "passes": false
+    },
+    {
+      "id": 121,
+      "category": "Statistics",
+      "description": "Statistics page displays tournament summary",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /statistics",
+        "Verify total goals, cards, avg goals per match displayed"
+      ],
+      "passes": false
+    },
+    {
+      "id": 122,
+      "category": "Statistics",
+      "description": "Statistics show total goals scored in tournament",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /statistics",
+        "Verify 'Total Goals' stat"
+      ],
+      "passes": false
+    },
+    {
+      "id": 123,
+      "category": "Statistics",
+      "description": "Statistics show total yellow cards",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /statistics",
+        "Verify yellow cards count"
+      ],
+      "passes": false
+    },
+    {
+      "id": 124,
+      "category": "Statistics",
+      "description": "Statistics show total red cards",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /statistics",
+        "Verify red cards count"
+      ],
+      "passes": false
+    },
+    {
+      "id": 125,
+      "category": "Statistics",
+      "description": "Statistics show average goals per match",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /statistics",
+        "Verify calculated avg"
+      ],
+      "passes": false
+    },
+    {
+      "id": 126,
+      "category": "Statistics",
+      "description": "Statistics show highest-scoring match",
+      "priority": "low",
+      "test_steps": [
+        "Navigate to /statistics",
+        "Verify match with most goals highlighted"
+      ],
+      "passes": false
+    },
+    {
+      "id": 127,
+      "category": "Statistics",
+      "description": "Statistics show highest-scoring team",
+      "priority": "low",
+      "test_steps": [
+        "Navigate to /statistics",
+        "Verify team with most goals"
+      ],
+      "passes": false
+    },
+    {
+      "id": 128,
+      "category": "Statistics",
+      "description": "Prediction accuracy chart displays",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /statistics",
+        "Verify bar chart showing predicted vs actual outcomes"
+      ],
+      "passes": false
+    },
+    {
+      "id": 129,
+      "category": "Statistics",
+      "description": "Exact scores chart shows percentage",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /statistics",
+        "Verify pie chart with exact scores / correct winners / incorrect"
+      ],
+      "passes": false
+    },
+    {
+      "id": 130,
+      "category": "Statistics",
+      "description": "Top predicted teams vs actual qualifiers chart",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /statistics",
+        "Verify comparison chart"
+      ],
+      "passes": false
+    },
+    {
+      "id": 131,
+      "category": "Statistics",
+      "description": "Statistics has tabs for different stages",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /statistics",
+        "Verify tabs: Group Stage, Knockout, Champion, Bonus Questions"
+      ],
+      "passes": false
+    },
+    {
+      "id": 132,
+      "category": "Statistics",
+      "description": "Group Stage Stats tab shows group-by-group analysis",
+      "priority": "medium",
+      "test_steps": [
+        "Click Group Stage Stats tab",
+        "Verify stats for each group"
+      ],
+      "passes": false
+    },
+    {
+      "id": 133,
+      "category": "Statistics",
+      "description": "Knockout Stats tab shows round-by-round analysis",
+      "priority": "medium",
+      "test_steps": [
+        "Click Knockout Stats tab",
+        "Verify stats for each knockout round"
+      ],
+      "passes": false
+    },
+    {
+      "id": 134,
+      "category": "Statistics",
+      "description": "Champion Predictions tab shows breakdown of user predictions",
+      "priority": "high",
+      "test_steps": [
+        "Click Champion tab",
+        "Verify bar chart showing how many users predicted each team"
+      ],
+      "passes": false
+    },
+    {
+      "id": 135,
+      "category": "Statistics",
+      "description": "Bonus Questions tab shows results",
+      "priority": "medium",
+      "test_steps": [
+        "Click Bonus Questions tab",
+        "Verify stats for each bonus question"
+      ],
+      "passes": false
+    },
+    {
+      "id": 136,
+      "category": "Statistics",
+      "description": "Charts use Chart.js library",
+      "priority": "low",
+      "test_steps": [
+        "Navigate to /statistics",
+        "Verify charts are interactive (hover shows tooltips)"
+      ],
+      "passes": false
+    },
+    {
+      "id": 137,
+      "category": "Statistics",
+      "description": "Statistics update after each match",
+      "priority": "high",
+      "test_steps": [
+        "After match completes",
+        "Navigate to /statistics",
+        "Verify stats updated"
+      ],
+      "passes": false
+    },
+    {
+      "id": 138,
+      "category": "Statistics",
+      "description": "Can export statistics to PDF",
+      "priority": "low",
+      "test_steps": [
+        "Navigate to /statistics",
+        "Click Export PDF",
+        "Verify PDF downloads"
+      ],
+      "passes": false
+    },
+    {
+      "id": 139,
+      "category": "Statistics",
+      "description": "Mobile view of statistics is readable",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /statistics on mobile",
+        "Verify charts scale appropriately"
+      ],
+      "passes": false
+    },
+    {
+      "id": 140,
+      "category": "Statistics",
+      "description": "Statistics page loads within 3 seconds",
+      "priority": "low",
+      "test_steps": [
+        "Navigate to /statistics",
+        "Measure load time",
+        "Verify < 3 seconds"
+      ],
+      "passes": false
+    },
+    {
+      "id": 141,
+      "category": "Admin Panel",
+      "description": "Admin panel requires admin authentication",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /admin without admin login",
+        "Verify access denied"
+      ],
+      "passes": false
+    },
+    {
+      "id": 142,
+      "category": "Admin Panel",
+      "description": "Admin dashboard shows overview statistics",
+      "priority": "high",
+      "test_steps": [
+        "Login as admin",
+        "Navigate to /admin",
+        "Verify stats: total users, total predictions, pending tasks"
+      ],
+      "passes": false
+    },
+    {
+      "id": 143,
+      "category": "Admin Panel",
+      "description": "Admin can view all users in table",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /admin/users",
+        "Verify table lists all users"
+      ],
+      "passes": false
+    },
+    {
+      "id": 144,
+      "category": "Admin Panel",
+      "description": "Admin can search users",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /admin/users",
+        "Search for user",
+        "Verify filtered results"
+      ],
+      "passes": false
+    },
+    {
+      "id": 145,
+      "category": "Admin Panel",
+      "description": "Admin can create new user",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /admin/users",
+        "Click Create User",
+        "Fill form",
+        "Submit",
+        "Verify user created"
+      ],
+      "passes": false
+    },
+    {
+      "id": 146,
+      "category": "Admin Panel",
+      "description": "Admin can edit user details",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /admin/users",
+        "Click Edit on user",
+        "Change name",
+        "Save",
+        "Verify updated"
+      ],
+      "passes": false
+    },
+    {
+      "id": 147,
+      "category": "Admin Panel",
+      "description": "Admin can delete user",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /admin/users",
+        "Click Delete",
+        "Confirm",
+        "Verify user removed"
+      ],
+      "passes": false
+    },
+    {
+      "id": 148,
+      "category": "Admin Panel",
+      "description": "Admin can reset user password",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /admin/users",
+        "Click Reset Password",
+        "Verify new password sent/displayed"
+      ],
+      "passes": false
+    },
+    {
+      "id": 149,
+      "category": "Admin Panel",
+      "description": "Admin can change user role (user/admin)",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /admin/users",
+        "Edit user",
+        "Change role to admin",
+        "Save",
+        "Verify user has admin access"
+      ],
+      "passes": false
+    },
+    {
+      "id": 150,
+      "category": "Admin Panel",
+      "description": "Admin can bulk import users from CSV",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /admin/users",
+        "Click Import CSV",
+        "Upload file",
+        "Verify users created"
+      ],
+      "passes": false
+    },
+    {
+      "id": 151,
+      "category": "Admin Panel",
+      "description": "Admin can view all departments",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /admin/departments",
+        "Verify all departments listed"
+      ],
+      "passes": false
+    },
+    {
+      "id": 152,
+      "category": "Admin Panel",
+      "description": "Admin can create new department",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /admin/departments",
+        "Click Create",
+        "Enter name, upload logo",
+        "Save",
+        "Verify created"
+      ],
+      "passes": false
+    },
+    {
+      "id": 153,
+      "category": "Admin Panel",
+      "description": "Admin can edit department",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /admin/departments",
+        "Click Edit",
+        "Change name",
+        "Save",
+        "Verify updated"
+      ],
+      "passes": false
+    },
+    {
+      "id": 154,
+      "category": "Admin Panel",
+      "description": "Admin can delete department",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /admin/departments",
+        "Click Delete",
+        "Confirm",
+        "Verify deleted"
+      ],
+      "passes": false
+    },
+    {
+      "id": 155,
+      "category": "Admin Panel",
+      "description": "Admin can assign users to departments",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /admin/users",
+        "Edit user",
+        "Change department",
+        "Save",
+        "Verify updated"
+      ],
+      "passes": false
+    },
+    {
+      "id": 156,
+      "category": "Admin Panel",
+      "description": "Admin can view all matches",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /admin/matches",
+        "Verify all 104 matches listed"
+      ],
+      "passes": false
+    },
+    {
+      "id": 157,
+      "category": "Admin Panel",
+      "description": "Admin can edit match details",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /admin/matches",
+        "Click Edit on match",
+        "Change venue",
+        "Save",
+        "Verify updated"
+      ],
+      "passes": false
+    },
+    {
+      "id": 158,
+      "category": "Admin Panel",
+      "description": "Admin can manually enter match result",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /admin/matches",
+        "Find match",
+        "Enter home score 2, away score 1",
+        "Set status Finished",
+        "Save",
+        "Verify result saved"
+      ],
+      "passes": false
+    },
+    {
+      "id": 159,
+      "category": "Admin Panel",
+      "description": "Entering match result triggers scoring calculation",
+      "priority": "high",
+      "test_steps": [
+        "Admin enters match result",
+        "Verify scoring calculation runs",
+        "Check user points updated"
+      ],
+      "passes": false
+    },
+    {
+      "id": 160,
+      "category": "Admin Panel",
+      "description": "Admin can trigger manual scoring recalculation",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /admin/matches",
+        "Click 'Recalculate All Scores'",
+        "Verify confirmation",
+        "Verify points updated"
+      ],
+      "passes": false
+    },
+    {
+      "id": 161,
+      "category": "Admin Panel",
+      "description": "Admin can import fixtures from API",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /admin/matches",
+        "Click 'Import from API'",
+        "Verify fixtures imported/updated"
+      ],
+      "passes": false
+    },
+    {
+      "id": 162,
+      "category": "Admin Panel",
+      "description": "Admin can view all teams",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /admin/teams",
+        "Verify all 48 teams listed"
+      ],
+      "passes": false
+    },
+    {
+      "id": 163,
+      "category": "Admin Panel",
+      "description": "Admin can edit team details",
+      "priority": "low",
+      "test_steps": [
+        "Navigate to /admin/teams",
+        "Click Edit on team",
+        "Change FIFA rank",
+        "Save"
+      ],
+      "passes": false
+    },
+    {
+      "id": 164,
+      "category": "Admin Panel",
+      "description": "Admin can configure scoring rules",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /admin/scoring-rules",
+        "Change 'Group exact score' from 5 to 6 points",
+        "Save",
+        "Verify rule updated"
+      ],
+      "passes": false
+    },
+    {
+      "id": 165,
+      "category": "Admin Panel",
+      "description": "Admin can add prizes",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /admin/prizes",
+        "Click Add Prize",
+        "Enter rank 1, name, description, upload image",
+        "Save",
+        "Verify prize created"
+      ],
+      "passes": false
+    },
+    {
+      "id": 166,
+      "category": "Admin Panel",
+      "description": "Admin can edit prizes",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /admin/prizes",
+        "Click Edit",
+        "Change description",
+        "Save"
+      ],
+      "passes": false
+    },
+    {
+      "id": 167,
+      "category": "Admin Panel",
+      "description": "Admin can delete prizes",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /admin/prizes",
+        "Click Delete",
+        "Confirm"
+      ],
+      "passes": false
+    },
+    {
+      "id": 168,
+      "category": "Admin Panel",
+      "description": "Admin can create bonus questions",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /admin/bonus-questions",
+        "Click Create",
+        "Enter question, set options, deadline",
+        "Save",
+        "Verify created"
+      ],
+      "passes": false
+    },
+    {
+      "id": 169,
+      "category": "Admin Panel",
+      "description": "Admin can set correct answers for bonus questions",
+      "priority": "high",
+      "test_steps": [
+        "After tournament",
+        "Navigate to /admin/bonus-questions",
+        "Click Set Answer",
+        "Select correct answer",
+        "Save",
+        "Verify points calculated"
+      ],
+      "passes": false
+    },
+    {
+      "id": 170,
+      "category": "Admin Panel",
+      "description": "Admin can configure app settings",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /admin/settings",
+        "Change prediction deadline",
+        "Save",
+        "Verify deadline updated throughout app"
+      ],
+      "passes": false
+    },
+    {
+      "id": 171,
+      "category": "API Integration",
+      "description": "System can fetch teams from Live-Score API",
+      "priority": "high",
+      "test_steps": [
+        "Trigger API sync",
+        "Verify 48 teams imported with names, flags"
+      ],
+      "passes": false
+    },
+    {
+      "id": 172,
+      "category": "API Integration",
+      "description": "System can fetch fixtures from Live-Score API",
+      "priority": "high",
+      "test_steps": [
+        "Trigger API sync",
+        "Verify 104 matches imported with dates, venues"
+      ],
+      "passes": false
+    },
+    {
+      "id": 173,
+      "category": "API Integration",
+      "description": "System can fetch live scores from API",
+      "priority": "high",
+      "test_steps": [
+        "During live match",
+        "Trigger sync",
+        "Verify score updated"
+      ],
+      "passes": false
+    },
+    {
+      "id": 174,
+      "category": "API Integration",
+      "description": "System can fetch group standings from API",
+      "priority": "high",
+      "test_steps": [
+        "Trigger sync",
+        "Verify group tables updated for all 12 groups"
+      ],
+      "passes": false
+    },
+    {
+      "id": 175,
+      "category": "API Integration",
+      "description": "API sync handles rate limiting gracefully",
+      "priority": "medium",
+      "test_steps": [
+        "Trigger multiple rapid API calls",
+        "Verify rate limit errors handled",
+        "Verify retries with backoff"
+      ],
+      "passes": false
+    },
+    {
+      "id": 176,
+      "category": "API Integration",
+      "description": "API sync logs all requests",
+      "priority": "medium",
+      "test_steps": [
+        "Trigger API sync",
+        "Navigate to /admin/api-logs",
+        "Verify request logged with status, response time"
+      ],
+      "passes": false
+    },
+    {
+      "id": 177,
+      "category": "API Integration",
+      "description": "API sync caches responses",
+      "priority": "medium",
+      "test_steps": [
+        "Trigger API call",
+        "Check cache",
+        "Make same call within TTL",
+        "Verify cached data used"
+      ],
+      "passes": false
+    },
+    {
+      "id": 178,
+      "category": "API Integration",
+      "description": "Scheduled job updates fixtures daily",
+      "priority": "medium",
+      "test_steps": [
+        "Wait for scheduled job or trigger manually",
+        "Verify fixtures updated"
+      ],
+      "passes": false
+    },
+    {
+      "id": 179,
+      "category": "API Integration",
+      "description": "Scheduled job updates scores every 5 min during matches",
+      "priority": "high",
+      "test_steps": [
+        "During match day",
+        "Verify scores update every 5 minutes"
+      ],
+      "passes": false
+    },
+    {
+      "id": 180,
+      "category": "API Integration",
+      "description": "When match finishes, scoring calculation triggered",
+      "priority": "high",
+      "test_steps": [
+        "When API returns finished match",
+        "Verify scoring calculation runs automatically"
+      ],
+      "passes": false
+    },
+    {
+      "id": 181,
+      "category": "API Integration",
+      "description": "After scoring, leaderboards update automatically",
+      "priority": "high",
+      "test_steps": [
+        "After scoring runs",
+        "Navigate to /standings",
+        "Verify points updated"
+      ],
+      "passes": false
+    },
+    {
+      "id": 182,
+      "category": "API Integration",
+      "description": "API errors are logged and don't crash app",
+      "priority": "high",
+      "test_steps": [
+        "Simulate API failure",
+        "Verify error logged",
+        "Verify app uses cached data",
+        "Verify app remains functional"
+      ],
+      "passes": false
+    },
+    {
+      "id": 183,
+      "category": "API Integration",
+      "description": "Admin can manually trigger API sync",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /admin/api",
+        "Click 'Sync Now'",
+        "Verify sync runs",
+        "Verify data updated"
+      ],
+      "passes": false
+    },
+    {
+      "id": 184,
+      "category": "API Integration",
+      "description": "API authentication works with key and secret",
+      "priority": "high",
+      "test_steps": [
+        "Configure API keys in .env",
+        "Trigger sync",
+        "Verify authenticated requests succeed"
+      ],
+      "passes": false
+    },
+    {
+      "id": 185,
+      "category": "API Integration",
+      "description": "System handles API timeout gracefully",
+      "priority": "medium",
+      "test_steps": [
+        "Simulate slow API",
+        "Verify timeout after 30 seconds",
+        "Verify error handling"
+      ],
+      "passes": false
+    },
+    {
+      "id": 186,
+      "category": "Security",
+      "description": "All passwords are hashed with bcrypt",
+      "priority": "high",
+      "test_steps": [
+        "Create user",
+        "Check database",
+        "Verify password_hash is bcrypt format, not plaintext"
+      ],
+      "passes": false
+    },
+    {
+      "id": 187,
+      "category": "Security",
+      "description": "JWT tokens expire after configured time",
+      "priority": "medium",
+      "test_steps": [
+        "Login",
+        "Wait for expiry",
+        "Try to access protected route",
+        "Verify forced to re-login"
+      ],
+      "passes": false
+    },
+    {
+      "id": 188,
+      "category": "Security",
+      "description": "API endpoints validate all inputs",
+      "priority": "high",
+      "test_steps": [
+        "Send invalid data to API endpoint",
+        "Verify 400 error with validation message"
+      ],
+      "passes": false
+    },
+    {
+      "id": 189,
+      "category": "Security",
+      "description": "SQL injection is prevented",
+      "priority": "high",
+      "test_steps": [
+        "Try SQL injection in login form",
+        "Verify sanitized, no injection"
+      ],
+      "passes": false
+    },
+    {
+      "id": 190,
+      "category": "Security",
+      "description": "XSS attacks are prevented",
+      "priority": "high",
+      "test_steps": [
+        "Try to inject <script> tag in user input",
+        "Verify sanitized"
+      ],
+      "passes": false
+    },
+    {
+      "id": 191,
+      "category": "Security",
+      "description": "HTTPS enforced in production",
+      "priority": "medium",
+      "test_steps": [
+        "Access app via HTTP in production",
+        "Verify redirected to HTTPS"
+      ],
+      "passes": false
+    },
+    {
+      "id": 192,
+      "category": "Security",
+      "description": "Rate limiting prevents abuse",
+      "priority": "medium",
+      "test_steps": [
+        "Make 150 requests in 1 minute",
+        "Verify rate limit error after 100"
+      ],
+      "passes": false
+    },
+    {
+      "id": 193,
+      "category": "Security",
+      "description": "User can export their data (GDPR)",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /profile/data",
+        "Click Export",
+        "Verify JSON with all user data downloads"
+      ],
+      "passes": false
+    },
+    {
+      "id": 194,
+      "category": "Security",
+      "description": "User can delete their account (GDPR)",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /profile",
+        "Click Delete Account",
+        "Confirm",
+        "Verify account deleted"
+      ],
+      "passes": false
+    },
+    {
+      "id": 195,
+      "category": "Security",
+      "description": "CORS configured correctly",
+      "priority": "medium",
+      "test_steps": [
+        "Make API call from different origin",
+        "Verify CORS headers allow/deny correctly based on config"
+      ],
+      "passes": false
+    },
+    {
+      "id": 196,
+      "category": "Responsive Design",
+      "description": "App is fully responsive on iPhone SE (375px)",
+      "priority": "high",
+      "test_steps": [
+        "Open app on iPhone SE",
+        "Navigate all pages",
+        "Verify no horizontal scroll",
+        "Verify all content readable"
+      ],
+      "passes": false
+    },
+    {
+      "id": 197,
+      "category": "Responsive Design",
+      "description": "App is fully responsive on iPad (768px)",
+      "priority": "high",
+      "test_steps": [
+        "Open app on iPad",
+        "Navigate all pages",
+        "Verify layout uses tablet optimizations"
+      ],
+      "passes": false
+    },
+    {
+      "id": 198,
+      "category": "Responsive Design",
+      "description": "App is fully responsive on desktop (1920px)",
+      "priority": "high",
+      "test_steps": [
+        "Open app on desktop",
+        "Navigate all pages",
+        "Verify layout uses full width appropriately"
+      ],
+      "passes": false
+    },
+    {
+      "id": 199,
+      "category": "Responsive Design",
+      "description": "Touch targets are at least 44x44px on mobile",
+      "priority": "medium",
+      "test_steps": [
+        "Open app on mobile",
+        "Verify all buttons, links, dropdowns easy to tap"
+      ],
+      "passes": false
+    },
+    {
+      "id": 200,
+      "category": "Responsive Design",
+      "description": "Forms are easy to use on mobile",
+      "priority": "high",
+      "test_steps": [
+        "Open /my-prediction on mobile",
+        "Fill predictions",
+        "Verify dropdowns, inputs work well"
+      ],
+      "passes": false
+    },
+    {
+      "id": 201,
+      "category": "Responsive Design",
+      "description": "Loading spinners display during async operations",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to page that loads data",
+        "Verify spinner shows while loading"
+      ],
+      "passes": false
+    },
+    {
+      "id": 202,
+      "category": "Responsive Design",
+      "description": "Error messages are user-friendly",
+      "priority": "high",
+      "test_steps": [
+        "Trigger validation error",
+        "Verify error message is clear and helpful"
+      ],
+      "passes": false
+    },
+    {
+      "id": 203,
+      "category": "Responsive Design",
+      "description": "Success messages display after actions",
+      "priority": "medium",
+      "test_steps": [
+        "Save predictions",
+        "Verify success toast/message appears"
+      ],
+      "passes": false
+    },
+    {
+      "id": 204,
+      "category": "Responsive Design",
+      "description": "Keyboard navigation works throughout app",
+      "priority": "medium",
+      "test_steps": [
+        "Use only keyboard (Tab, Enter, Escape)",
+        "Navigate app",
+        "Verify all functionality accessible"
+      ],
+      "passes": false
+    },
+    {
+      "id": 205,
+      "category": "Responsive Design",
+      "description": "Screen reader support for accessibility",
+      "priority": "low",
+      "test_steps": [
+        "Use screen reader",
+        "Navigate app",
+        "Verify alt text, labels, ARIA tags present"
+      ],
+      "passes": false
+    },
+    {
+      "id": 206,
+      "category": "Responsive Design",
+      "description": "Dark mode support (optional)",
+      "priority": "low",
+      "test_steps": [
+        "Toggle dark mode",
+        "Verify all pages use dark theme",
+        "Verify readable contrast"
+      ],
+      "passes": false
+    },
+    {
+      "id": 207,
+      "category": "Responsive Design",
+      "description": "App works offline for viewed pages (PWA)",
+      "priority": "low",
+      "test_steps": [
+        "Load page",
+        "Disable network",
+        "Reload",
+        "Verify cached version loads"
+      ],
+      "passes": false
+    },
+    {
+      "id": 208,
+      "category": "Responsive Design",
+      "description": "Images have alt text",
+      "priority": "medium",
+      "test_steps": [
+        "Inspect all images",
+        "Verify alt attributes present"
+      ],
+      "passes": false
+    },
+    {
+      "id": 209,
+      "category": "Responsive Design",
+      "description": "App works in Chrome, Firefox, Safari, Edge",
+      "priority": "high",
+      "test_steps": [
+        "Test app in each browser",
+        "Verify full functionality"
+      ],
+      "passes": false
+    },
+    {
+      "id": 210,
+      "category": "Responsive Design",
+      "description": "No console errors in production",
+      "priority": "medium",
+      "test_steps": [
+        "Open app in production",
+        "Open console",
+        "Verify no errors"
+      ],
+      "passes": false
+    },
+    {
+      "id": 211,
+      "category": "Internationalization",
+      "description": "App supports English language",
+      "priority": "high",
+      "test_steps": [
+        "Set language to EN",
+        "Navigate all pages",
+        "Verify all text in English"
+      ],
+      "passes": false
+    },
+    {
+      "id": 212,
+      "category": "Internationalization",
+      "description": "App supports Dutch language",
+      "priority": "high",
+      "test_steps": [
+        "Set language to NL",
+        "Navigate all pages",
+        "Verify all text in Dutch"
+      ],
+      "passes": false
+    },
+    {
+      "id": 213,
+      "category": "Internationalization",
+      "description": "Language preference persists",
+      "priority": "medium",
+      "test_steps": [
+        "Set language to NL",
+        "Reload page",
+        "Verify still in Dutch"
+      ],
+      "passes": false
+    },
+    {
+      "id": 214,
+      "category": "Internationalization",
+      "description": "Date/time formatted per locale",
+      "priority": "medium",
+      "test_steps": [
+        "Switch to NL",
+        "Verify dates show as DD-MM-YYYY",
+        "Switch to EN",
+        "Verify MM/DD/YYYY"
+      ],
+      "passes": false
+    },
+    {
+      "id": 215,
+      "category": "Internationalization",
+      "description": "Numbers formatted per locale",
+      "priority": "low",
+      "test_steps": [
+        "Switch to NL",
+        "Verify large numbers use . as thousands separator",
+        "Switch to EN",
+        "Verify comma separator"
+      ],
+      "passes": false
+    },
+    {
+      "id": 216,
+      "category": "Email & Notifications",
+      "description": "System sends welcome email after registration",
+      "priority": "high",
+      "test_steps": [
+        "Register new user",
+        "Check email inbox",
+        "Verify welcome email received with login instructions"
+      ],
+      "passes": false
+    },
+    {
+      "id": 217,
+      "category": "Email & Notifications",
+      "description": "System sends prediction deadline reminder 24h before",
+      "priority": "high",
+      "test_steps": [
+        "Wait until 24h before deadline",
+        "Check email",
+        "Verify reminder email received"
+      ],
+      "passes": false
+    },
+    {
+      "id": 218,
+      "category": "Email & Notifications",
+      "description": "System sends prediction deadline reminder 1h before",
+      "priority": "high",
+      "test_steps": [
+        "Wait until 1h before deadline",
+        "Check email",
+        "Verify final reminder received"
+      ],
+      "passes": false
+    },
+    {
+      "id": 219,
+      "category": "Email & Notifications",
+      "description": "System sends match start notification",
+      "priority": "medium",
+      "test_steps": [
+        "Enable notifications",
+        "Wait for match to start",
+        "Verify notification received"
+      ],
+      "passes": false
+    },
+    {
+      "id": 220,
+      "category": "Email & Notifications",
+      "description": "System sends notification when match result is available",
+      "priority": "medium",
+      "test_steps": [
+        "After match completes",
+        "Check email",
+        "Verify result notification with points earned"
+      ],
+      "passes": false
+    },
+    {
+      "id": 221,
+      "category": "Email & Notifications",
+      "description": "System sends weekly standings update email",
+      "priority": "medium",
+      "test_steps": [
+        "Wait for weekly email",
+        "Check inbox",
+        "Verify standings summary received"
+      ],
+      "passes": false
+    },
+    {
+      "id": 222,
+      "category": "Email & Notifications",
+      "description": "System sends prize winner notification",
+      "priority": "high",
+      "test_steps": [
+        "After tournament ends",
+        "Winners receive email",
+        "Verify email congratulates and explains prize claim"
+      ],
+      "passes": false
+    },
+    {
+      "id": 223,
+      "category": "Email & Notifications",
+      "description": "System sends tournament conclusion email to all participants",
+      "priority": "medium",
+      "test_steps": [
+        "After tournament ends",
+        "Check email",
+        "Verify final standings and thank you message"
+      ],
+      "passes": false
+    },
+    {
+      "id": 224,
+      "category": "Email & Notifications",
+      "description": "User can opt-in/opt-out of email notifications",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /profile/notifications",
+        "Toggle email preferences",
+        "Save",
+        "Verify preferences respected"
+      ],
+      "passes": false
+    },
+    {
+      "id": 225,
+      "category": "Email & Notifications",
+      "description": "User can opt-in/opt-out of push notifications",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /profile/notifications",
+        "Toggle push notifications",
+        "Verify preferences saved"
+      ],
+      "passes": false
+    },
+    {
+      "id": 226,
+      "category": "Email & Notifications",
+      "description": "Emails support English language",
+      "priority": "high",
+      "test_steps": [
+        "Set user language to EN",
+        "Trigger notification",
+        "Verify email in English"
+      ],
+      "passes": false
+    },
+    {
+      "id": 227,
+      "category": "Email & Notifications",
+      "description": "Emails support Dutch language",
+      "priority": "high",
+      "test_steps": [
+        "Set user language to NL",
+        "Trigger notification",
+        "Verify email in Dutch"
+      ],
+      "passes": false
+    },
+    {
+      "id": 228,
+      "category": "Email & Notifications",
+      "description": "Password reset email sent successfully",
+      "priority": "high",
+      "test_steps": [
+        "Request password reset",
+        "Check email",
+        "Verify reset link received and works"
+      ],
+      "passes": false
+    },
+    {
+      "id": 229,
+      "category": "Email & Notifications",
+      "description": "Email templates are professionally designed",
+      "priority": "low",
+      "test_steps": [
+        "Receive any email",
+        "Check design",
+        "Verify branded, well-formatted, mobile-responsive"
+      ],
+      "passes": false
+    },
+    {
+      "id": 230,
+      "category": "Email & Notifications",
+      "description": "Notification system logs all sent emails",
+      "priority": "low",
+      "test_steps": [
+        "Send email",
+        "Navigate to /admin/notifications",
+        "Verify email logged with status"
+      ],
+      "passes": false
+    },
+    {
+      "id": 231,
+      "category": "Flexible Participation",
+      "description": "User can skip predicting any match",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /my-prediction",
+        "Leave some matches blank",
+        "Click Save Draft",
+        "Verify saved without errors"
+      ],
+      "passes": false
+    },
+    {
+      "id": 232,
+      "category": "Flexible Participation",
+      "description": "User can submit predictions for only group stage",
+      "priority": "high",
+      "test_steps": [
+        "Predict only group matches",
+        "Leave knockout blank",
+        "Submit",
+        "Verify accepted"
+      ],
+      "passes": false
+    },
+    {
+      "id": 233,
+      "category": "Flexible Participation",
+      "description": "User can submit predictions for only knockout stage",
+      "priority": "medium",
+      "test_steps": [
+        "Skip group predictions",
+        "Only fill knockout",
+        "Submit",
+        "Verify accepted"
+      ],
+      "passes": false
+    },
+    {
+      "id": 234,
+      "category": "Flexible Participation",
+      "description": "User can predict only matches of their favorite team",
+      "priority": "high",
+      "test_steps": [
+        "Fill predictions for Brazil matches only",
+        "Submit",
+        "Verify accepted"
+      ],
+      "passes": false
+    },
+    {
+      "id": 235,
+      "category": "Flexible Participation",
+      "description": "Scoring system only counts predictions that were made",
+      "priority": "high",
+      "test_steps": [
+        "User predicts 20 out of 104 matches",
+        "After matches complete",
+        "Verify points only calculated for those 20"
+      ],
+      "passes": false
+    },
+    {
+      "id": 236,
+      "category": "Flexible Participation",
+      "description": "Leaderboard shows 'Predictions Made' count",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /standings/individual",
+        "Verify column shows how many predictions each user made"
+      ],
+      "passes": false
+    },
+    {
+      "id": 237,
+      "category": "Flexible Participation",
+      "description": "User with fewer predictions can still rank high",
+      "priority": "medium",
+      "test_steps": [
+        "User A predicts 10 matches with 100% accuracy",
+        "User B predicts 50 matches with 60% accuracy",
+        "Verify both can rank competitively"
+      ],
+      "passes": false
+    },
+    {
+      "id": 238,
+      "category": "Flexible Participation",
+      "description": "User can add predictions for later matches even after earlier matches finished",
+      "priority": "high",
+      "test_steps": [
+        "After group stage starts",
+        "User adds knockout predictions",
+        "Verify accepted for future matches"
+      ],
+      "passes": false
+    },
+    {
+      "id": 239,
+      "category": "Flexible Participation",
+      "description": "System doesn't force predictions for all matches",
+      "priority": "high",
+      "test_steps": [
+        "Try to submit with only 10 predictions",
+        "Verify no error about incomplete predictions"
+      ],
+      "passes": false
+    },
+    {
+      "id": 240,
+      "category": "Flexible Participation",
+      "description": "User can still participate after their favorite team eliminated",
+      "priority": "high",
+      "test_steps": [
+        "After team eliminated",
+        "User can still predict remaining matches",
+        "Verify full functionality"
+      ],
+      "passes": false
+    },
+    {
+      "id": 241,
+      "category": "Admin Insights",
+      "description": "Admin can view list of all registered customers",
+      "priority": "high",
+      "test_steps": [
+        "Login as admin",
+        "Navigate to /admin/customers",
+        "Verify complete list with names, emails, departments, registration dates"
+      ],
+      "passes": false
+    },
+    {
+      "id": 242,
+      "category": "Admin Insights",
+      "description": "Admin can view customer's full prediction set",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /admin/customers",
+        "Click on customer",
+        "View Predictions",
+        "Verify all predictions displayed"
+      ],
+      "passes": false
+    },
+    {
+      "id": 243,
+      "category": "Admin Insights",
+      "description": "Admin can filter customers by department",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /admin/customers",
+        "Filter by department",
+        "Verify filtered list"
+      ],
+      "passes": false
+    },
+    {
+      "id": 244,
+      "category": "Admin Insights",
+      "description": "Admin can filter customers by prediction status",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /admin/customers",
+        "Filter by 'Has Submitted Predictions'",
+        "Verify only users with predictions shown"
+      ],
+      "passes": false
+    },
+    {
+      "id": 245,
+      "category": "Admin Insights",
+      "description": "Admin can export customer list to CSV",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /admin/customers",
+        "Click Export CSV",
+        "Verify file contains all customer data"
+      ],
+      "passes": false
+    },
+    {
+      "id": 246,
+      "category": "Admin Insights",
+      "description": "Admin can see participation statistics",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /admin/dashboard",
+        "Verify stats: Total registered, Total with predictions, Participation rate %"
+      ],
+      "passes": false
+    },
+    {
+      "id": 247,
+      "category": "Admin Insights",
+      "description": "Admin can view winners after tournament",
+      "priority": "high",
+      "test_steps": [
+        "After tournament ends",
+        "Navigate to /admin/winners",
+        "Verify top 3 individual winners and department winner displayed"
+      ],
+      "passes": false
+    },
+    {
+      "id": 248,
+      "category": "Admin Insights",
+      "description": "Admin can generate tournament report",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /admin/reports",
+        "Click Generate Report",
+        "Verify PDF with all statistics, winners, participation"
+      ],
+      "passes": false
+    },
+    {
+      "id": 249,
+      "category": "Admin Insights",
+      "description": "Admin can view most/least predicted outcomes",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /admin/insights",
+        "Verify chart showing most popular predictions"
+      ],
+      "passes": false
+    },
+    {
+      "id": 250,
+      "category": "Admin Insights",
+      "description": "Admin can see which customers haven't submitted predictions",
+      "priority": "high",
+      "test_steps": [
+        "Navigate to /admin/customers",
+        "Filter by 'No Predictions'",
+        "Verify list of inactive users"
+      ],
+      "passes": false
+    },
+    {
+      "id": 251,
+      "category": "Admin Insights",
+      "description": "Admin can send manual email to specific users",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /admin/customers",
+        "Select users",
+        "Click Send Email",
+        "Compose message",
+        "Send",
+        "Verify received"
+      ],
+      "passes": false
+    },
+    {
+      "id": 252,
+      "category": "Admin Insights",
+      "description": "Admin can see email delivery statistics",
+      "priority": "low",
+      "test_steps": [
+        "Navigate to /admin/notifications",
+        "Verify dashboard shows emails sent, delivered, opened, bounced"
+      ],
+      "passes": false
+    },
+    {
+      "id": 253,
+      "category": "Admin Insights",
+      "description": "Admin can view prediction trends over time",
+      "priority": "low",
+      "test_steps": [
+        "Navigate to /admin/insights",
+        "Verify chart showing predictions submitted per day"
+      ],
+      "passes": false
+    },
+    {
+      "id": 254,
+      "category": "Admin Insights",
+      "description": "Admin dashboard shows upcoming deadline warnings",
+      "priority": "medium",
+      "test_steps": [
+        "Navigate to /admin",
+        "Verify warning if deadline approaching and many users haven't predicted"
+      ],
+      "passes": false
+    },
+    {
+      "id": 255,
+      "category": "Admin Insights",
+      "description": "Admin can view audit log of all admin actions",
+      "priority": "low",
+      "test_steps": [
+        "Navigate to /admin/audit-log",
+        "Verify log shows who changed what and when"
+      ],
+      "passes": false
+    }
+  ]
+}
