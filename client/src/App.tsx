@@ -9,6 +9,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import MyPredictionPage from './pages/MyPredictionPage';
 import StandingsIndividualPage from './pages/StandingsIndividualPage';
+import StandingsDepartmentPage from './pages/StandingsDepartmentPage';
 import { CircularProgress, Box } from '@mui/material';
 
 // Placeholder pages (to be implemented)
@@ -41,7 +42,7 @@ const ProtectedRoutes = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/my-prediction" element={<MyPredictionPage />} />
         <Route path="/standings/individual" element={<StandingsIndividualPage />} />
-        <Route path="/standings/departments" element={<PlaceholderPage title="Department Standings" />} />
+        <Route path="/standings/departments" element={<StandingsDepartmentPage />} />
         <Route path="/matches" element={<PlaceholderPage title="Matches" />} />
         <Route path="/groups" element={<PlaceholderPage title="Groups" />} />
         <Route path="/statistics" element={<PlaceholderPage title="Statistics" />} />
