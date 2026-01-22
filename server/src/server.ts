@@ -13,6 +13,9 @@ import teamRoutes from './routes/teams';
 import matchRoutes from './routes/matches';
 import predictionRoutes from './routes/predictions';
 import standingsRoutes from './routes/standings';
+import scoringRulesRoutes from './routes/scoringRules';
+import bonusQuestionsRoutes from './routes/bonusQuestions';
+import adminRoutes from './routes/admin';
 
 const app: Application = express();
 
@@ -46,6 +49,9 @@ app.use('/api/teams', teamRoutes);
 app.use('/api/matches', matchRoutes);
 app.use('/api/predictions', predictionRoutes);
 app.use('/api/standings', standingsRoutes);
+app.use('/api/scoring-rules', scoringRulesRoutes);
+app.use('/api/bonus-questions', bonusQuestionsRoutes);
+app.use('/api/admin', adminRoutes);
 
 // 404 handler
 app.use(notFoundHandler);
