@@ -54,11 +54,20 @@ export interface Prediction {
 
 export interface BonusQuestion {
   id: string;
-  questionText: string;
-  questionType: 'top_scorer' | 'champion' | 'total_goals' | 'custom';
-  options: string[];
-  pointsValue: number;
-  deadline: string;
+  questionType: 'champion' | 'top_scorer' | 'total_goals' | 'most_yellow_cards' | 'highest_scoring_team';
+  questionTextEn: string;
+  questionTextNl: string;
+  points: number;
+  correctAnswer?: string;
+  isActive: boolean;
+}
+
+export interface ScoringRule {
+  id: string;
+  stage: 'group' | 'round32' | 'round16' | 'quarter' | 'semi' | 'final' | 'third_place';
+  exactScorePoints: number;
+  correctWinnerPoints: number;
+  description?: string;
 }
 
 export interface Prize {

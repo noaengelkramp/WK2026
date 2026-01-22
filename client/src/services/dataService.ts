@@ -1,5 +1,5 @@
 import apiClient from './api';
-import type { Team, Match, Department } from '../types';
+import type { Team, Match, Department, ScoringRule, BonusQuestion } from '../types';
 
 export const dataService = {
   /**
@@ -65,5 +65,29 @@ export const dataService = {
   async getDepartment(id: string): Promise<Department> {
     const response = await apiClient.get<{ department: Department }>(`/departments/${id}`);
     return response.data.department;
+  },
+
+  /**
+   * Get all scoring rules
+   */
+  async getScoringRules(): Promise<ScoringRule[]> {
+    const response = await apiClient.get<{ success: boolean; count: number; scoringRules: ScoringRule[] }>('/scoring-rules');
+    return response.data.scoringRules;
+  },
+
+  /**
+   * Get scoring rule for a specific stage
+   */
+  async getScoringRuleByStage(stage: string): Promise<ScoringRule> {
+    const response = await apiClient.get<{ success: boolean; scoringRule: ScoringRule }>(`/scoring-rules/${stage}`);
+    return response.data.scoringRule;
+  },
+
+  /**
+   * Get all bonus questions
+   */
+  async getBonusQuestions(): Promise<BonusQuestion[]> {
+    const response = await apiClient.get<{ success: boolean; count: number; bonusQuestions: BonusQuestion[] }>('/bonus-questions');
+    return response.data.bonusQuestions;
   },
 };

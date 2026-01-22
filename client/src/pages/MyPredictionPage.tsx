@@ -467,10 +467,10 @@ export default function MyPredictionPage() {
                   <Card>
                     <CardContent>
                       <Typography variant="h6" gutterBottom>
-                        {question.questionText}
+                        {question.questionTextEn}
                       </Typography>
                       <Typography variant="body2" color="text.secondary" gutterBottom>
-                        Worth {question.pointsValue} points
+                        Worth {question.points} points
                       </Typography>
                       <TextField
                         fullWidth

@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import {
   Box,
   Card,
@@ -16,6 +17,7 @@ import {
   Chip,
   Alert,
   Divider,
+  CircularProgress,
 } from '@mui/material';
 import {
   ExpandMore as ExpandIcon,
@@ -23,8 +25,53 @@ import {
   SportsSoccer as SoccerIcon,
   Help as HelpIcon,
 } from '@mui/icons-material';
+import { dataService } from '../services/dataService';
+import type { ScoringRule, BonusQuestion } from '../types';
 
 export default function RulesPage() {
+  const [scoringRules, setScoringRules] = useState<ScoringRule[]>([]);
+  const [bonusQuestions, setBonusQuestions] = useState<BonusQuestion[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [rules, questions] = await Promise.all([
+          dataService.getScoringRules(),
+          dataService.getBonusQuestions(),
+        ]);
+        setScoringRules(rules);
+        setBonusQuestions(questions);
+      } catch (error) {
+        console.error('Error fetching rules data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  // Helper to get stage display name
+  const getStageDisplayName = (stage: string): string => {
+    const names: Record<string, string> = {
+      group: 'Group Stage',
+      round32: 'Round of 32',
+      round16: 'Round of 16',
+      quarter: 'Quarter-finals',
+      semi: 'Semi-finals',
+      third_place: 'Third-Place Match',
+      final: 'Final',
+    };
+    return names[stage] || stage;
+  };
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+        <CircularProgress />
+      </Box>
+    );
+  }
   return (
     <Box>
       <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
@@ -81,45 +128,12 @@ export default function RulesPage() {
 
           <Divider sx={{ my: 2 }} />
 
-          {/* Group Stage */}
+          {/* All Stages Scoring */}
           <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
-            Group Stage (48 matches)
+            Match Prediction Scoring
           </Typography>
-          <TableContainer component={Paper} sx={{ mb: 3 }}>
-            <Table size="small">
-              <TableHead>
-                <TableRow sx={{ backgroundColor: 'primary.main' }}>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Prediction Accuracy</TableCell>
-                  <TableCell align="right" sx={{ color: 'white', fontWeight: 'bold' }}>Points</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <TableRow>
-                  <TableCell><strong>Exact Score</strong> (e.g., predict 2-1, result is 2-1)</TableCell>
-                  <TableCell align="right"><Chip label="5 points" color="primary" size="small" /></TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell><strong>Correct Winner</strong> (e.g., predict 2-1, result is 3-0)</TableCell>
-                  <TableCell align="right"><Chip label="3 points" size="small" /></TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell><strong>Correct Draw</strong> (e.g., predict 1-1, result is 2-2)</TableCell>
-                  <TableCell align="right"><Chip label="3 points" size="small" /></TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell><strong>Wrong Prediction</strong></TableCell>
-                  <TableCell align="right"><Chip label="0 points" size="small" /></TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
-
-          {/* Knockout Rounds */}
-          <Typography variant="h6" gutterBottom>
-            Knockout Rounds (56 matches)
-          </Typography>
-          <Typography variant="body2" color="text.secondary" gutterBottom>
-            Note: For knockout matches, we score based on the result after 90 minutes (not including extra time or penalties).
+          <Typography variant="body2" color="text.secondary" gutterBottom sx={{ mb: 2 }}>
+            Points are progressive - you earn more in later rounds! The scoring system rewards accuracy with higher stakes.
           </Typography>
           <TableContainer component={Paper} sx={{ mb: 3 }}>
             <Table size="small">
@@ -127,43 +141,36 @@ export default function RulesPage() {
                 <TableRow sx={{ backgroundColor: 'primary.main' }}>
                   <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Round</TableCell>
                   <TableCell align="right" sx={{ color: 'white', fontWeight: 'bold' }}>Exact Score</TableCell>
-                  <TableCell align="right" sx={{ color: 'white', fontWeight: 'bold' }}>Correct Qualifier</TableCell>
+                  <TableCell align="right" sx={{ color: 'white', fontWeight: 'bold' }}>Correct Winner/Draw</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                <TableRow>
-                  <TableCell><strong>Round of 32</strong> (16 matches)</TableCell>
-                  <TableCell align="right"><Chip label="7 pts" color="primary" size="small" /></TableCell>
-                  <TableCell align="right"><Chip label="3 pts" size="small" /></TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell><strong>Round of 16</strong> (8 matches)</TableCell>
-                  <TableCell align="right"><Chip label="9 pts" color="primary" size="small" /></TableCell>
-                  <TableCell align="right"><Chip label="4 pts" size="small" /></TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell><strong>Quarter-finals</strong> (4 matches)</TableCell>
-                  <TableCell align="right"><Chip label="11 pts" color="primary" size="small" /></TableCell>
-                  <TableCell align="right"><Chip label="5 pts" size="small" /></TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell><strong>Semi-finals</strong> (2 matches)</TableCell>
-                  <TableCell align="right"><Chip label="13 pts" color="primary" size="small" /></TableCell>
-                  <TableCell align="right"><Chip label="6 pts" size="small" /></TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell><strong>Third-Place Match</strong> (1 match)</TableCell>
-                  <TableCell align="right"><Chip label="10 pts" color="primary" size="small" /></TableCell>
-                  <TableCell align="right"><Chip label="5 pts" size="small" /></TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell><strong>Final</strong> (1 match)</TableCell>
-                  <TableCell align="right"><Chip label="20 pts" color="primary" size="small" /></TableCell>
-                  <TableCell align="right"><Chip label="10 pts" size="small" /></TableCell>
-                </TableRow>
+                {scoringRules
+                  .sort((a, b) => {
+                    const order = ['group', 'round32', 'round16', 'quarter', 'semi', 'third_place', 'final'];
+                    return order.indexOf(a.stage) - order.indexOf(b.stage);
+                  })
+                  .map((rule) => (
+                    <TableRow key={rule.id}>
+                      <TableCell><strong>{getStageDisplayName(rule.stage)}</strong></TableCell>
+                      <TableCell align="right">
+                        <Chip label={`${rule.exactScorePoints} pts`} color="primary" size="small" />
+                      </TableCell>
+                      <TableCell align="right">
+                        <Chip label={`${rule.correctWinnerPoints} pts`} size="small" />
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </TableContainer>
+
+          <Alert severity="info" sx={{ mb: 3 }}>
+            <Typography variant="body2">
+              <strong>How it works:</strong> If you predict the exact score, you get full points. 
+              If you predict the correct winner (or draw), you get partial points. Wrong predictions earn 0 points.
+            </Typography>
+          </Alert>
 
           {/* Bonus Points */}
           <Typography variant="h6" gutterBottom>
@@ -178,26 +185,18 @@ export default function RulesPage() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                <TableRow>
-                  <TableCell><strong>Champion Prediction</strong> (Who wins the World Cup?)</TableCell>
-                  <TableCell align="right"><Chip label="30 pts" color="primary" size="small" /></TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell><strong>Top Scorer</strong> (Which player scores the most goals?)</TableCell>
-                  <TableCell align="right"><Chip label="15 pts" size="small" /></TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell><strong>Highest Scoring Team</strong></TableCell>
-                  <TableCell align="right"><Chip label="10 pts" size="small" /></TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell><strong>Total Goals</strong> (Within ±5 goals)</TableCell>
-                  <TableCell align="right"><Chip label="10 pts" size="small" /></TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell><strong>Most Yellow Cards Team</strong></TableCell>
-                  <TableCell align="right"><Chip label="10 pts" size="small" /></TableCell>
-                </TableRow>
+                {bonusQuestions.map((question) => (
+                  <TableRow key={question.id}>
+                    <TableCell><strong>{question.questionTextEn}</strong></TableCell>
+                    <TableCell align="right">
+                      <Chip 
+                        label={`${question.points} pts`} 
+                        color={question.points >= 20 ? "primary" : "default"} 
+                        size="small" 
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </TableContainer>
