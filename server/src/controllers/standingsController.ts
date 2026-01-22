@@ -71,7 +71,7 @@ export const getIndividualStandings = async (req: Request, res: Response) => {
 /**
  * Get department standings
  */
-export const getDepartmentStandings = async (req: Request, res: Response) => {
+export const getDepartmentStandings = async (_req: Request, res: Response) => {
   try {
     const standings = await DepartmentStatistics.findAll({
       include: [
