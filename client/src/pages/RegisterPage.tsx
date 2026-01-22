@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Card,
@@ -10,12 +10,17 @@ import {
   Container,
   Alert,
   MenuItem,
+  CircularProgress,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { mockDepartments } from '../data/mockData';
+import { useAuth } from '../contexts/AuthContext';
+import { dataService } from '../services/dataService';
+import { getErrorMessage } from '../services/api';
+import type { Department } from '../types';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
+  const { register } = useAuth();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -26,6 +31,25 @@ export default function RegisterPage() {
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [loadingDepartments, setLoadingDepartments] = useState(true);
+
+  // Fetch departments on mount
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const deps = await dataService.getDepartments();
+        setDepartments(deps);
+      } catch (err) {
+        console.error('Failed to load departments:', err);
+        setError('Failed to load departments. Please refresh the page.');
+      } finally {
+        setLoadingDepartments(false);
+      }
+    };
+    fetchDepartments();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -34,7 +58,7 @@ export default function RegisterPage() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -54,11 +78,25 @@ export default function RegisterPage() {
       return;
     }
 
-    // Mock registration - in real app, call API
-    setSuccess(true);
-    setTimeout(() => {
-      navigate('/login');
-    }, 2000);
+    // Call registration API
+    setLoading(true);
+    try {
+      await register({
+        email: formData.email,
+        password: formData.password,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        departmentId: formData.departmentId,
+      });
+      setSuccess(true);
+      setTimeout(() => {
+        navigate('/');
+      }, 2000);
+    } catch (err: any) {
+      setError(getErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (success) {
@@ -81,7 +119,7 @@ export default function RegisterPage() {
                 Registration Successful!
               </Typography>
               <Typography color="text.secondary">
-                Redirecting to login page...
+                Redirecting to home page...
               </Typography>
             </CardContent>
           </Card>
@@ -156,12 +194,19 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 margin="normal"
                 required
+                disabled={loadingDepartments}
               >
-                {mockDepartments.map((dept) => (
-                  <MenuItem key={dept.id} value={dept.id}>
-                    {dept.name}
-                  </MenuItem>
-                ))}
+                {loadingDepartments ? (
+                  <MenuItem disabled>Loading departments...</MenuItem>
+                ) : departments.length === 0 ? (
+                  <MenuItem disabled>No departments available</MenuItem>
+                ) : (
+                  departments.map((dept) => (
+                    <MenuItem key={dept.id} value={dept.id}>
+                      {dept.name}
+                    </MenuItem>
+                  ))
+                )}
               </TextField>
               <TextField
                 fullWidth
@@ -189,9 +234,10 @@ export default function RegisterPage() {
                 variant="contained"
                 size="large"
                 type="submit"
+                disabled={loading || loadingDepartments}
                 sx={{ mt: 3, mb: 2 }}
               >
-                Register
+                {loading ? <CircularProgress size={24} /> : 'Register'}
               </Button>
             </form>
 
