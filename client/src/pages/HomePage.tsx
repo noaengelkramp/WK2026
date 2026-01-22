@@ -196,7 +196,19 @@ export default function HomePage() {
                 <>
                   <Grid container spacing={2} sx={{ mt: 2, alignItems: 'center' }}>
                     <Grid size={{ xs: 12, sm: 4 }} sx={{ textAlign: 'center' }}>
-                      <Typography variant="h3">{nextMatch.homeTeam.flagUrl}</Typography>
+                      <Box
+                        component="img"
+                        src={nextMatch.homeTeam.flagUrl}
+                        alt={`${nextMatch.homeTeam.name} flag`}
+                        sx={{
+                          width: 80,
+                          height: 60,
+                          objectFit: 'cover',
+                          borderRadius: 1,
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                          mb: 1,
+                        }}
+                      />
                       <Typography variant="h6">{nextMatch.homeTeam.name}</Typography>
                     </Grid>
                     <Grid size={{ xs: 12, sm: 4 }} sx={{ textAlign: 'center' }}>
@@ -213,7 +225,19 @@ export default function HomePage() {
                       <Typography variant="body2">{nextMatch.venue}, {nextMatch.city}</Typography>
                     </Grid>
                     <Grid size={{ xs: 12, sm: 4 }} sx={{ textAlign: 'center' }}>
-                      <Typography variant="h3">{nextMatch.awayTeam.flagUrl}</Typography>
+                      <Box
+                        component="img"
+                        src={nextMatch.awayTeam.flagUrl}
+                        alt={`${nextMatch.awayTeam.name} flag`}
+                        sx={{
+                          width: 80,
+                          height: 60,
+                          objectFit: 'cover',
+                          borderRadius: 1,
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                          mb: 1,
+                        }}
+                      />
                       <Typography variant="h6">{nextMatch.awayTeam.name}</Typography>
                     </Grid>
                   </Grid>
