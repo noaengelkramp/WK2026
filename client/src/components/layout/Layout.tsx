@@ -28,7 +28,6 @@ import {
   BarChart as ChartIcon,
   CardGiftcard as PrizeIcon,
   Gavel as RulesIcon,
-  Assessment as StatsIcon,
   AdminPanelSettings as AdminIcon,
   Language as LanguageIcon,
   Logout as LogoutIcon,

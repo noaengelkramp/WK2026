@@ -32,18 +32,18 @@ export default function HomePage() {
 
       <Grid container spacing={3}>
         {/* Next Match Card */}
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Card sx={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }}>
             <CardContent>
               <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <ClockIcon /> Next Match
               </Typography>
-              <Grid container spacing={2} alignItems="center" sx={{ mt: 2 }}>
-                <Grid item xs={12} sm={4} sx={{ textAlign: 'center' }}>
+              <Grid container spacing={2} sx={{ mt: 2, alignItems: 'center' }}>
+                <Grid size={{ xs: 12, sm: 4 }} sx={{ textAlign: 'center' }}>
                   <Typography variant="h3">{nextMatch.homeTeam.flagUrl}</Typography>
                   <Typography variant="h6">{nextMatch.homeTeam.name}</Typography>
                 </Grid>
-                <Grid item xs={12} sm={4} sx={{ textAlign: 'center' }}>
+                <Grid size={{ xs: 12, sm: 4 }} sx={{ textAlign: 'center' }}>
                   <Chip label={nextMatch.status.toUpperCase()} color="warning" sx={{ mb: 1 }} />
                   <Typography variant="h5">VS</Typography>
                   <Typography variant="body2" sx={{ mt: 1 }}>
@@ -56,7 +56,7 @@ export default function HomePage() {
                   </Typography>
                   <Typography variant="body2">{nextMatch.venue}, {nextMatch.city}</Typography>
                 </Grid>
-                <Grid item xs={12} sm={4} sx={{ textAlign: 'center' }}>
+                <Grid size={{ xs: 12, sm: 4 }} sx={{ textAlign: 'center' }}>
                   <Typography variant="h3">{nextMatch.awayTeam.flagUrl}</Typography>
                   <Typography variant="h6">{nextMatch.awayTeam.name}</Typography>
                 </Grid>
@@ -76,7 +76,7 @@ export default function HomePage() {
         </Grid>
 
         {/* Deadline Countdown Card */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card sx={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', color: 'white', height: '100%' }}>
             <CardContent>
               <Typography variant="h5" gutterBottom>
@@ -96,7 +96,7 @@ export default function HomePage() {
         </Grid>
 
         {/* Prize Info Card */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card sx={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', color: 'white', height: '100%' }}>
             <CardContent>
               <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -124,7 +124,7 @@ export default function HomePage() {
         </Grid>
 
         {/* Top Individual Players */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card>
             <CardContent>
               <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -171,7 +171,7 @@ export default function HomePage() {
         </Grid>
 
         {/* Top Departments */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card>
             <CardContent>
               <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -216,29 +216,29 @@ export default function HomePage() {
         </Grid>
 
         {/* Quick Links */}
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Card>
             <CardContent>
               <Typography variant="h5" gutterBottom>
                 Quick Links
               </Typography>
               <Grid container spacing={2} sx={{ mt: 1 }}>
-                <Grid item xs={6} sm={3}>
+                <Grid size={{ xs: 6, sm: 3 }}>
                   <Button fullWidth variant="outlined" onClick={() => navigate('/matches')}>
                     View Matches
                   </Button>
                 </Grid>
-                <Grid item xs={6} sm={3}>
+                <Grid size={{ xs: 6, sm: 3 }}>
                   <Button fullWidth variant="outlined" onClick={() => navigate('/groups')}>
                     Group Standings
                   </Button>
                 </Grid>
-                <Grid item xs={6} sm={3}>
+                <Grid size={{ xs: 6, sm: 3 }}>
                   <Button fullWidth variant="outlined" onClick={() => navigate('/statistics')}>
                     Statistics
                   </Button>
                 </Grid>
-                <Grid item xs={6} sm={3}>
+                <Grid size={{ xs: 6, sm: 3 }}>
                   <Button fullWidth variant="outlined" onClick={() => navigate('/rules')}>
                     How to Play
                   </Button>

@@ -1,5 +1,5 @@
 import apiClient from './api';
-import { User } from '../types';
+import type { User } from '../types';
 
 export interface LoginCredentials {
   email: string;

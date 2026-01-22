@@ -94,18 +94,18 @@ export default function MyPredictionPage() {
             {mockMatches
               .filter((match) => match.stage === 'group')
               .map((match) => (
-                <Grid item xs={12} key={match.id}>
+                <Grid size={12} key={match.id}>
                   <Card variant="outlined">
                     <CardContent>
                       <Grid container spacing={2} alignItems="center">
-                        <Grid item xs={12} sm={1}>
+                        <Grid size={{ xs: 12, sm: 1 }}>
                           <Chip
                             label={`#${match.matchNumber}`}
                             size="small"
                             color={match.status === 'finished' ? 'success' : 'default'}
                           />
                         </Grid>
-                        <Grid item xs={12} sm={3}>
+                        <Grid size={{ xs: 12, sm: 3 }}>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                             <Typography variant="h4">{match.homeTeam.flagUrl}</Typography>
                             <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
@@ -113,7 +113,7 @@ export default function MyPredictionPage() {
                             </Typography>
                           </Box>
                         </Grid>
-                        <Grid item xs={12} sm={3} sx={{ textAlign: 'center' }}>
+                        <Grid size={{ xs: 12, sm: 3 }} sx={{ textAlign: 'center' }}>
                           {match.status === 'finished' ? (
                             <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
                               {match.homeScore} - {match.awayScore}
@@ -127,7 +127,6 @@ export default function MyPredictionPage() {
                                 inputProps={{ min: 0, max: 10, style: { textAlign: 'center' } }}
                                 value={predictions[match.id]?.home || ''}
                                 onChange={(e) => handlePredictionChange(match.id, 'home', parseInt(e.target.value) || 0)}
-                                disabled={match.status === 'finished'}
                               />
                               <Typography variant="h6">-</Typography>
                               <TextField
@@ -137,12 +136,11 @@ export default function MyPredictionPage() {
                                 inputProps={{ min: 0, max: 10, style: { textAlign: 'center' } }}
                                 value={predictions[match.id]?.away || ''}
                                 onChange={(e) => handlePredictionChange(match.id, 'away', parseInt(e.target.value) || 0)}
-                                disabled={match.status === 'finished'}
                               />
                             </Box>
                           )}
                         </Grid>
-                        <Grid item xs={12} sm={3}>
+                        <Grid size={{ xs: 12, sm: 3 }}>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                             <Typography variant="h4">{match.awayTeam.flagUrl}</Typography>
                             <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
@@ -150,7 +148,7 @@ export default function MyPredictionPage() {
                             </Typography>
                           </Box>
                         </Grid>
-                        <Grid item xs={12} sm={2}>
+                        <Grid size={{ xs: 12, sm: 2 }}>
                           <Typography variant="caption" color="text.secondary">
                             {new Date(match.matchDate).toLocaleDateString()}
                           </Typography>
@@ -219,7 +217,7 @@ export default function MyPredictionPage() {
         </AccordionSummary>
         <AccordionDetails>
           <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <FormControl fullWidth>
                 <InputLabel>Top Scorer</InputLabel>
                 <Select label="Top Scorer">
@@ -229,7 +227,7 @@ export default function MyPredictionPage() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <FormControl fullWidth>
                 <InputLabel>Highest Scoring Team</InputLabel>
                 <Select label="Highest Scoring Team">
@@ -241,7 +239,7 @@ export default function MyPredictionPage() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
                 label="Total Goals in Tournament"
@@ -249,7 +247,7 @@ export default function MyPredictionPage() {
                 inputProps={{ min: 0 }}
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <FormControl fullWidth>
                 <InputLabel>Most Yellow Cards Team</InputLabel>
                 <Select label="Most Yellow Cards Team">
@@ -269,7 +267,7 @@ export default function MyPredictionPage() {
       <Card>
         <CardContent>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <Button
                 fullWidth
                 variant="outlined"
@@ -280,7 +278,7 @@ export default function MyPredictionPage() {
                 Save Draft
               </Button>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <Button
                 fullWidth
                 variant="contained"

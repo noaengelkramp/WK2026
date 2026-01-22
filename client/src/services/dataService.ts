@@ -1,5 +1,5 @@
 import apiClient from './api';
-import { Team, Match, Department } from '../types';
+import type { Team, Match, Department } from '../types';
 
 export const dataService = {
   /**

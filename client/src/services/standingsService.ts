@@ -1,5 +1,5 @@
 import apiClient from './api';
-import { LeaderboardEntry, GroupStanding } from '../types';
+import type { LeaderboardEntry } from '../types';
 
 export interface StandingsResponse {
   standings: LeaderboardEntry[];

@@ -1,5 +1,5 @@
 import apiClient from './api';
-import { Prediction, BonusQuestion } from '../types';
+import type { Prediction, BonusQuestion } from '../types';
 
 export interface PredictionSubmission {
   matchId: string;

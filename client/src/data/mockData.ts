@@ -1,4 +1,4 @@
-import { Team, Department, Match, User, LeaderboardEntry, DepartmentStatistics, GroupStanding, Prize } from '../types';
+import type { Team, Department, Match, User, LeaderboardEntry, DepartmentStatistics, GroupStanding, Prize } from '../types';
 
 // Mock Teams
 export const mockTeams: Team[] = [
