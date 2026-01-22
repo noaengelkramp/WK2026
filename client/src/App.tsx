@@ -13,6 +13,7 @@ import StandingsDepartmentPage from './pages/StandingsDepartmentPage';
 import RulesPage from './pages/RulesPage';
 import PrizesPage from './pages/PrizesPage';
 import MatchesPage from './pages/MatchesPage';
+import GroupsPage from './pages/GroupsPage';
 import { CircularProgress, Box } from '@mui/material';
 
 // Placeholder pages (to be implemented)
@@ -47,7 +48,7 @@ const ProtectedRoutes = () => {
         <Route path="/standings/individual" element={<StandingsIndividualPage />} />
         <Route path="/standings/departments" element={<StandingsDepartmentPage />} />
         <Route path="/matches" element={<MatchesPage />} />
-        <Route path="/groups" element={<PlaceholderPage title="Groups" />} />
+        <Route path="/groups" element={<GroupsPage />} />
         <Route path="/statistics" element={<PlaceholderPage title="Statistics" />} />
         <Route path="/prizes" element={<PrizesPage />} />
         <Route path="/rules" element={<RulesPage />} />
