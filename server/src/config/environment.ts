@@ -1,6 +1,8 @@
 import dotenv from 'dotenv';
+import path from 'path';
 
-dotenv.config();
+// Load .env from project root (parent directory of server/)
+dotenv.config({ path: path.join(__dirname, '../../../.env') });
 
 export const config = {
   // Server
@@ -14,8 +16,17 @@ export const config = {
     port: parseInt(process.env.DATABASE_PORT || '5432'),
     name: process.env.DATABASE_NAME || 'wk2026',
     user: process.env.DATABASE_USER || 'postgres',
-    password: process.env.DATABASE_PASSWORD || 'postgres',
-    url: process.env.DATABASE_URL || `postgresql://${process.env.DATABASE_USER}:${process.env.DATABASE_PASSWORD}@${process.env.DATABASE_HOST}:${process.env.DATABASE_PORT}/${process.env.DATABASE_NAME}`,
+    password: process.env.DATABASE_PASSWORD || '',
+    url: process.env.DATABASE_URL || (() => {
+      const user = process.env.DATABASE_USER || 'postgres';
+      const password = process.env.DATABASE_PASSWORD || '';
+      const host = process.env.DATABASE_HOST || 'localhost';
+      const port = process.env.DATABASE_PORT || '5432';
+      const name = process.env.DATABASE_NAME || 'wk2026';
+      // Only include password in URL if it's not empty
+      const credentials = password ? `${user}:${password}` : user;
+      return `postgresql://${credentials}@${host}:${port}/${name}`;
+    })(),
   },
 
   // JWT
