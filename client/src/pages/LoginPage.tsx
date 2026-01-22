@@ -9,23 +9,32 @@ import {
   Link,
   Container,
   Alert,
+  CircularProgress,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { getErrorMessage } from '../services/api';
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+    setLoading(true);
     
-    // Mock login - in real app, call API
-    if (email && password) {
+    try {
+      await login({ email, password });
       navigate('/');
-    } else {
-      setError('Please enter both email and password');
+    } catch (err: any) {
+      setError(getErrorMessage(err));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -83,9 +92,10 @@ export default function LoginPage() {
                 variant="contained"
                 size="large"
                 type="submit"
+                disabled={loading}
                 sx={{ mt: 3, mb: 2 }}
               >
-                Sign In
+                {loading ? <CircularProgress size={24} /> : 'Sign In'}
               </Button>
             </form>
 

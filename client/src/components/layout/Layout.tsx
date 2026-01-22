@@ -34,7 +34,7 @@ import {
   Logout as LogoutIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { getCurrentUser } from '../../data/mockData';
+import { useAuth } from '../../contexts/AuthContext';
 
 const drawerWidth = 240;
 
@@ -49,7 +49,11 @@ export default function Layout({ children }: LayoutProps) {
   const location = useLocation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const currentUser = getCurrentUser();
+  const { user, logout } = useAuth();
+
+  if (!user) {
+    return null; // Or redirect to login
+  }
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -75,9 +79,15 @@ export default function Layout({ children }: LayoutProps) {
     { text: 'Rules', icon: <RulesIcon />, path: '/rules' },
   ];
 
-  if (currentUser.isAdmin) {
+  if (user.isAdmin) {
     menuItems.push({ text: 'Admin Panel', icon: <AdminIcon />, path: '/admin' });
   }
+
+  const handleLogout = () => {
+    handleUserMenuClose();
+    logout();
+    navigate('/login');
+  };
 
   const drawer = (
     <Box>
@@ -130,7 +140,7 @@ export default function Layout({ children }: LayoutProps) {
           </Typography>
           <IconButton color="inherit" onClick={handleUserMenuOpen}>
             <Avatar sx={{ width: 32, height: 32, bgcolor: theme.palette.secondary.main }}>
-              {currentUser.firstName[0]}{currentUser.lastName[0]}
+              {user.firstName[0]}{user.lastName[0]}
             </Avatar>
           </IconButton>
           <Menu
@@ -140,14 +150,14 @@ export default function Layout({ children }: LayoutProps) {
           >
             <MenuItem disabled>
               <PersonIcon sx={{ mr: 1 }} />
-              {currentUser.firstName} {currentUser.lastName}
+              {user.firstName} {user.lastName}
             </MenuItem>
             <Divider />
             <MenuItem onClick={handleUserMenuClose}>
               <LanguageIcon sx={{ mr: 1 }} />
-              Language: English
+              Language: {user.languagePreference === 'en' ? 'English' : 'Nederlands'}
             </MenuItem>
-            <MenuItem onClick={() => navigate('/login')}>
+            <MenuItem onClick={handleLogout}>
               <LogoutIcon sx={{ mr: 1 }} />
               Logout
             </MenuItem>
