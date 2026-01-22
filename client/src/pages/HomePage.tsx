@@ -93,10 +93,10 @@ export default function HomePage() {
       try {
         setLoadingMatches(true);
         setMatchError(null);
-        const response = await dataService.getUpcomingMatches(1);
-        if (response.matches && response.matches.length > 0) {
-          setNextMatch(response.matches[0]);
-          setCachedData('homepage_next_match', response.matches[0]);
+        const matches = await dataService.getUpcomingMatches(1);
+        if (matches && matches.length > 0) {
+          setNextMatch(matches[0]);
+          setCachedData('homepage_next_match', matches[0]);
         }
       } catch (error: any) {
         console.error('Error fetching next match:', error);
@@ -123,7 +123,7 @@ export default function HomePage() {
       try {
         setLoadingPlayers(true);
         setPlayersError(null);
-        const response = await standingsService.getIndividualStandings(5, 0);
+        const response = await standingsService.getIndividualStandings({ limit: 5, offset: 0 });
         setTopPlayers(response.standings);
         setCachedData('homepage_top_players', response.standings);
       } catch (error: any) {
@@ -314,7 +314,7 @@ export default function HomePage() {
                       </TableHead>
                       <TableBody>
                         {topPlayers.map((entry) => (
-                          <TableRow key={entry.userId}>
+                          <TableRow key={entry.user.id}>
                             <TableCell>
                               {entry.rank === 1 && '🥇'}
                               {entry.rank === 2 && '🥈'}
