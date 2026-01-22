@@ -13,6 +13,7 @@ import {
   CircularProgress,
   Alert,
   Divider,
+  Pagination,
 } from '@mui/material';
 import {
   SportsSoccer as SoccerIcon,
@@ -45,6 +46,10 @@ export default function MatchesPage() {
   const [stageFilter, setStageFilter] = useState<StageFilter>('all');
   const [teamFilter, setTeamFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  
+  // Pagination
+  const [page, setPage] = useState(1);
+  const matchesPerPage = 20;
 
   useEffect(() => {
     loadData();
@@ -92,6 +97,18 @@ export default function MatchesPage() {
 
   // Sort matches by match number
   const sortedMatches = [...filteredMatches].sort((a, b) => a.matchNumber - b.matchNumber);
+  
+  // Pagination
+  const totalPages = Math.ceil(sortedMatches.length / matchesPerPage);
+  const paginatedMatches = sortedMatches.slice(
+    (page - 1) * matchesPerPage,
+    page * matchesPerPage
+  );
+  
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [stageFilter, teamFilter, statusFilter]);
 
   // Get match status icon and color
   const getStatusInfo = (status: string) => {
@@ -212,15 +229,15 @@ export default function MatchesPage() {
 
       {/* Match Count */}
       <Alert severity="info" icon={<SoccerIcon />} sx={{ mb: 3 }}>
-        Showing <strong>{sortedMatches.length}</strong> of <strong>{matches.length}</strong> matches
+        Showing <strong>{(page - 1) * matchesPerPage + 1}-{Math.min(page * matchesPerPage, sortedMatches.length)}</strong> of <strong>{sortedMatches.length}</strong> matches
       </Alert>
 
       {/* Matches List */}
-      {sortedMatches.length === 0 ? (
+      {paginatedMatches.length === 0 ? (
         <Alert severity="warning">No matches found matching your filters.</Alert>
       ) : (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {sortedMatches.map((match) => {
+          {paginatedMatches.map((match) => {
             const statusInfo = getStatusInfo(match.status);
 
             return (
@@ -357,6 +374,24 @@ export default function MatchesPage() {
               </Card>
             );
           })}
+        </Box>
+      )}
+      
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+          <Pagination
+            count={totalPages}
+            page={page}
+            onChange={(_, value) => {
+              setPage(value);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            color="primary"
+            size="large"
+            showFirstButton
+            showLastButton
+          />
         </Box>
       )}
     </Box>

@@ -2,7 +2,15 @@ import { Team, Match } from '../models';
 
 /**
  * Seed all 104 World Cup 2026 matches
- * This includes all group stage (48) + knockout matches (56)
+ * This includes:
+ * - Group stage: 72 matches (12 groups × 6 matches each)
+ * - Round of 32: 16 matches (32 teams)
+ * - Round of 16: 8 matches (16 teams)
+ * - Quarter-finals: 4 matches (8 teams)
+ * - Semi-finals: 2 matches (4 teams)
+ * - Third place: 1 match
+ * - Final: 1 match
+ * Total: 104 matches
  */
 export async function seedAllMatches() {
   try {
@@ -144,8 +152,8 @@ export async function seedAllMatches() {
 
     const knockoutStartDate = new Date('2026-06-30T00:00:00Z');
 
-    // Round of 32 (32 matches) - June 30 - July 3
-    for (let i = 0; i < 32; i++) {
+    // Round of 32 (16 matches - 32 teams) - June 30 - July 3
+    for (let i = 0; i < 16; i++) {
       matchesData.push({
         matchNumber: matchNumber++,
         stage: 'round32' as const,
@@ -153,14 +161,14 @@ export async function seedAllMatches() {
         // awayTeamId: undefined (omitted - TBD),
         venue: venues[i % venues.length].name,
         city: venues[i % venues.length].city,
-        matchDate: new Date(knockoutStartDate.getTime() + Math.floor(i / 8) * 24 * 60 * 60 * 1000 + (i % 4) * 3 * 60 * 60 * 1000),
+        matchDate: new Date(knockoutStartDate.getTime() + Math.floor(i / 4) * 24 * 60 * 60 * 1000 + (i % 4) * 3 * 60 * 60 * 1000),
         status: 'scheduled' as const,
       });
     }
 
-    // Round of 16 (16 matches) - July 5-7
+    // Round of 16 (8 matches - 16 teams) - July 5-7
     const round16Date = new Date('2026-07-05T00:00:00Z');
-    for (let i = 0; i < 16; i++) {
+    for (let i = 0; i < 8; i++) {
       matchesData.push({
         matchNumber: matchNumber++,
         stage: 'round16' as const,
@@ -168,14 +176,14 @@ export async function seedAllMatches() {
         // awayTeamId: undefined (omitted - TBD),
         venue: venues[i % venues.length].name,
         city: venues[i % venues.length].city,
-        matchDate: new Date(round16Date.getTime() + Math.floor(i / 8) * 24 * 60 * 60 * 1000 + (i % 4) * 3 * 60 * 60 * 1000),
+        matchDate: new Date(round16Date.getTime() + Math.floor(i / 4) * 24 * 60 * 60 * 1000 + (i % 4) * 3 * 60 * 60 * 1000),
         status: 'scheduled' as const,
       });
     }
 
-    // Quarter-finals (8 matches) - July 9-10
+    // Quarter-finals (4 matches - 8 teams) - July 9-10
     const quarterDate = new Date('2026-07-09T00:00:00Z');
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 4; i++) {
       matchesData.push({
         matchNumber: matchNumber++,
         stage: 'quarter' as const,
@@ -183,22 +191,22 @@ export async function seedAllMatches() {
         // awayTeamId: undefined (omitted - TBD),
         venue: venues[i % 4].name,
         city: venues[i % 4].city,
-        matchDate: new Date(quarterDate.getTime() + Math.floor(i / 4) * 24 * 60 * 60 * 1000 + (i % 2) * 4 * 60 * 60 * 1000),
+        matchDate: new Date(quarterDate.getTime() + Math.floor(i / 2) * 24 * 60 * 60 * 1000 + (i % 2) * 4 * 60 * 60 * 1000),
         status: 'scheduled' as const,
       });
     }
 
-    // Semi-finals (4 matches) - July 13-14
+    // Semi-finals (2 matches - 4 teams) - July 13-14
     const semiDate = new Date('2026-07-13T00:00:00Z');
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 2; i++) {
       matchesData.push({
         matchNumber: matchNumber++,
         stage: 'semi' as const,
         // homeTeamId: undefined (omitted - TBD),
         // awayTeamId: undefined (omitted - TBD),
-        venue: i < 2 ? 'MetLife Stadium' : 'SoFi Stadium',
-        city: i < 2 ? 'New York' : 'Los Angeles',
-        matchDate: new Date(semiDate.getTime() + Math.floor(i / 2) * 24 * 60 * 60 * 1000 + (i % 2) * 4 * 60 * 60 * 1000),
+        venue: i === 0 ? 'MetLife Stadium' : 'SoFi Stadium',
+        city: i === 0 ? 'New York' : 'Los Angeles',
+        matchDate: new Date(semiDate.getTime() + i * 24 * 60 * 60 * 1000),
         status: 'scheduled' as const,
       });
     }
