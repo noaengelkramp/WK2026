@@ -41,9 +41,27 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
+// Available languages (European languages for World Cup 2026)
+const languages = [
+  { code: 'en', name: 'English', flag: '🇬🇧' },
+  { code: 'nl', name: 'Nederlands', flag: '🇳🇱' },
+  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
+  { code: 'fr', name: 'Français', flag: '🇫🇷' },
+  { code: 'es', name: 'Español', flag: '🇪🇸' },
+  { code: 'it', name: 'Italiano', flag: '🇮🇹' },
+  { code: 'pt', name: 'Português', flag: '🇵🇹' },
+  { code: 'pl', name: 'Polski', flag: '🇵🇱' },
+  { code: 'ro', name: 'Română', flag: '🇷🇴' },
+  { code: 'sv', name: 'Svenska', flag: '🇸🇪' },
+  { code: 'da', name: 'Dansk', flag: '🇩🇰' },
+  { code: 'fi', name: 'Suomi', flag: '🇫🇮' },
+];
+
 export default function Layout({ children }: LayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [languageMenuAnchor, setLanguageMenuAnchor] = useState<null | HTMLElement>(null);
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
@@ -65,6 +83,26 @@ export default function Layout({ children }: LayoutProps) {
   const handleUserMenuClose = () => {
     setAnchorEl(null);
   };
+
+  const handleLanguageMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
+    setLanguageMenuAnchor(event.currentTarget);
+  };
+
+  const handleLanguageMenuClose = () => {
+    setLanguageMenuAnchor(null);
+  };
+
+  const handleLanguageSelect = (langCode: string) => {
+    setSelectedLanguage(langCode);
+    handleLanguageMenuClose();
+    handleUserMenuClose();
+    // TODO: In production, this would call an API to update user preference
+    // and reload the app with translated content
+    console.log(`Language changed to: ${langCode}`);
+  };
+
+  const currentLanguage = languages.find(lang => lang.code === selectedLanguage) || languages[0];
 
   const menuItems = [
     { text: 'Home', icon: <HomeIcon />, path: '/' },
@@ -171,13 +209,58 @@ export default function Layout({ children }: LayoutProps) {
               {user.firstName} {user.lastName}
             </MenuItem>
             <Divider />
-            <MenuItem onClick={handleUserMenuClose}>
+            <MenuItem onClick={handleLanguageMenuOpen}>
               <LanguageIcon sx={{ mr: 1 }} />
-              Language: {user.languagePreference === 'en' ? 'English' : 'Nederlands'}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <span>{currentLanguage.flag}</span>
+                <span>{currentLanguage.name}</span>
+              </Box>
             </MenuItem>
             <MenuItem onClick={handleLogout}>
               <LogoutIcon sx={{ mr: 1 }} />
               Logout
+            </MenuItem>
+          </Menu>
+
+          {/* Language Selection Submenu */}
+          <Menu
+            anchorEl={languageMenuAnchor}
+            open={Boolean(languageMenuAnchor)}
+            onClose={handleLanguageMenuClose}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+          >
+            <MenuItem disabled sx={{ opacity: 1, fontWeight: 'bold' }}>
+              <LanguageIcon sx={{ mr: 1 }} />
+              Select Language
+            </MenuItem>
+            <Divider />
+            {languages.map((lang) => (
+              <MenuItem
+                key={lang.code}
+                onClick={() => handleLanguageSelect(lang.code)}
+                selected={lang.code === selectedLanguage}
+                sx={{
+                  '&.Mui-selected': {
+                    backgroundColor: '#F5E5E4',
+                  },
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, width: '100%' }}>
+                  <Typography sx={{ fontSize: '1.3rem' }}>{lang.flag}</Typography>
+                  <Typography>{lang.name}</Typography>
+                </Box>
+              </MenuItem>
+            ))}
+            <Divider sx={{ mt: 1 }} />
+            <MenuItem disabled sx={{ fontSize: '0.75rem', fontStyle: 'italic' }}>
+              💡 More languages coming soon
             </MenuItem>
           </Menu>
         </Toolbar>
