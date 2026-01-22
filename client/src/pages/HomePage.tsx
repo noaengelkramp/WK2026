@@ -239,18 +239,18 @@ export default function HomePage() {
 
         {/* Deadline Countdown Card */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <Card sx={{ background: 'linear-gradient(135deg, #194461 0%, #2A5F7F 100%)', color: 'white', height: '100%' }}>
+          <Card sx={{ background: 'linear-gradient(135deg, #F5F5F5 0%, #E0E0E0 100%)', height: '100%' }}>
             <CardContent>
-              <Typography variant="h5" gutterBottom>
+              <Typography variant="h5" gutterBottom sx={{ color: '#9B1915' }}>
                 ⏰ Prediction Deadline
               </Typography>
-              <Typography variant="h3" sx={{ my: 2 }}>
+              <Typography variant="h3" sx={{ my: 2, color: '#9B1915' }}>
                 15 Days 4 Hours
               </Typography>
-              <Typography variant="body1">
+              <Typography variant="body1" sx={{ color: '#212121' }}>
                 June 11, 2026 at 23:00
               </Typography>
-              <Typography variant="body2" sx={{ mt: 2 }}>
+              <Typography variant="body2" sx={{ mt: 2, color: '#666666' }}>
                 Make sure to submit all your predictions before the deadline!
               </Typography>
             </CardContent>
@@ -259,7 +259,7 @@ export default function HomePage() {
 
         {/* Prize Info Card */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <Card sx={{ background: 'linear-gradient(135deg, #9B1915 0%, #7A1411 100%)', color: 'white', height: '100%' }}>
+          <Card sx={{ background: 'linear-gradient(135deg, #C42420 0%, #9B1915 100%)', color: 'white', height: '100%' }}>
             <CardContent>
               <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <TrophyIcon /> Prizes to Win!

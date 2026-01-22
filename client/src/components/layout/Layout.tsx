@@ -105,6 +105,17 @@ export default function Layout({ children }: LayoutProps) {
                 navigate(item.path);
                 if (isMobile) setMobileOpen(false);
               }}
+              sx={{
+                '&.Mui-selected': {
+                  backgroundColor: '#F5E5E4', // Light red tint for selected
+                  '& .MuiListItemIcon-root': {
+                    color: '#9B1915',
+                  },
+                },
+                '& .MuiListItemIcon-root': {
+                  color: '#666666',
+                },
+              }}
             >
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.text} />

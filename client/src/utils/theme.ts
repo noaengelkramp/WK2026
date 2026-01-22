@@ -104,9 +104,9 @@ export const theme = createTheme({
           },
         },
         containedSecondary: {
-          backgroundColor: '#194461',
+          backgroundColor: '#666666', // Grey for secondary buttons, not blue
           '&:hover': {
-            backgroundColor: '#2A5F7F',
+            backgroundColor: '#808080',
           },
         },
       },
@@ -133,8 +133,8 @@ export const theme = createTheme({
           color: '#FFFFFF',
         },
         colorSecondary: {
-          backgroundColor: '#194461',
-          color: '#FFFFFF',
+          backgroundColor: '#E0E0E0', // Light grey for secondary chips, not blue
+          color: '#212121',
         },
       },
     },
@@ -150,8 +150,9 @@ export const theme = createTheme({
     MuiDrawer: {
       styleOverrides: {
         paper: {
-          backgroundColor: '#194461',
-          color: '#FFFFFF',
+          backgroundColor: '#FFFFFF', // White drawer with grey border, not blue
+          color: '#212121',
+          borderRight: '1px solid #E0E0E0',
         },
       },
     },
