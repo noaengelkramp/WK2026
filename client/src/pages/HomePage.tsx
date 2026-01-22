@@ -180,8 +180,8 @@ export default function HomePage() {
         <Grid size={12}>
           <Card sx={{ background: 'linear-gradient(135deg, #9B1915 0%, #C42420 100%)', color: 'white' }}>
             <CardContent>
-              <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <ClockIcon /> Next Match
+              <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'white' }}>
+                <ClockIcon sx={{ color: 'white' }} /> Next Match
               </Typography>
               
               {loadingMatches ? (
@@ -209,12 +209,12 @@ export default function HomePage() {
                           mb: 1,
                         }}
                       />
-                      <Typography variant="h6">{nextMatch.homeTeam.name}</Typography>
+                      <Typography variant="h6" sx={{ color: 'white' }}>{nextMatch.homeTeam.name}</Typography>
                     </Grid>
                     <Grid size={{ xs: 12, sm: 4 }} sx={{ textAlign: 'center' }}>
                       <Chip label={nextMatch.status.toUpperCase()} color="warning" sx={{ mb: 1 }} />
-                      <Typography variant="h5">VS</Typography>
-                      <Typography variant="body2" sx={{ mt: 1 }}>
+                      <Typography variant="h5" sx={{ color: 'white' }}>VS</Typography>
+                      <Typography variant="body2" sx={{ mt: 1, color: 'white' }}>
                         {new Date(nextMatch.matchDate).toLocaleDateString('en-US', {
                           month: 'long',
                           day: 'numeric',
@@ -222,7 +222,7 @@ export default function HomePage() {
                           minute: '2-digit',
                         })}
                       </Typography>
-                      <Typography variant="body2">{nextMatch.venue}, {nextMatch.city}</Typography>
+                      <Typography variant="body2" sx={{ color: 'white' }}>{nextMatch.venue}, {nextMatch.city}</Typography>
                     </Grid>
                     <Grid size={{ xs: 12, sm: 4 }} sx={{ textAlign: 'center' }}>
                       <Box
@@ -238,7 +238,7 @@ export default function HomePage() {
                           mb: 1,
                         }}
                       />
-                      <Typography variant="h6">{nextMatch.awayTeam.name}</Typography>
+                      <Typography variant="h6" sx={{ color: 'white' }}>{nextMatch.awayTeam.name}</Typography>
                     </Grid>
                   </Grid>
                   <Box sx={{ textAlign: 'center', mt: 3 }}>
@@ -285,16 +285,16 @@ export default function HomePage() {
         <Grid size={{ xs: 12, md: 6 }}>
           <Card sx={{ background: 'linear-gradient(135deg, #C42420 0%, #9B1915 100%)', color: 'white', height: '100%' }}>
             <CardContent>
-              <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <TrophyIcon /> Prizes to Win!
+              <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'white' }}>
+                <TrophyIcon sx={{ color: 'white' }} /> Prizes to Win!
               </Typography>
-              <Typography variant="h6" sx={{ mt: 2 }}>
+              <Typography variant="h6" sx={{ mt: 2, color: 'white' }}>
                 🎯 1st: Professional Foosball Table
               </Typography>
-              <Typography variant="h6" sx={{ mt: 1 }}>
+              <Typography variant="h6" sx={{ mt: 1, color: 'white' }}>
                 📺 2nd: Smart TV 55"
               </Typography>
-              <Typography variant="h6" sx={{ mt: 1 }}>
+              <Typography variant="h6" sx={{ mt: 1, color: 'white' }}>
                 📱 3rd: iPad Pro
               </Typography>
               <Button
