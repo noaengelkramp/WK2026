@@ -4,15 +4,15 @@ import { createTheme } from '@mui/material/styles';
 export const theme = createTheme({
   palette: {
     primary: {
-      main: '#FF6600', // Kramp Orange - Primary brand color
-      light: '#FF8533',
-      dark: '#CC5200',
+      main: '#9B1915', // Kramp Red - Primary brand color
+      light: '#C42420',
+      dark: '#7A1411',
       contrastText: '#FFFFFF',
     },
     secondary: {
-      main: '#003D6D', // Kramp Dark Blue - Professional, trustworthy
-      light: '#0056A0',
-      dark: '#002347',
+      main: '#194461', // Kramp Blue - Secondary brand color
+      light: '#2A5F7F',
+      dark: '#0F2F42',
       contrastText: '#FFFFFF',
     },
     success: {
@@ -36,12 +36,12 @@ export const theme = createTheme({
       dark: '#01579B',
     },
     background: {
-      default: '#F8F9FA', // Light gray background
+      default: '#F5F5F5', // Light grey background
       paper: '#FFFFFF',
     },
     text: {
-      primary: '#212121', // Dark gray for primary text
-      secondary: '#666666', // Medium gray for secondary text
+      primary: '#212121', // Dark grey for primary text
+      secondary: '#666666', // Medium grey for secondary text
     },
     divider: '#E0E0E0',
   },
@@ -50,17 +50,17 @@ export const theme = createTheme({
     h1: {
       fontSize: '2.5rem',
       fontWeight: 700,
-      color: '#003D6D', // Kramp Dark Blue
+      color: '#9B1915', // Kramp Red
     },
     h2: {
       fontSize: '2rem',
       fontWeight: 700,
-      color: '#003D6D',
+      color: '#9B1915',
     },
     h3: {
       fontSize: '1.75rem',
       fontWeight: 600,
-      color: '#003D6D',
+      color: '#194461', // Kramp Blue
     },
     h4: {
       fontSize: '1.5rem',
@@ -98,15 +98,15 @@ export const theme = createTheme({
           },
         },
         containedPrimary: {
-          backgroundColor: '#FF6600',
+          backgroundColor: '#9B1915',
           '&:hover': {
-            backgroundColor: '#FF8533',
+            backgroundColor: '#C42420',
           },
         },
         containedSecondary: {
-          backgroundColor: '#003D6D',
+          backgroundColor: '#194461',
           '&:hover': {
-            backgroundColor: '#0056A0',
+            backgroundColor: '#2A5F7F',
           },
         },
       },
@@ -129,11 +129,11 @@ export const theme = createTheme({
           fontWeight: 600,
         },
         colorPrimary: {
-          backgroundColor: '#FF6600',
+          backgroundColor: '#9B1915',
           color: '#FFFFFF',
         },
         colorSecondary: {
-          backgroundColor: '#003D6D',
+          backgroundColor: '#194461',
           color: '#FFFFFF',
         },
       },
@@ -142,7 +142,7 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundColor: '#FFFFFF',
-          color: '#003D6D',
+          color: '#9B1915',
           boxShadow: '0 2px 4px rgba(0,0,0,0.08)',
         },
       },
@@ -150,7 +150,7 @@ export const theme = createTheme({
     MuiDrawer: {
       styleOverrides: {
         paper: {
-          backgroundColor: '#003D6D',
+          backgroundColor: '#194461',
           color: '#FFFFFF',
         },
       },
@@ -158,10 +158,10 @@ export const theme = createTheme({
     MuiTableHead: {
       styleOverrides: {
         root: {
-          backgroundColor: '#F8F9FA',
+          backgroundColor: '#F5F5F5',
           '& .MuiTableCell-head': {
             fontWeight: 700,
-            color: '#003D6D',
+            color: '#9B1915',
           },
         },
       },
@@ -180,10 +180,10 @@ export const theme = createTheme({
           height: 8,
         },
         colorPrimary: {
-          backgroundColor: '#FFE5CC', // Light orange
+          backgroundColor: '#F5E5E4', // Light red tint
         },
         barColorPrimary: {
-          backgroundColor: '#FF6600', // Kramp Orange
+          backgroundColor: '#9B1915', // Kramp Red
         },
       },
     },

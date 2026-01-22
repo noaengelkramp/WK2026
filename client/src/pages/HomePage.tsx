@@ -178,7 +178,7 @@ export default function HomePage() {
       <Grid container spacing={3}>
         {/* Next Match Card */}
         <Grid size={12}>
-          <Card sx={{ background: 'linear-gradient(135deg, #FF6600 0%, #FF8533 100%)', color: 'white' }}>
+          <Card sx={{ background: 'linear-gradient(135deg, #9B1915 0%, #C42420 100%)', color: 'white' }}>
             <CardContent>
               <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <ClockIcon /> Next Match
@@ -239,7 +239,7 @@ export default function HomePage() {
 
         {/* Deadline Countdown Card */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <Card sx={{ background: 'linear-gradient(135deg, #003D6D 0%, #0056A0 100%)', color: 'white', height: '100%' }}>
+          <Card sx={{ background: 'linear-gradient(135deg, #194461 0%, #2A5F7F 100%)', color: 'white', height: '100%' }}>
             <CardContent>
               <Typography variant="h5" gutterBottom>
                 ⏰ Prediction Deadline
@@ -259,7 +259,7 @@ export default function HomePage() {
 
         {/* Prize Info Card */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <Card sx={{ background: 'linear-gradient(135deg, #FF6600 0%, #CC5200 100%)', color: 'white', height: '100%' }}>
+          <Card sx={{ background: 'linear-gradient(135deg, #9B1915 0%, #7A1411 100%)', color: 'white', height: '100%' }}>
             <CardContent>
               <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <TrophyIcon /> Prizes to Win!
