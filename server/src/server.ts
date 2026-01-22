@@ -11,6 +11,8 @@ import authRoutes from './routes/auth';
 import departmentRoutes from './routes/departments';
 import teamRoutes from './routes/teams';
 import matchRoutes from './routes/matches';
+import predictionRoutes from './routes/predictions';
+import standingsRoutes from './routes/standings';
 
 const app: Application = express();
 
@@ -42,6 +44,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/departments', departmentRoutes);
 app.use('/api/teams', teamRoutes);
 app.use('/api/matches', matchRoutes);
+app.use('/api/predictions', predictionRoutes);
+app.use('/api/standings', standingsRoutes);
 
 // 404 handler
 app.use(notFoundHandler);
