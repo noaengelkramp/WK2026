@@ -90,10 +90,18 @@ export default function Layout({ children }: LayoutProps) {
 
   const drawer = (
     <Box>
-      <Toolbar sx={{ backgroundColor: theme.palette.primary.main }}>
-        <Typography variant="h6" noWrap component="div" sx={{ color: 'white', fontWeight: 'bold' }}>
-          ⚽ WC 2026
-        </Typography>
+      <Toolbar sx={{ backgroundColor: theme.palette.primary.main, display: 'flex', justifyContent: 'center', py: 2 }}>
+        <Box
+          component="img"
+          src="/assets/kramp-logo-white.svg"
+          alt="Kramp - It's That Easy"
+          sx={{
+            height: 40,
+            width: 'auto',
+            maxWidth: '100%',
+            objectFit: 'contain',
+          }}
+        />
       </Toolbar>
       <Divider />
       <List>
