@@ -15,15 +15,8 @@ import PrizesPage from './pages/PrizesPage';
 import MatchesPage from './pages/MatchesPage';
 import GroupsPage from './pages/GroupsPage';
 import StatisticsPage from './pages/StatisticsPage';
+import AdminPanel from './pages/AdminPanel';
 import { CircularProgress, Box } from '@mui/material';
-
-// Placeholder pages (to be implemented)
-const PlaceholderPage = ({ title }: { title: string }) => (
-  <div>
-    <h1>{title}</h1>
-    <p>This page is coming soon...</p>
-  </div>
-);
 
 // Protected routes component
 const ProtectedRoutes = () => {
@@ -53,7 +46,7 @@ const ProtectedRoutes = () => {
         <Route path="/statistics" element={<StatisticsPage />} />
         <Route path="/prizes" element={<PrizesPage />} />
         <Route path="/rules" element={<RulesPage />} />
-        <Route path="/admin" element={<PlaceholderPage title="Admin Panel" />} />
+        <Route path="/admin" element={<AdminPanel />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Layout>
