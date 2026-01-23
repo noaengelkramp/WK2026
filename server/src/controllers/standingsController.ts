@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { UserStatistics, User, Department, DepartmentStatistics } from '../models';
 import { AppError } from '../middleware/errorHandler';
 import { Op } from 'sequelize';
+import { getCache, setCache, CACHE_TTL, CACHE_KEYS } from '../config/redis';
 
 /**
  * Get individual user standings (leaderboard)
@@ -12,6 +13,19 @@ export const getIndividualStandings = async (req: Request, res: Response) => {
 
     const limitNum = parseInt(limit as string);
     const offsetNum = parseInt(offset as string);
+
+    // Create cache key with query params
+    const cacheKey = `${CACHE_KEYS.LEADERBOARD_INDIVIDUAL}:${limitNum}:${offsetNum}:${search}`;
+
+    // Try to get from cache
+    const cached = await getCache<any>(cacheKey);
+    if (cached) {
+      console.log('✅ Cache HIT: Individual standings');
+      res.json(cached);
+      return;
+    }
+
+    console.log('⚠️  Cache MISS: Individual standings - querying database');
 
     // Build where clause for search
     const whereClause: any = {};
@@ -56,12 +70,17 @@ export const getIndividualStandings = async (req: Request, res: Response) => {
       ...stat.toJSON(),
     }));
 
-    res.json({
+    const response = {
       standings: standingsWithRank,
       total,
       limit: limitNum,
       offset: offsetNum,
-    });
+    };
+
+    // Cache the result
+    await setCache(cacheKey, response, CACHE_TTL.LEADERBOARD);
+
+    res.json(response);
   } catch (error) {
     console.error('Error fetching individual standings:', error);
     throw new AppError('Failed to fetch individual standings', 500);
@@ -73,6 +92,18 @@ export const getIndividualStandings = async (req: Request, res: Response) => {
  */
 export const getDepartmentStandings = async (_req: Request, res: Response) => {
   try {
+    const cacheKey = CACHE_KEYS.LEADERBOARD_DEPARTMENT;
+
+    // Try to get from cache
+    const cached = await getCache<any>(cacheKey);
+    if (cached) {
+      console.log('✅ Cache HIT: Department standings');
+      res.json(cached);
+      return;
+    }
+
+    console.log('⚠️  Cache MISS: Department standings - querying database');
+
     const standings = await DepartmentStatistics.findAll({
       include: [
         {
@@ -94,10 +125,15 @@ export const getDepartmentStandings = async (_req: Request, res: Response) => {
       ...stat.toJSON(),
     }));
 
-    res.json({
+    const response = {
       standings: standingsWithRank,
       total: standings.length,
-    });
+    };
+
+    // Cache the result
+    await setCache(cacheKey, response, CACHE_TTL.LEADERBOARD);
+
+    res.json(response);
   } catch (error) {
     console.error('Error fetching department standings:', error);
     throw new AppError('Failed to fetch department standings', 500);
@@ -111,6 +147,18 @@ export const getTopUsers = async (req: Request, res: Response) => {
   try {
     const { limit = '5' } = req.query;
     const limitNum = parseInt(limit as string);
+
+    const cacheKey = `${CACHE_KEYS.LEADERBOARD_INDIVIDUAL}:top:${limitNum}`;
+
+    // Try to get from cache
+    const cached = await getCache<any>(cacheKey);
+    if (cached) {
+      console.log('✅ Cache HIT: Top users');
+      res.json(cached);
+      return;
+    }
+
+    console.log('⚠️  Cache MISS: Top users - querying database');
 
     const topUsers = await UserStatistics.findAll({
       include: [
@@ -141,7 +189,12 @@ export const getTopUsers = async (req: Request, res: Response) => {
       ...stat.toJSON(),
     }));
 
-    res.json({ topUsers: topUsersWithRank });
+    const response = { topUsers: topUsersWithRank };
+
+    // Cache the result
+    await setCache(cacheKey, response, CACHE_TTL.LEADERBOARD);
+
+    res.json(response);
   } catch (error) {
     console.error('Error fetching top users:', error);
     throw new AppError('Failed to fetch top users', 500);

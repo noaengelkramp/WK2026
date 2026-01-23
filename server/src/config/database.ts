@@ -6,8 +6,8 @@ export const sequelize = new Sequelize(config.database.url, {
   dialect: 'postgres',
   logging: config.nodeEnv === 'development' ? console.log : false,
   pool: {
-    max: 10,
-    min: 0,
+    max: 50,        // Increased from 10 to 50 for higher concurrency
+    min: 5,         // Keep 5 connections warm
     acquire: 30000,
     idle: 10000,
   },

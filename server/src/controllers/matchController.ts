@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { Match, Team } from '../models';
 import { AppError } from '../middleware/errorHandler';
 import { Op } from 'sequelize';
+import { getCache, setCache, CACHE_TTL, CACHE_KEYS } from '../config/redis';
 
 /**
  * Get all matches
@@ -9,6 +10,21 @@ import { Op } from 'sequelize';
 export const getAllMatches = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { stage, status, group } = req.query;
+
+    // Create cache key based on query params
+    const cacheKey = stage 
+      ? CACHE_KEYS.MATCHES_BY_STAGE(stage as string)
+      : `${CACHE_KEYS.MATCHES_ALL}:${status || 'all'}:${group || 'all'}`;
+
+    // Try to get from cache
+    const cached = await getCache<any>(cacheKey);
+    if (cached) {
+      console.log('✅ Cache HIT: Matches');
+      res.json(cached);
+      return;
+    }
+
+    console.log('⚠️  Cache MISS: Matches - querying database');
 
     const where: any = {};
     if (stage) where.stage = stage;
@@ -24,7 +40,13 @@ export const getAllMatches = async (req: Request, res: Response, next: NextFunct
       order: [['matchDate', 'ASC'], ['matchNumber', 'ASC']],
     });
 
-    res.json({ matches });
+    const response = { matches };
+
+    // Cache with appropriate TTL based on status
+    const ttl = status === 'live' ? 60 : CACHE_TTL.MATCHES; // 1 min for live matches
+    await setCache(cacheKey, response, ttl);
+
+    res.json(response);
   } catch (error) {
     next(error);
   }

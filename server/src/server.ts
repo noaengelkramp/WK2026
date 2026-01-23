@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import { config } from './config/environment';
 import { testConnection, syncDatabase } from './config/database';
+import { initRedis, closeRedis, isRedisAvailable } from './config/redis';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 
 // Import routes
@@ -39,7 +40,11 @@ if (config.nodeEnv === 'development') {
 
 // Health check
 app.get('/health', (_req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    redis: isRedisAvailable() ? 'connected' : 'disconnected'
+  });
 });
 
 // API Routes
@@ -65,6 +70,9 @@ const startServer = async () => {
     // Test database connection
     await testConnection();
 
+    // Initialize Redis (optional - graceful degradation if not available)
+    await initRedis();
+
     // Sync database (create tables)
     await syncDatabase(false); // Set to true to force recreate tables
 
@@ -74,6 +82,7 @@ const startServer = async () => {
       console.log(`📝 Environment: ${config.nodeEnv}`);
       console.log(`🗄️  Database: ${config.database.name}`);
       console.log(`🌐 Client URL: ${config.clientUrl}`);
+      console.log(`⚡ Redis: ${isRedisAvailable() ? 'Connected' : 'Disabled (using database only)'}`);
       console.log(`⚽ Football API: ${config.footballApi.key ? 'Configured' : 'Not configured'}`);
     });
   } catch (error) {
@@ -85,13 +94,26 @@ const startServer = async () => {
 // Handle uncaught exceptions
 process.on('uncaughtException', (error) => {
   console.error('❌ Uncaught Exception:', error);
-  process.exit(1);
+  closeRedis().finally(() => process.exit(1));
 });
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (reason, promise) => {
   console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
-  process.exit(1);
+  closeRedis().finally(() => process.exit(1));
+});
+
+// Graceful shutdown
+process.on('SIGTERM', async () => {
+  console.log('⚠️  SIGTERM received, shutting down gracefully...');
+  await closeRedis();
+  process.exit(0);
+});
+
+process.on('SIGINT', async () => {
+  console.log('⚠️  SIGINT received, shutting down gracefully...');
+  await closeRedis();
+  process.exit(0);
 });
 
 // Start the server
