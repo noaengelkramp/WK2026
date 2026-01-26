@@ -9,7 +9,6 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import MyPredictionPage from './pages/MyPredictionPage';
 import StandingsIndividualPage from './pages/StandingsIndividualPage';
-import StandingsDepartmentPage from './pages/StandingsDepartmentPage';
 import RulesPage from './pages/RulesPage';
 import PrizesPage from './pages/PrizesPage';
 import MatchesPage from './pages/MatchesPage';
@@ -40,7 +39,6 @@ const ProtectedRoutes = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/my-prediction" element={<MyPredictionPage />} />
         <Route path="/standings/individual" element={<StandingsIndividualPage />} />
-        <Route path="/standings/departments" element={<StandingsDepartmentPage />} />
         <Route path="/matches" element={<MatchesPage />} />
         <Route path="/groups" element={<GroupsPage />} />
         <Route path="/statistics" element={<StatisticsPage />} />

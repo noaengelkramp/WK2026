@@ -107,8 +107,7 @@ export default function Layout({ children }: LayoutProps) {
   const menuItems = [
     { text: 'Home', icon: <HomeIcon />, path: '/' },
     { text: 'My Prediction', icon: <SoccerIcon />, path: '/my-prediction' },
-    { text: 'Standings - Individual', icon: <TrophyIcon />, path: '/standings/individual' },
-    { text: 'Standings - Departments', icon: <PeopleIcon />, path: '/standings/departments' },
+    { text: 'Standings', icon: <TrophyIcon />, path: '/standings/individual' },
     { text: 'Matches', icon: <SoccerIcon />, path: '/matches' },
     { text: 'Groups', icon: <PeopleIcon />, path: '/groups' },
     { text: 'Statistics', icon: <ChartIcon />, path: '/statistics' },
