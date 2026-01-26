@@ -281,7 +281,7 @@
         "Navigate to /",
         "Verify next match card shows teams, date, time, venue"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": 22,
@@ -292,7 +292,7 @@
         "Navigate to /",
         "Verify top 5 users displayed with names, points, ranks"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": 23,
@@ -337,7 +337,7 @@
         "Click each nav link (Standings, Matches, Groups, etc.)",
         "Verify correct page loads"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": 27,
