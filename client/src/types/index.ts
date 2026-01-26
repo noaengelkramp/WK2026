@@ -111,10 +111,15 @@ export interface GroupStanding {
 
 export interface LeaderboardEntry {
   rank: number;
-  user: User;
-  department: Department;
+  userId?: string; // Only present for current user
+  customerNumber: string; // May be '████████' for anonymized entries
+  companyName: string | null;
+  firstName: string | null;
+  lastName: string | null;
   totalPoints: number;
-  correctScores: number;
+  exactScores: number;
   correctWinners: number;
   predictionsMade: number;
+  bonusPoints: number;
+  isCurrentUser: boolean;
 }

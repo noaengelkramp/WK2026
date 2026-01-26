@@ -337,8 +337,8 @@ export default function HomePage() {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {topPlayers.map((entry) => (
-                          <TableRow key={entry.user.id}>
+                        {topPlayers.map((entry, index) => (
+                          <TableRow key={entry.userId || `player-${index}`}>
                             <TableCell>
                               {entry.rank === 1 && '🥇'}
                               {entry.rank === 2 && '🥈'}
@@ -346,7 +346,10 @@ export default function HomePage() {
                               {entry.rank && entry.rank > 3 && entry.rank}
                             </TableCell>
                             <TableCell>
-                              {entry.user.firstName} {entry.user.lastName}
+                              {entry.firstName && entry.lastName 
+                                ? `${entry.firstName} ${entry.lastName}`
+                                : entry.customerNumber
+                              }
                             </TableCell>
                             <TableCell align="right">
                               <Chip label={entry.totalPoints} color="primary" size="small" />

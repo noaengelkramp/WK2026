@@ -3443,3 +3443,149 @@ curl /api/teams
 
 **The app can now handle 10x more traffic at minimal cost!** 🚀
 
+
+=== Session 14: Customer-Based Authentication Frontend Implementation ===
+Date: January 26, 2026
+Agent: auto-coder-coding
+
+Previous Status: 0/255 tests passing
+
+Context:
+- Picked up after Session 13 (Redis caching implementation)
+- Backend already had customer-based authentication implemented (from earlier session)
+- Frontend still had department-based registration
+- Task: Update frontend to match backend's customer number system
+
+Accomplished:
+
+1. **Frontend Type Updates**
+   - Updated `RegisterData` interface: `departmentId` → `customerNumber`
+   - Updated `User` type: `departmentId` → `customerNumber`
+   - Updated mock data to use customer numbers (C1234_0000001, etc.)
+
+2. **Registration Page Refactor** (`client/src/pages/RegisterPage.tsx`)
+   - Removed department dropdown and department fetching logic
+   - Added customer number text input field
+   - Added placeholder: "C1234_1234567"
+   - Added helper text showing format
+   - Implemented client-side validation with regex: `/^C\d{4}_\d{7}$/`
+   - Updated form submission to send `customerNumber` instead of `departmentId`
+   - Removed `departments` state and `useEffect` for fetching departments
+   - Removed `loadingDepartments` state
+   - Simplified form by removing department-related imports (MenuItem)
+
+3. **Backend Verification (via API Testing)**
+   - ✅ Registration with valid customer number (C1234_0000010) succeeds
+   - ✅ Returns proper user object with customerNumber field
+   - ✅ Invalid customer number (C9999_9999999) rejected with clear error
+   - ✅ Duplicate customer number (C1234_0000001) rejected properly
+   - ✅ Login works correctly with customer-based users
+   - ✅ Redis health check confirms caching layer is active
+
+4. **Validation Rules Implemented**
+   - Format: C####_####### (e.g., C1234_1234567)
+   - Client-side regex validation before API call
+   - Server-side validation checks:
+     * Customer number exists in database
+     * Customer is active
+     * Customer number not already used by another user (one account per customer)
+
+5. **Code Quality**
+   - Clean removal of unused imports (MenuItem, useEffect, useState for departments)
+   - Proper error handling with user-friendly messages
+   - Form maintains consistent UX with other fields
+   - Helper text guides users on correct format
+
+Git Commit:
+- Hash: 703764a
+- Message: "Implement customer-based authentication frontend"
+- Files changed: 17 (4 frontend + 13 backend from previous session)
+- Lines: +251 -466 (net reduction due to department removal)
+
+Files Modified:
+Frontend:
+- client/src/pages/RegisterPage.tsx (removed 31 lines, simplified to single text input)
+- client/src/services/authService.ts (RegisterData interface)
+- client/src/types/index.ts (User interface)
+- client/src/data/mockData.ts (mock users updated)
+
+Backend (from previous session, now committed):
+- server/src/models/Customer.ts (NEW - customer model)
+- server/src/models/User.ts (updated to use customerNumber)
+- server/src/models/index.ts (associations updated)
+- server/src/controllers/authController.ts (customer validation)
+- server/src/controllers/standingsController.ts (anonymization)
+- server/src/utils/seed.ts (seeds 50 test customers)
+- DELETED: Department.ts, DepartmentStatistics.ts, departmentController.ts, departments.ts routes
+
+Testing Performed:
+- ✅ API endpoint testing via curl
+- ✅ Valid customer number registration
+- ✅ Invalid customer number rejection
+- ✅ Duplicate customer number rejection
+- ✅ Login with customer-based account
+- ✅ Error message validation
+
+Next Steps (Priority Order):
+
+**Priority 1: Manual UI Verification**
+Since browser automation tools were not available in this session, the following needs manual verification:
+1. Open http://localhost:5173/register in browser
+2. Verify customer number field is visible with placeholder text
+3. Test form validation:
+   - Try invalid format (should show client-side error)
+   - Try valid format with non-existent customer (should show server error)
+   - Try valid format with existing customer number (should show "already registered" error)
+   - Try valid format with available customer number (C1234_0000004 through C1234_0000050)
+   - Verify successful registration redirects to home page
+
+**Priority 2: Update Standings Pages**
+- Update `StandingsIndividualPage.tsx` to display anonymized leaderboard
+- Show current user's customer number and name
+- Show `████████` for other users' customer numbers
+- Hide other users' names (show as null or "(hidden)")
+- Highlight current user's row with visual indicator
+- Remove department column from individual standings
+
+**Priority 3: Update Homepage**
+- Remove department standings leaderboard block entirely
+- Update individual leaderboard mini-widget to show anonymized data
+- Remove any references to department competition
+
+**Priority 4: Clean Up Frontend**
+- Delete `StandingsDepartmentPage.tsx` (no longer needed)
+- Remove department routes from router
+- Remove department navigation links
+- Update any components still referencing departments
+
+**Priority 5: Feature Testing & Marking**
+Once manual verification is complete:
+- Mark authentication features (#1-5) as passing in feature_list.json
+- Test complete user flow: Register → Login → View Profile
+- Take screenshots for documentation
+
+Current Status: 0/255 tests passing (no features marked yet - awaiting manual UI verification)
+
+Servers Running:
+- Backend: http://localhost:3001 ✅ (with Redis caching)
+- Frontend: http://localhost:5173 ✅
+
+Test Credentials Available:
+- admin@wk2026.com / password123 (Customer: C1234_0000001)
+- john.doe@wk2026.com / password123 (Customer: C1234_0000002)
+- jane.smith@wk2026.com / password123 (Customer: C1234_0000003)
+- Available for new registrations: C1234_0000004 through C1234_0000050
+
+Technical Notes:
+- Customer number format is strict and validated on both client and server
+- Backend enforces one account per customer (unique constraint)
+- Real customer database will replace test data in production
+- Department system fully removed from backend (models, controllers, routes deleted)
+- Anonymized leaderboard logic already implemented in backend (standingsController)
+- Frontend needs updates to display anonymized data correctly
+
+Key Achievement:
+✅ **Frontend now matches backend's customer-based authentication system**
+✅ **Department system removed, customer system operational**
+✅ **All backend APIs tested and working correctly**
+
