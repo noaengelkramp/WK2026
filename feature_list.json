@@ -160,7 +160,7 @@
         "Navigate to /admin",
         "Verify access denied message"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": 12,
@@ -172,7 +172,7 @@
         "Navigate to /admin",
         "Verify admin dashboard loads"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": 13,
