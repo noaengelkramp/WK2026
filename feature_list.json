@@ -44,7 +44,7 @@
         "Enter already registered email",
         "Verify error message appears"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": 3,
@@ -58,7 +58,7 @@
         "Verify redirect to home page",
         "Verify user menu shows name"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": 4,
@@ -70,7 +70,7 @@
         "Enter invalid password",
         "Verify error message displayed"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": 5,
@@ -940,7 +940,7 @@
         "Navigate to /standings/individual",
         "Verify table shows all registered users"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": 77,
@@ -951,7 +951,7 @@
         "Navigate to /standings/individual",
         "Verify columns: Rank, Name, Department, Total Points"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": 78,
@@ -962,7 +962,7 @@
         "Navigate to /standings/individual",
         "Verify 'Correct Scores' column displays"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": 79,
@@ -973,7 +973,7 @@
         "Navigate to /standings/individual",
         "Verify 'Correct Winners' column displays"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": 80,
@@ -984,7 +984,7 @@
         "Navigate to /standings/individual",
         "Verify 'Predictions Made' column"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": 81,
@@ -1032,7 +1032,7 @@
         "Navigate to /standings/individual",
         "Verify own row highlighted in different color"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": 85,
