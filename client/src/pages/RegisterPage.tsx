@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   Box,
   Card,
@@ -9,14 +9,11 @@ import {
   Link,
   Container,
   Alert,
-  MenuItem,
   CircularProgress,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { dataService } from '../services/dataService';
 import { getErrorMessage } from '../services/api';
-import type { Department } from '../types';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -27,29 +24,11 @@ export default function RegisterPage() {
     email: '',
     password: '',
     confirmPassword: '',
-    departmentId: '',
+    customerNumber: '',
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [loadingDepartments, setLoadingDepartments] = useState(true);
-
-  // Fetch departments on mount
-  useEffect(() => {
-    const fetchDepartments = async () => {
-      try {
-        const deps = await dataService.getDepartments();
-        setDepartments(deps);
-      } catch (err) {
-        console.error('Failed to load departments:', err);
-        setError('Failed to load departments. Please refresh the page.');
-      } finally {
-        setLoadingDepartments(false);
-      }
-    };
-    fetchDepartments();
-  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -63,7 +42,7 @@ export default function RegisterPage() {
     setError('');
 
     // Validation
-    if (!formData.firstName || !formData.lastName || !formData.email || !formData.password || !formData.departmentId) {
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.password || !formData.customerNumber) {
       setError('Please fill in all fields');
       return;
     }
@@ -78,6 +57,13 @@ export default function RegisterPage() {
       return;
     }
 
+    // Validate customer number format: C1234_1234567
+    const customerNumberRegex = /^C\d{4}_\d{7}$/;
+    if (!customerNumberRegex.test(formData.customerNumber)) {
+      setError('Customer number must be in format: C1234_1234567');
+      return;
+    }
+
     // Call registration API
     setLoading(true);
     try {
@@ -86,7 +72,7 @@ export default function RegisterPage() {
         password: formData.password,
         firstName: formData.firstName,
         lastName: formData.lastName,
-        departmentId: formData.departmentId,
+        customerNumber: formData.customerNumber,
       });
       setSuccess(true);
       setTimeout(() => {
@@ -187,27 +173,15 @@ export default function RegisterPage() {
               />
               <TextField
                 fullWidth
-                label="Department"
-                name="departmentId"
-                select
-                value={formData.departmentId}
+                label="Customer Number"
+                name="customerNumber"
+                value={formData.customerNumber}
                 onChange={handleChange}
                 margin="normal"
                 required
-                disabled={loadingDepartments}
-              >
-                {loadingDepartments ? (
-                  <MenuItem disabled>Loading departments...</MenuItem>
-                ) : departments.length === 0 ? (
-                  <MenuItem disabled>No departments available</MenuItem>
-                ) : (
-                  departments.map((dept) => (
-                    <MenuItem key={dept.id} value={dept.id}>
-                      {dept.name}
-                    </MenuItem>
-                  ))
-                )}
-              </TextField>
+                placeholder="C1234_1234567"
+                helperText="Format: C1234_1234567"
+              />
               <TextField
                 fullWidth
                 label="Password"
@@ -234,7 +208,7 @@ export default function RegisterPage() {
                 variant="contained"
                 size="large"
                 type="submit"
-                disabled={loading || loadingDepartments}
+                disabled={loading}
                 sx={{ mt: 3, mb: 2 }}
               >
                 {loading ? <CircularProgress size={24} /> : 'Register'}

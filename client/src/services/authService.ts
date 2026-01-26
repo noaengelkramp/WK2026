@@ -11,7 +11,7 @@ export interface RegisterData {
   password: string;
   firstName: string;
   lastName: string;
-  departmentId: string;
+  customerNumber: string;
 }
 
 export interface AuthResponse {

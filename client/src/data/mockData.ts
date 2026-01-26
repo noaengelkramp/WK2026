@@ -27,9 +27,9 @@ export const mockDepartments: Department[] = [
 
 // Mock Users
 export const mockUsers: User[] = [
-  { id: '1', email: 'john@company.com', firstName: 'John', lastName: 'Doe', departmentId: '1', isAdmin: false, languagePreference: 'en', createdAt: '2026-01-01' },
-  { id: '2', email: 'jane@company.com', firstName: 'Jane', lastName: 'Smith', departmentId: '2', isAdmin: false, languagePreference: 'en', createdAt: '2026-01-02' },
-  { id: '3', email: 'admin@company.com', firstName: 'Admin', lastName: 'User', departmentId: '1', isAdmin: true, languagePreference: 'en', createdAt: '2026-01-01' },
+  { id: '1', email: 'john@company.com', firstName: 'John', lastName: 'Doe', customerNumber: 'C1234_0000001', isAdmin: false, languagePreference: 'en', createdAt: '2026-01-01' },
+  { id: '2', email: 'jane@company.com', firstName: 'Jane', lastName: 'Smith', customerNumber: 'C1234_0000002', isAdmin: false, languagePreference: 'en', createdAt: '2026-01-02' },
+  { id: '3', email: 'admin@company.com', firstName: 'Admin', lastName: 'User', customerNumber: 'C1234_0000003', isAdmin: true, languagePreference: 'en', createdAt: '2026-01-01' },
 ];
 
 // Mock Matches

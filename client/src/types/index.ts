@@ -5,7 +5,7 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
-  departmentId: string;
+  customerNumber: string;
   isAdmin: boolean;
   languagePreference: 'en' | 'nl';
   createdAt: string;

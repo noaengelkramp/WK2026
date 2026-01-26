@@ -8,7 +8,7 @@ interface UserAttributes {
   passwordHash: string;
   firstName: string;
   lastName: string;
-  departmentId: string;
+  customerNumber: string;
   isAdmin: boolean;
   languagePreference: 'en' | 'nl';
   createdAt?: Date;
@@ -23,7 +23,7 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public passwordHash!: string;
   public firstName!: string;
   public lastName!: string;
-  public departmentId!: string;
+  public customerNumber!: string;
   public isAdmin!: boolean;
   public languagePreference!: 'en' | 'nl';
   public readonly createdAt!: Date;
@@ -74,12 +74,16 @@ User.init(
       type: DataTypes.STRING(100),
       allowNull: false,
     },
-    departmentId: {
-      type: DataTypes.UUID,
+    customerNumber: {
+      type: DataTypes.STRING(50),
       allowNull: false,
+      unique: true,
       references: {
-        model: 'departments',
-        key: 'id',
+        model: 'customers',
+        key: 'customer_number',
+      },
+      validate: {
+        is: /^C\d{4}_\d{7}$/, // Format: C1234_1234567
       },
     },
     isAdmin: {
@@ -101,7 +105,8 @@ User.init(
         fields: ['email'],
       },
       {
-        fields: ['department_id'],
+        unique: true,
+        fields: ['customer_number'],
       },
     ],
   }

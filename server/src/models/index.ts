@@ -1,7 +1,7 @@
 import sequelize from '../config/database';
 
 // Import all models
-import Department from './Department';
+import Customer from './Customer';
 import User from './User';
 import Team from './Team';
 import Match from './Match';
@@ -11,15 +11,14 @@ import BonusAnswer from './BonusAnswer';
 import Prize from './Prize';
 import ScoringRule from './ScoringRule';
 import UserStatistics from './UserStatistics';
-import DepartmentStatistics from './DepartmentStatistics';
 import AppSettings from './AppSettings';
 import ApiLog from './ApiLog';
 
 // Define associations
 
-// User <-> Department
-User.belongsTo(Department, { foreignKey: 'departmentId', as: 'department' });
-Department.hasMany(User, { foreignKey: 'departmentId', as: 'users' });
+// Customer <-> User
+User.belongsTo(Customer, { foreignKey: 'customerNumber', targetKey: 'customerNumber', as: 'customer' });
+Customer.hasOne(User, { foreignKey: 'customerNumber', sourceKey: 'customerNumber', as: 'user' });
 
 // User <-> Predictions
 User.hasMany(Prediction, { foreignKey: 'userId', as: 'predictions' });
@@ -36,10 +35,6 @@ UserStatistics.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 // User <-> Prize (winner)
 User.hasMany(Prize, { foreignKey: 'winnerId', as: 'prizesWon' });
 Prize.belongsTo(User, { foreignKey: 'winnerId', as: 'winner' });
-
-// Department <-> DepartmentStatistics (one-to-one)
-Department.hasOne(DepartmentStatistics, { foreignKey: 'departmentId', as: 'statistics' });
-DepartmentStatistics.belongsTo(Department, { foreignKey: 'departmentId', as: 'department' });
 
 // Match <-> Team (home and away)
 Match.belongsTo(Team, { foreignKey: 'homeTeamId', as: 'homeTeam' });
@@ -58,7 +53,7 @@ BonusAnswer.belongsTo(BonusQuestion, { foreignKey: 'bonusQuestionId', as: 'quest
 // Export all models and sequelize instance
 export {
   sequelize,
-  Department,
+  Customer,
   User,
   Team,
   Match,
@@ -68,7 +63,6 @@ export {
   Prize,
   ScoringRule,
   UserStatistics,
-  DepartmentStatistics,
   AppSettings,
   ApiLog,
 };
@@ -76,7 +70,7 @@ export {
 // Export default for convenience
 export default {
   sequelize,
-  Department,
+  Customer,
   User,
   Team,
   Match,
@@ -86,7 +80,6 @@ export default {
   Prize,
   ScoringRule,
   UserStatistics,
-  DepartmentStatistics,
   AppSettings,
   ApiLog,
 };

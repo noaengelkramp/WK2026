@@ -1,4 +1,4 @@
-import { Match, Prediction, ScoringRule, UserStatistics, User, DepartmentStatistics } from '../models';
+import { Match, Prediction, ScoringRule, UserStatistics, User } from '../models';
 
 /**
  * Calculate points for a single prediction based on match result
@@ -104,9 +104,6 @@ export async function processMatchScoring(matchId: string): Promise<void> {
     console.log(`  User ${prediction.userId}: ${pointsEarned} points (exact: ${isCorrectScore}, winner: ${isCorrectWinner})`);
   }
 
-  // Recalculate department statistics
-  await recalculateDepartmentStatistics();
-
   console.log(`✅ Scoring complete for match ${matchId}`);
 }
 
@@ -139,44 +136,6 @@ async function updateUserStatistics(
       totalPoints: stats.totalPoints + pointsEarned,
       exactScores: stats.exactScores + (isCorrectScore ? 1 : 0),
       correctWinners: stats.correctWinners + (isCorrectWinner ? 1 : 0),
-    });
-  }
-}
-
-/**
- * Recalculate all department statistics based on current user statistics
- */
-async function recalculateDepartmentStatistics(): Promise<void> {
-  // Get all departments
-  const departmentStats = await DepartmentStatistics.findAll();
-
-  for (const deptStat of departmentStats) {
-    // Get all users in this department
-    const users = await User.findAll({
-      where: { departmentId: deptStat.departmentId },
-      include: [{ model: UserStatistics, as: 'statistics' }],
-    });
-
-    // Calculate totals
-    let totalPoints = 0;
-    let participantCount = 0;
-
-    for (const user of users) {
-      if ((user as any).statistics) {
-        totalPoints += (user as any).statistics.totalPoints;
-        if ((user as any).statistics.predictionsMade > 0) {
-          participantCount++;
-        }
-      }
-    }
-
-    const averagePoints = participantCount > 0 ? totalPoints / participantCount : 0;
-
-    // Update department statistics
-    await deptStat.update({
-      totalPoints,
-      averagePoints: Math.round(averagePoints * 100) / 100, // Round to 2 decimals
-      participantCount,
     });
   }
 }

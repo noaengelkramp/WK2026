@@ -9,7 +9,6 @@ import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 
 // Import routes
 import authRoutes from './routes/auth';
-import departmentRoutes from './routes/departments';
 import teamRoutes from './routes/teams';
 import matchRoutes from './routes/matches';
 import predictionRoutes from './routes/predictions';
@@ -49,7 +48,6 @@ app.get('/health', (_req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/departments', departmentRoutes);
 app.use('/api/teams', teamRoutes);
 app.use('/api/matches', matchRoutes);
 app.use('/api/predictions', predictionRoutes);
@@ -74,7 +72,7 @@ const startServer = async () => {
     await initRedis();
 
     // Sync database (create tables)
-    await syncDatabase(false); // Set to true to force recreate tables
+    await syncDatabase(true); // Force recreate tables for schema changes
 
     // Start listening
     app.listen(config.port, () => {

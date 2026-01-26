@@ -1,12 +1,11 @@
 import {
-  Department,
+  Customer,
   Team,
   Match,
   ScoringRule,
   BonusQuestion,
   User,
   UserStatistics,
-  DepartmentStatistics,
 } from '../models';
 import bcrypt from 'bcrypt';
 
@@ -19,44 +18,25 @@ export async function seedDatabase() {
 
     // Clear existing data (in correct order to respect foreign keys)
     await UserStatistics.destroy({ where: {} });
-    await DepartmentStatistics.destroy({ where: {} });
     await User.destroy({ where: {} });
     await Match.destroy({ where: {} });
     await Team.destroy({ where: {} });
-    await Department.destroy({ where: {} });
+    await Customer.destroy({ where: {} });
     await ScoringRule.destroy({ where: {} });
     await BonusQuestion.destroy({ where: {} });
 
-    // 1. Seed Departments
-    console.log('📁 Seeding departments...');
-    const departments = await Department.bulkCreate([
-      {
-        name: 'Engineering',
-        description: 'Software development and technical operations',
-        logoUrl: 'https://via.placeholder.com/100/0D47A1/ffffff?text=ENG',
-      },
-      {
-        name: 'Sales',
-        description: 'Sales and business development team',
-        logoUrl: 'https://via.placeholder.com/100/1B5E20/ffffff?text=SALES',
-      },
-      {
-        name: 'Marketing',
-        description: 'Marketing and communications department',
-        logoUrl: 'https://via.placeholder.com/100/E65100/ffffff?text=MKT',
-      },
-      {
-        name: 'Operations',
-        description: 'Operations and logistics management',
-        logoUrl: 'https://via.placeholder.com/100/6A1B9A/ffffff?text=OPS',
-      },
-      {
-        name: 'Finance',
-        description: 'Finance and accounting department',
-        logoUrl: 'https://via.placeholder.com/100/C62828/ffffff?text=FIN',
-      },
-    ]);
-    console.log(`✅ Created ${departments.length} departments`);
+    // 1. Seed Customers (50 test customers)
+    console.log('🏢 Seeding customers...');
+    const customers = [];
+    for (let i = 1; i <= 50; i++) {
+      customers.push({
+        customerNumber: `C1234_${String(i).padStart(7, '0')}`,
+        companyName: `Test Company ${i}`,
+        isActive: true,
+      });
+    }
+    const createdCustomers = await Customer.bulkCreate(customers);
+    console.log(`✅ Created ${createdCustomers.length} customers`);
 
     // 2. Seed Teams (48 World Cup 2026 teams)
     console.log('⚽ Seeding teams...');
@@ -222,7 +202,7 @@ export async function seedDatabase() {
         passwordHash: hashedPassword,
         firstName: 'Admin',
         lastName: 'User',
-        departmentId: departments[0].id,
+        customerNumber: 'C1234_0000001',
         isAdmin: true,
         languagePreference: 'en',
       },
@@ -231,7 +211,7 @@ export async function seedDatabase() {
         passwordHash: hashedPassword,
         firstName: 'John',
         lastName: 'Doe',
-        departmentId: departments[0].id,
+        customerNumber: 'C1234_0000002',
         isAdmin: false,
         languagePreference: 'en',
       },
@@ -240,7 +220,7 @@ export async function seedDatabase() {
         passwordHash: hashedPassword,
         firstName: 'Jane',
         lastName: 'Smith',
-        departmentId: departments[1].id,
+        customerNumber: 'C1234_0000003',
         isAdmin: false,
         languagePreference: 'nl',
       },
@@ -261,25 +241,13 @@ export async function seedDatabase() {
     }
     console.log(`✅ Created statistics for ${users.length} users`);
 
-    // 8. Create DepartmentStatistics
-    console.log('📈 Creating department statistics...');
-    for (const department of departments) {
-      await DepartmentStatistics.create({
-        departmentId: department.id,
-        totalPoints: 0,
-        averagePoints: 0,
-        participantCount: 0,
-      });
-    }
-    console.log(`✅ Created statistics for ${departments.length} departments`);
-
     console.log('\n✅ Database seeded successfully!');
     console.log('\n📝 Test User Credentials:');
     console.log('  Admin: admin@wk2026.com / password123');
     console.log('  User 1: john.doe@wk2026.com / password123');
     console.log('  User 2: jane.smith@wk2026.com / password123');
     console.log('\n📊 Summary:');
-    console.log(`  - ${departments.length} departments`);
+    console.log(`  - ${createdCustomers.length} customers`);
     console.log(`  - ${teams.length} teams`);
     console.log(`  - ${matches.length} matches`);
     console.log(`  - ${scoringRules.length} scoring rules`);

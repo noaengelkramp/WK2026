@@ -1,27 +1,30 @@
 import { Request, Response } from 'express';
-import { UserStatistics, User, Department, DepartmentStatistics } from '../models';
+import { UserStatistics, User, Customer } from '../models';
 import { AppError } from '../middleware/errorHandler';
 import { Op } from 'sequelize';
 import { getCache, setCache, CACHE_TTL, CACHE_KEYS } from '../config/redis';
 
 /**
- * Get individual user standings (leaderboard)
+ * Get individual user standings (leaderboard) with anonymization
  */
 export const getIndividualStandings = async (req: Request, res: Response) => {
   try {
     const { limit = '100', offset = '0', search = '' } = req.query;
+    const currentUserId = (req as any).user?.userId; // Get current user if authenticated
 
     const limitNum = parseInt(limit as string);
     const offsetNum = parseInt(offset as string);
 
-    // Create cache key with query params
+    // Create cache key with query params (but not including user ID for shared cache)
     const cacheKey = `${CACHE_KEYS.LEADERBOARD_INDIVIDUAL}:${limitNum}:${offsetNum}:${search}`;
 
-    // Try to get from cache
+    // Try to get from cache (but we'll need to apply anonymization after)
     const cached = await getCache<any>(cacheKey);
     if (cached) {
       console.log('✅ Cache HIT: Individual standings');
-      res.json(cached);
+      // Apply anonymization based on current user
+      const anonymized = anonymizeStandings(cached.standings, currentUserId);
+      res.json({ ...cached, standings: anonymized });
       return;
     }
 
@@ -30,23 +33,26 @@ export const getIndividualStandings = async (req: Request, res: Response) => {
     // Build where clause for search
     const whereClause: any = {};
     if (search) {
-      whereClause['$user.firstName$'] = { $like: `%${search}%` };
-      whereClause['$user.lastName$'] = { $like: `%${search}%` };
+      whereClause[Op.or] = [
+        { '$user.firstName$': { [Op.iLike]: `%${search}%` } },
+        { '$user.lastName$': { [Op.iLike]: `%${search}%` } },
+        { '$user.customerNumber$': { [Op.iLike]: `%${search}%` } },
+      ];
     }
 
-    // Get standings with user and department info
+    // Get standings with user and customer info
     const standings = await UserStatistics.findAll({
       where: whereClause,
       include: [
         {
           model: User,
           as: 'user',
-          attributes: ['id', 'firstName', 'lastName', 'email'],
+          attributes: ['id', 'firstName', 'lastName', 'email', 'customerNumber'],
           include: [
             {
-              model: Department,
-              as: 'department',
-              attributes: ['id', 'name'],
+              model: Customer,
+              as: 'customer',
+              attributes: ['customerNumber', 'companyName'],
             },
           ],
         },
@@ -55,7 +61,7 @@ export const getIndividualStandings = async (req: Request, res: Response) => {
         ['totalPoints', 'DESC'],
         ['exactScores', 'DESC'],
         ['correctWinners', 'DESC'],
-        ['user', 'createdAt', 'ASC'], // Tie-breaker: earlier registration
+        ['createdAt', 'ASC'], // Tie-breaker: earlier registration
       ],
       limit: limitNum,
       offset: offsetNum,
@@ -65,10 +71,22 @@ export const getIndividualStandings = async (req: Request, res: Response) => {
     const total = await UserStatistics.count({ where: whereClause });
 
     // Add rank to each entry
-    const standingsWithRank = standings.map((stat, index) => ({
-      rank: offsetNum + index + 1,
-      ...stat.toJSON(),
-    }));
+    const standingsWithRank = standings.map((stat, index) => {
+      const statJSON: any = stat.toJSON();
+      return {
+        rank: offsetNum + index + 1,
+        userId: statJSON.user?.id,
+        customerNumber: statJSON.user?.customerNumber,
+        companyName: statJSON.user?.customer?.companyName,
+        firstName: statJSON.user?.firstName,
+        lastName: statJSON.user?.lastName,
+        totalPoints: stat.totalPoints,
+        exactScores: stat.exactScores,
+        correctWinners: stat.correctWinners,
+        predictionsMade: stat.predictionsMade,
+        bonusPoints: stat.bonusPoints,
+      };
+    });
 
     const response = {
       standings: standingsWithRank,
@@ -77,10 +95,13 @@ export const getIndividualStandings = async (req: Request, res: Response) => {
       offset: offsetNum,
     };
 
-    // Cache the result
+    // Cache the result (without anonymization - we'll apply it per user)
     await setCache(cacheKey, response, CACHE_TTL.LEADERBOARD);
 
-    res.json(response);
+    // Apply anonymization based on current user
+    const anonymized = anonymizeStandings(standingsWithRank, currentUserId);
+
+    res.json({ ...response, standings: anonymized });
   } catch (error) {
     console.error('Error fetching individual standings:', error);
     throw new AppError('Failed to fetch individual standings', 500);
@@ -88,60 +109,39 @@ export const getIndividualStandings = async (req: Request, res: Response) => {
 };
 
 /**
- * Get department standings
+ * Anonymize standings - only show current user's full info
  */
-export const getDepartmentStandings = async (_req: Request, res: Response) => {
-  try {
-    const cacheKey = CACHE_KEYS.LEADERBOARD_DEPARTMENT;
-
-    // Try to get from cache
-    const cached = await getCache<any>(cacheKey);
-    if (cached) {
-      console.log('✅ Cache HIT: Department standings');
-      res.json(cached);
-      return;
+function anonymizeStandings(standings: any[], currentUserId?: string) {
+  return standings.map((standing) => {
+    const isCurrentUser = currentUserId && standing.userId === currentUserId;
+    
+    if (isCurrentUser) {
+      // Show full info for current user
+      return {
+        ...standing,
+        isCurrentUser: true,
+      };
+    } else {
+      // Anonymize other users
+      return {
+        rank: standing.rank,
+        customerNumber: '████████', // Fully blurred
+        companyName: null,
+        firstName: null,
+        lastName: null,
+        totalPoints: standing.totalPoints,
+        exactScores: standing.exactScores,
+        correctWinners: standing.correctWinners,
+        predictionsMade: standing.predictionsMade,
+        bonusPoints: standing.bonusPoints,
+        isCurrentUser: false,
+      };
     }
-
-    console.log('⚠️  Cache MISS: Department standings - querying database');
-
-    const standings = await DepartmentStatistics.findAll({
-      include: [
-        {
-          model: Department,
-          as: 'department',
-          attributes: ['id', 'name', 'description', 'logoUrl'],
-        },
-      ],
-      order: [
-        ['totalPoints', 'DESC'],
-        ['averagePoints', 'DESC'],
-        ['participantCount', 'DESC'],
-      ],
-    });
-
-    // Add rank to each department
-    const standingsWithRank = standings.map((stat, index) => ({
-      rank: index + 1,
-      ...stat.toJSON(),
-    }));
-
-    const response = {
-      standings: standingsWithRank,
-      total: standings.length,
-    };
-
-    // Cache the result
-    await setCache(cacheKey, response, CACHE_TTL.LEADERBOARD);
-
-    res.json(response);
-  } catch (error) {
-    console.error('Error fetching department standings:', error);
-    throw new AppError('Failed to fetch department standings', 500);
-  }
-};
+  });
+}
 
 /**
- * Get top N users (for homepage)
+ * Get top N users (for homepage) - fully anonymized
  */
 export const getTopUsers = async (req: Request, res: Response) => {
   try {
@@ -165,12 +165,12 @@ export const getTopUsers = async (req: Request, res: Response) => {
         {
           model: User,
           as: 'user',
-          attributes: ['id', 'firstName', 'lastName'],
+          attributes: ['customerNumber'],
           include: [
             {
-              model: Department,
-              as: 'department',
-              attributes: ['name'],
+              model: Customer,
+              as: 'customer',
+              attributes: ['companyName'],
             },
           ],
         },
@@ -183,13 +183,16 @@ export const getTopUsers = async (req: Request, res: Response) => {
       limit: limitNum,
     });
 
-    // Add rank
-    const topUsersWithRank = topUsers.map((stat, index) => ({
+    // Fully anonymize for homepage (don't reveal anyone)
+    const topUsersAnonymized = topUsers.map((stat, index) => ({
       rank: index + 1,
-      ...stat.toJSON(),
+      customerNumber: '████████',
+      totalPoints: stat.totalPoints,
+      exactScores: stat.exactScores,
+      correctWinners: stat.correctWinners,
     }));
 
-    const response = { topUsers: topUsersWithRank };
+    const response = { topUsers: topUsersAnonymized };
 
     // Cache the result
     await setCache(cacheKey, response, CACHE_TTL.LEADERBOARD);
@@ -215,12 +218,12 @@ export const getMyRanking = async (req: Request, res: Response) => {
         {
           model: User,
           as: 'user',
-          attributes: ['id', 'firstName', 'lastName', 'email'],
+          attributes: ['id', 'firstName', 'lastName', 'email', 'customerNumber'],
           include: [
             {
-              model: Department,
-              as: 'department',
-              attributes: ['id', 'name'],
+              model: Customer,
+              as: 'customer',
+              attributes: ['customerNumber', 'companyName'],
             },
           ],
         },
@@ -236,12 +239,12 @@ export const getMyRanking = async (req: Request, res: Response) => {
       where: {
         totalPoints: { [Op.gt]: userStats.totalPoints },
       },
-    })) as number;
+    })) + 1;
 
     // Get total participants
     const totalParticipants = await UserStatistics.count();
 
-    // Get users above and below (context)
+    // Get users above (anonymized)
     const contextAbove = await UserStatistics.findAll({
       where: {
         totalPoints: { [Op.gte]: userStats.totalPoints },
@@ -251,14 +254,7 @@ export const getMyRanking = async (req: Request, res: Response) => {
         {
           model: User,
           as: 'user',
-          attributes: ['id', 'firstName', 'lastName'],
-          include: [
-            {
-              model: Department,
-              as: 'department',
-              attributes: ['name'],
-            },
-          ],
+          attributes: ['customerNumber'],
         },
       ],
       order: [
@@ -269,6 +265,7 @@ export const getMyRanking = async (req: Request, res: Response) => {
       limit: 3,
     });
 
+    // Get users below (anonymized)
     const contextBelow = await UserStatistics.findAll({
       where: {
         totalPoints: { [Op.lt]: userStats.totalPoints },
@@ -277,14 +274,7 @@ export const getMyRanking = async (req: Request, res: Response) => {
         {
           model: User,
           as: 'user',
-          attributes: ['id', 'firstName', 'lastName'],
-          include: [
-            {
-              model: Department,
-              as: 'department',
-              attributes: ['name'],
-            },
-          ],
+          attributes: ['customerNumber'],
         },
       ],
       order: [
@@ -295,12 +285,22 @@ export const getMyRanking = async (req: Request, res: Response) => {
       limit: 3,
     });
 
+    // Anonymize context users
+    const anonymizeContext = (users: any[]) => {
+      return users.map((stat) => ({
+        customerNumber: '████████',
+        totalPoints: stat.totalPoints,
+        exactScores: stat.exactScores,
+        correctWinners: stat.correctWinners,
+      }));
+    };
+
     res.json({
-      rank: rank + 1,
+      rank,
       totalParticipants,
       userStats,
-      contextAbove,
-      contextBelow,
+      contextAbove: anonymizeContext(contextAbove),
+      contextBelow: anonymizeContext(contextBelow),
     });
   } catch (error) {
     if (error instanceof AppError) {

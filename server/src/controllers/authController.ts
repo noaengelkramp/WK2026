@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { User, UserStatistics, Department } from '../models';
+import { User, UserStatistics, Customer } from '../models';
 import { generateTokens } from '../utils/jwt';
 import { AppError } from '../middleware/errorHandler';
 
@@ -8,11 +8,17 @@ import { AppError } from '../middleware/errorHandler';
  */
 export const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { email, password, firstName, lastName, departmentId, languagePreference } = req.body;
+    const { email, password, firstName, lastName, customerNumber, languagePreference } = req.body;
 
     // Validate required fields
-    if (!email || !password || !firstName || !lastName || !departmentId) {
+    if (!email || !password || !firstName || !lastName || !customerNumber) {
       throw new AppError('All fields are required', 400);
+    }
+
+    // Validate customer number format
+    const customerNumberRegex = /^C\d{4}_\d{7}$/;
+    if (!customerNumberRegex.test(customerNumber)) {
+      throw new AppError('Invalid customer number format. Expected format: C1234_1234567', 400);
     }
 
     // Check if user already exists
@@ -21,10 +27,20 @@ export const register = async (req: Request, res: Response, next: NextFunction):
       throw new AppError('Email already registered', 409);
     }
 
-    // Validate department exists
-    const department = await Department.findByPk(departmentId);
-    if (!department) {
-      throw new AppError('Department not found', 404);
+    // Check if customer number already used
+    const existingCustomerUser = await User.findOne({ where: { customerNumber } });
+    if (existingCustomerUser) {
+      throw new AppError('This customer number is already registered. One account per customer is allowed.', 409);
+    }
+
+    // Validate customer exists and is active
+    const customer = await Customer.findOne({ where: { customerNumber } });
+    if (!customer) {
+      throw new AppError('Customer number not found in our system. Please contact support.', 404);
+    }
+
+    if (!customer.isActive) {
+      throw new AppError('This customer account is not active. Please contact support.', 403);
     }
 
     // Hash password
@@ -36,7 +52,7 @@ export const register = async (req: Request, res: Response, next: NextFunction):
       passwordHash,
       firstName,
       lastName,
-      departmentId,
+      customerNumber,
       languagePreference: languagePreference || 'en',
       isAdmin: false,
     });
@@ -80,10 +96,10 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
       throw new AppError('Email and password are required', 400);
     }
 
-    // Find user with department
+    // Find user with customer
     const user = await User.findOne({
       where: { email },
-      include: [{ model: Department, as: 'department' }],
+      include: [{ model: Customer, as: 'customer' }],
     });
 
     if (!user) {
@@ -124,7 +140,7 @@ export const getProfile = async (req: Request, res: Response, next: NextFunction
 
     const user = await User.findByPk(req.user.userId, {
       include: [
-        { model: Department, as: 'department' },
+        { model: Customer, as: 'customer' },
         { model: UserStatistics, as: 'statistics' },
       ],
     });
