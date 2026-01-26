@@ -15,7 +15,7 @@ import {
 import {
   Dashboard as DashboardIcon,
   People as PeopleIcon,
-  Business as BusinessIcon,
+  Badge as BadgeIcon,
   SportsSoccer as SoccerIcon,
   Flag as FlagIcon,
   Settings as SettingsIcon,
@@ -23,7 +23,7 @@ import {
   CheckCircle as CheckIcon,
 } from '@mui/icons-material';
 
-type TabValue = 'dashboard' | 'users' | 'departments' | 'matches' | 'teams' | 'settings';
+type TabValue = 'dashboard' | 'users' | 'customers' | 'matches' | 'teams' | 'settings';
 
 export default function AdminPanel() {
   const [selectedTab, setSelectedTab] = useState<TabValue>('dashboard');
@@ -55,7 +55,7 @@ export default function AdminPanel() {
         >
           <Tab icon={<DashboardIcon />} iconPosition="start" label="Dashboard" value="dashboard" />
           <Tab icon={<PeopleIcon />} iconPosition="start" label="Users" value="users" />
-          <Tab icon={<BusinessIcon />} iconPosition="start" label="Departments" value="departments" />
+          <Tab icon={<BadgeIcon />} iconPosition="start" label="Customers" value="customers" />
           <Tab icon={<SoccerIcon />} iconPosition="start" label="Matches" value="matches" />
           <Tab icon={<FlagIcon />} iconPosition="start" label="Teams" value="teams" />
           <Tab icon={<SettingsIcon />} iconPosition="start" label="Settings" value="settings" />
@@ -241,10 +241,10 @@ export default function AdminPanel() {
                     fullWidth
                     variant="outlined"
                     color="primary"
-                    startIcon={<BusinessIcon />}
+                    startIcon={<BadgeIcon />}
                     sx={{ py: 2 }}
                   >
-                    Manage Departments
+                    Manage Customers
                   </Button>
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6, md: 4 }}>
@@ -271,7 +271,7 @@ export default function AdminPanel() {
             <Alert severity="info" icon={<SettingsIcon />}>
               <Typography variant="h6" gutterBottom>
                 {selectedTab === 'users' && 'User Management'}
-                {selectedTab === 'departments' && 'Department Management'}
+                {selectedTab === 'customers' && 'Customer Management'}
                 {selectedTab === 'matches' && 'Match Management'}
                 {selectedTab === 'teams' && 'Team Management'}
                 {selectedTab === 'settings' && 'System Settings'}
@@ -284,18 +284,20 @@ export default function AdminPanel() {
                   <>
                     <li>View and search all registered users</li>
                     <li>Create new user accounts</li>
-                    <li>Edit user details (name, email, department, role)</li>
+                    <li>Edit user details (name, email, customer number, role)</li>
                     <li>Reset user passwords</li>
                     <li>Bulk import users from CSV</li>
                     <li>View user predictions and statistics</li>
                   </>
                 )}
-                {selectedTab === 'departments' && (
+                {selectedTab === 'customers' && (
                   <>
-                    <li>Create and manage departments</li>
-                    <li>Assign users to departments</li>
-                    <li>Upload department logos</li>
-                    <li>View department standings</li>
+                    <li>View all customer numbers in the database</li>
+                    <li>Add new customer numbers to allow registration</li>
+                    <li>Bulk import customer numbers from CSV</li>
+                    <li>Mark customers as active or inactive</li>
+                    <li>See which customers have registered accounts</li>
+                    <li>Export customer list to CSV</li>
                   </>
                 )}
                 {selectedTab === 'matches' && (
