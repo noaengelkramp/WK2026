@@ -22,6 +22,8 @@ import {
   Warning as WarningIcon,
   CheckCircle as CheckIcon,
 } from '@mui/icons-material';
+import UserManagement from '../components/admin/UserManagement';
+import CustomerManagement from '../components/admin/CustomerManagement';
 
 type TabValue = 'dashboard' | 'users' | 'customers' | 'matches' | 'teams' | 'settings';
 
@@ -264,14 +266,18 @@ export default function AdminPanel() {
         </Box>
       )}
 
+      {/* User Management Tab */}
+      {selectedTab === 'users' && <UserManagement />}
+
+      {/* Customer Management Tab */}
+      {selectedTab === 'customers' && <CustomerManagement />}
+
       {/* Other Tabs - Placeholder */}
-      {selectedTab !== 'dashboard' && (
+      {(selectedTab === 'matches' || selectedTab === 'teams' || selectedTab === 'settings') && (
         <Card>
           <CardContent>
             <Alert severity="info" icon={<SettingsIcon />}>
               <Typography variant="h6" gutterBottom>
-                {selectedTab === 'users' && 'User Management'}
-                {selectedTab === 'customers' && 'Customer Management'}
                 {selectedTab === 'matches' && 'Match Management'}
                 {selectedTab === 'teams' && 'Team Management'}
                 {selectedTab === 'settings' && 'System Settings'}
@@ -280,26 +286,6 @@ export default function AdminPanel() {
                 This section allows administrators to:
               </Typography>
               <Box component="ul" sx={{ pl: 2, mb: 2 }}>
-                {selectedTab === 'users' && (
-                  <>
-                    <li>View and search all registered users</li>
-                    <li>Create new user accounts</li>
-                    <li>Edit user details (name, email, customer number, role)</li>
-                    <li>Reset user passwords</li>
-                    <li>Bulk import users from CSV</li>
-                    <li>View user predictions and statistics</li>
-                  </>
-                )}
-                {selectedTab === 'customers' && (
-                  <>
-                    <li>View all customer numbers in the database</li>
-                    <li>Add new customer numbers to allow registration</li>
-                    <li>Bulk import customer numbers from CSV</li>
-                    <li>Mark customers as active or inactive</li>
-                    <li>See which customers have registered accounts</li>
-                    <li>Export customer list to CSV</li>
-                  </>
-                )}
                 {selectedTab === 'matches' && (
                   <>
                     <li>View all 104 World Cup matches</li>
@@ -335,7 +321,7 @@ export default function AdminPanel() {
                 sx={{ mt: 1 }}
               />
               <Typography variant="body2" sx={{ mt: 2 }}>
-                Full implementation requires additional backend API endpoints and admin authentication.
+                Full implementation requires additional backend API endpoints.
               </Typography>
             </Alert>
           </CardContent>
