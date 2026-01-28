@@ -16,7 +16,7 @@ import standingsRoutes from './routes/standings';
 import scoringRulesRoutes from './routes/scoringRules';
 import bonusQuestionsRoutes from './routes/bonusQuestions';
 import adminRoutes from './routes/admin';
-import setupRoutes from './routes/setup';
+// import setupRoutes from './routes/setup';
 
 const app: Application = express();
 
@@ -56,7 +56,7 @@ app.use('/api/standings', standingsRoutes);
 app.use('/api/scoring-rules', scoringRulesRoutes);
 app.use('/api/bonus-questions', bonusQuestionsRoutes);
 app.use('/api/admin', adminRoutes);
-app.use('/api/setup', setupRoutes);
+// app.use('/api/setup', setupRoutes);
 
 // 404 handler
 app.use(notFoundHandler);
