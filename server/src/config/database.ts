@@ -1,16 +1,31 @@
 import { Sequelize } from 'sequelize';
 import { config } from './environment';
 
-// Create Sequelize instance
+// Create Sequelize instance with environment-specific configuration
+const isProduction = config.nodeEnv === 'production';
+const isServerless = process.env.NETLIFY === 'true';
+
 export const sequelize = new Sequelize(config.database.url, {
   dialect: 'postgres',
   logging: config.nodeEnv === 'development' ? console.log : false,
+  
+  // SSL configuration for cloud databases (Neon, Supabase, etc.)
+  dialectOptions: isProduction ? {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false, // Required for most cloud PostgreSQL providers
+    },
+  } : {},
+  
+  // Connection pool configuration
+  // Serverless needs smaller pool sizes
   pool: {
-    max: 50,        // Increased from 10 to 50 for higher concurrency
-    min: 5,         // Keep 5 connections warm
-    acquire: 30000,
-    idle: 10000,
+    max: isServerless ? 2 : (isProduction ? 10 : 50),  // Low max for serverless, higher for production server
+    min: isServerless ? 0 : (isProduction ? 2 : 5),    // Allow scaling to zero in serverless
+    acquire: 30000,  // Max time to get connection before throwing error
+    idle: isServerless ? 1000 : 10000,  // Close idle connections quickly in serverless
   },
+  
   define: {
     timestamps: true,
     underscored: true,

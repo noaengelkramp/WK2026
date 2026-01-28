@@ -16,6 +16,7 @@ import standingsRoutes from './routes/standings';
 import scoringRulesRoutes from './routes/scoringRules';
 import bonusQuestionsRoutes from './routes/bonusQuestions';
 import adminRoutes from './routes/admin';
+import setupRoutes from './routes/setup';
 
 const app: Application = express();
 
@@ -55,6 +56,7 @@ app.use('/api/standings', standingsRoutes);
 app.use('/api/scoring-rules', scoringRulesRoutes);
 app.use('/api/bonus-questions', bonusQuestionsRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/setup', setupRoutes);
 
 // 404 handler
 app.use(notFoundHandler);
@@ -62,8 +64,9 @@ app.use(notFoundHandler);
 // Error handler
 app.use(errorHandler);
 
-// Start server
-const startServer = async () => {
+// Initialize database and Redis connections
+// This runs on both local development and serverless environments
+const initializeConnections = async () => {
   try {
     // Test database connection
     await testConnection();
@@ -71,8 +74,21 @@ const startServer = async () => {
     // Initialize Redis (optional - graceful degradation if not available)
     await initRedis();
 
-    // Sync database (create tables)
-    await syncDatabase(true); // Force recreate tables for schema changes
+    // Don't force sync in production - use migrations instead
+    const shouldForceSync = config.nodeEnv === 'development';
+    await syncDatabase(shouldForceSync);
+
+    console.log('✅ Database and connections initialized');
+  } catch (error) {
+    console.error('❌ Failed to initialize connections:', error);
+    throw error;
+  }
+};
+
+// Start server (only for local development)
+const startServer = async () => {
+  try {
+    await initializeConnections();
 
     // Start listening
     app.listen(config.port, () => {
@@ -89,32 +105,42 @@ const startServer = async () => {
   }
 };
 
-// Handle uncaught exceptions
-process.on('uncaughtException', (error) => {
-  console.error('❌ Uncaught Exception:', error);
-  closeRedis().finally(() => process.exit(1));
-});
+// Only start server if not in Netlify serverless environment
+if (process.env.NETLIFY !== 'true') {
+  // Handle uncaught exceptions
+  process.on('uncaughtException', (error) => {
+    console.error('❌ Uncaught Exception:', error);
+    closeRedis().finally(() => process.exit(1));
+  });
 
-// Handle unhandled promise rejections
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
-  closeRedis().finally(() => process.exit(1));
-});
+  // Handle unhandled promise rejections
+  process.on('unhandledRejection', (reason, promise) => {
+    console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
+    closeRedis().finally(() => process.exit(1));
+  });
 
-// Graceful shutdown
-process.on('SIGTERM', async () => {
-  console.log('⚠️  SIGTERM received, shutting down gracefully...');
-  await closeRedis();
-  process.exit(0);
-});
+  // Graceful shutdown
+  process.on('SIGTERM', async () => {
+    console.log('⚠️  SIGTERM received, shutting down gracefully...');
+    await closeRedis();
+    process.exit(0);
+  });
 
-process.on('SIGINT', async () => {
-  console.log('⚠️  SIGINT received, shutting down gracefully...');
-  await closeRedis();
-  process.exit(0);
-});
+  process.on('SIGINT', async () => {
+    console.log('⚠️  SIGINT received, shutting down gracefully...');
+    await closeRedis();
+    process.exit(0);
+  });
 
-// Start the server
-startServer();
+  // Start the server
+  startServer();
+} else {
+  // In Netlify environment, just initialize connections
+  // The serverless-express wrapper will handle requests
+  console.log('🌐 Running in Netlify serverless mode');
+  initializeConnections().catch(error => {
+    console.error('❌ Failed to initialize in serverless mode:', error);
+  });
+}
 
 export default app;

@@ -1,8 +1,10 @@
 import axios, { AxiosError } from 'axios';
 import type { AxiosInstance } from 'axios';
 
-// API base URL - use environment variable or default to localhost
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
+// API base URL - use environment variable or default to relative path
+// In production (Netlify), uses relative path which gets redirected to function via netlify.toml
+// In development, Vite proxy handles the redirect to localhost:5000
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 // Create axios instance with default config
 const apiClient: AxiosInstance = axios.create({

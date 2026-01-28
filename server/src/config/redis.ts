@@ -38,8 +38,8 @@ export const CACHE_KEYS = {
  */
 export const initRedis = async (): Promise<void> => {
   try {
-    // Skip Redis if not configured (graceful degradation)
-    if (!config.redis.host) {
+    // Skip Redis if not configured or explicitly disabled (graceful degradation)
+    if (!config.redis.host || process.env.REDIS_URL === 'skip' || process.env.SKIP_REDIS === 'true') {
       console.log('⚠️  Redis not configured - caching disabled (will use database only)');
       return;
     }
@@ -75,7 +75,7 @@ export const initRedis = async (): Promise<void> => {
 
   } catch (error) {
     console.error('⚠️  Failed to connect to Redis:', error);
-    console.log('⚠️  Continuing without Redis - caching disabled');
+    console.log('⚠️  Continuing without Redis - caching disabled (application will use database queries only)');
     redisClient = null;
   }
 };

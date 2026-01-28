@@ -1,0 +1,68 @@
+# Netlify Configuration for WK2026 Prediction Game
+# Full-stack deployment: React frontend + Express API as serverless functions
+
+[build]
+  base = "/"
+  publish = "client/dist"
+  command = "npm run build:netlify"
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "18"
+  NPM_VERSION = "9"
+
+[functions]
+  # Use esbuild for faster bundling
+  node_bundler = "esbuild"
+  # Include server source files in function bundle
+  included_files = ["server/src/**/*", "server/dist/**/*"]
+
+# Redirect all API calls to the serverless function
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+  force = true
+
+# SPA routing - redirect all other requests to index.html
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Production environment variables (set in Netlify Dashboard)
+[context.production.environment]
+  NODE_ENV = "production"
+  NETLIFY = "true"
+
+# Deploy preview settings (for branches)
+[context.deploy-preview]
+  command = "npm run build:netlify"
+
+# Branch deploy settings
+[context.branch-deploy]
+  command = "npm run build:netlify"
+
+# Headers for security and performance
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
