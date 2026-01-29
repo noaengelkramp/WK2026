@@ -77,13 +77,18 @@ const initializeConnections = async () => {
     // Initialize Redis (optional - graceful degradation if not available)
     await initRedis();
 
-    // Only sync database in development
-    // In production, tables should already exist from migrations
-    if (config.nodeEnv === 'development') {
+    // NEVER sync database in Netlify serverless environment
+    // In production/Netlify, tables must exist from migrations
+    const isNetlify = process.env.NETLIFY === 'true';
+    const isProduction = config.nodeEnv === 'production';
+    
+    if (isNetlify || isProduction) {
+      console.log('✅ Skipping database sync (production/Netlify - using migrations)');
+      console.log(`   Environment: ${config.nodeEnv}, Netlify: ${isNetlify}`);
+    } else {
+      // Only sync in local development
       await syncDatabase(true); // Force sync in development
       console.log('✅ Database synced (development mode)');
-    } else {
-      console.log('✅ Skipping database sync (production mode - using migrations)');
     }
 
     console.log('✅ Database and connections initialized');
