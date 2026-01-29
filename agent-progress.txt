@@ -4450,3 +4450,149 @@ Test Credentials:
 Live Site: https://kramp-poules.netlify.app
 Database: Neon PostgreSQL (fully seeded)
 
+
+===Session 19: Database Persistence Fix and Production Setup ===
+Date: January 29, 2026
+Agent: auto-coder-coding
+
+Previous Status: 14/255 tests passing (5.5%)
+
+**CRITICAL ACCOMPLISHMENT: Fixed Database Table Persistence Issue**
+
+The Problem:
+- Database tables were disappearing after Netlify deployments
+- API endpoints returned "relation does not exist" errors
+- Tables would exist briefly after seeding, then disappear on next request
+- This was the #1 blocker preventing progress
+
+Root Cause Identified:
+- Netlify serverless function was importing server.ts which called initializeConnections()
+- But the initialization was fire-and-forget (async, not awaited)
+- Requests could be processed BEFORE database sync completed
+- Result: Tables might not exist when API endpoints tried to query them
+
+The Fix:
+1. Modified server/src/server.ts:
+   - Export initPromise for serverless environments
+   - Promise resolves when initializeConnections() completes
+   
+2. Modified netlify/functions/api.ts:
+   - Await initPromise before processing any requests
+   - Ensures sequelize.sync() completes and tables are created
+   - Only then does the function handle API requests
+
+How It Works:
+1. Netlify function cold-starts → imports server.ts
+2. server.ts immediately starts initializeConnections() and exports the promise
+3. Netlify handler awaits initPromise before processing requests
+4. sequelize.sync() completes → tables are created
+5. Function handles API requests with tables guaranteed to exist
+
+Accomplished:
+
+✅ **Database Persistence Fix**
+   - Identified root cause of table disappearance
+   - Implemented proper async initialization in serverless environment
+   - Netlify function now waits for database sync before handling requests
+   - Tables persist across deployments and cold starts
+
+✅ **Production Database Setup**
+   - Ran migration to create all 12 tables in Neon PostgreSQL
+   - Successfully seeded production database with:
+     * 50 customers (C1234_0000001 through C1234_0000050)
+     * 48 teams (all World Cup 2026 teams, groups A-L with flags)
+     * 12 matches (Group A and B sample matches)
+     * 7 scoring rules (progressive points system)
+     * 5 bonus questions (champion, top scorer, total goals, etc.)
+     * 3 test users (admin, john.doe, jane.smith)
+
+✅ **API Endpoint Verification**
+   - /api/teams returns 48 teams ✅
+   - /api/matches returns 12 matches ✅
+   - /api/auth/login works correctly ✅
+   - /api/admin/customers accessible (admin only) ✅
+   - All endpoints responding without "relation does not exist" errors
+
+Test Credentials (ACTIVE):
+- Admin: admin@wk2026.com / password123
+- User 1: john.doe@wk2026.com / password123
+- User 2: jane.smith@wk2026.com / password123
+
+Files Modified:
+1. server/src/server.ts - Export initPromise for serverless
+2. netlify/functions/api.ts - Await initPromise before handling requests
+
+Git Commits:
+1. ce38333 - Fix database table persistence issue in Netlify serverless
+
+Current Status: 14/255 tests passing (database now stable and ready for testing)
+
+**Key Achievement:**
+This session solved the most critical blocker in the project. The database persistence issue was preventing any meaningful progress on feature testing. With this fix, the application now has a stable foundation for continued development.
+
+Next Priority Tasks:
+
+1. **Add Remaining Matches** (HIGH - Currently 12/104)
+   - Seed script only has Groups A and B (12 matches)
+   - Need to add remaining 92 matches for Groups C-L
+   - Total should be 48 group stage matches
+   - Can add knockout matches later (56 matches)
+
+2. **Browser Test Frontend Features** (HIGH)
+   - Use browser automation to test actual UI
+   - Verify login flow works end-to-end
+   - Test home page displays correctly
+   - Test groups page shows teams
+   - Test matches page shows 12 matches
+   - Mark passing features in feature_list.json
+   - Target: 25-30 tests passing
+
+3. **Implement Prediction System** (MEDIUM)
+   - My Prediction page with match prediction forms
+   - Save predictions to database
+   - Display user's predictions
+   - Lock predictions after deadline
+
+4. **Add More Group Matches** (MEDIUM)
+   - Extend seed script to include all 48 group stage matches
+   - Groups C through L (36 more matches)
+   - Proper match dates and venues
+
+Technical Notes:
+
+**Database Sync Behavior:**
+- Development: sequelize.sync({ force: false }) - creates tables if missing
+- Production: sequelize.sync({ force: false }) - creates tables if missing
+- Serverless: Now properly awaited before handling requests
+- Tables persist across deployments ✅
+
+**Netlify Serverless Environment:**
+- NODE_ENV=production
+- NETLIFY=true
+- Connection pool: max 2, min 0 (optimized for serverless)
+- Idle timeout: 1000ms (close connections quickly)
+- SSL enabled for Neon database
+
+**Database Tables (12 total):**
+1. customers - 50 records
+2. users - 3 records
+3. teams - 48 records
+4. matches - 12 records
+5. predictions - 0 records (empty)
+6. bonus_questions - 5 records
+7. bonus_answers - 0 records (empty)
+8. prizes - 0 records (empty)
+9. scoring_rules - 7 records
+10. user_statistics - 3 records
+11. app_settings - 0 records (empty)
+12. api_logs - 0 records (empty)
+
+Session Summary:
+
+This was a breakthrough session. The database persistence issue had been plaguing the project since Session 18, causing tables to disappear unpredictably. By identifying that the serverless function wasn't waiting for database initialization, we implemented a proper async/await pattern that ensures tables exist before any requests are processed.
+
+The fix is elegant and minimal - just exporting an initialization promise and awaiting it in the Netlify handler. This guarantees that sequelize.sync() completes before the function processes any API requests.
+
+With the database now stable, the project is ready for the next phase: browser testing, feature verification, and implementing the core prediction system.
+
+# Database seeded on Thu Jan 29 10:41:59 CET 2026
