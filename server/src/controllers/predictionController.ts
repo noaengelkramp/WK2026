@@ -23,7 +23,7 @@ export const getMyPredictions = async (req: Request, res: Response) => {
           ],
         },
       ],
-      order: [['match', 'matchDate', 'ASC']],
+      order: [[{ model: Match, as: 'match' }, 'matchDate', 'ASC']],
     });
 
     // Get bonus answers
