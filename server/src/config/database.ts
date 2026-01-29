@@ -4,13 +4,18 @@ import { config } from './environment';
 // Create Sequelize instance with environment-specific configuration
 const isProduction = config.nodeEnv === 'production';
 const isServerless = process.env.NETLIFY === 'true';
+// Check if using cloud database (Neon, Supabase, etc.) - they always need SSL
+const isCloudDatabase = config.database.url.includes('neon.tech') || 
+                        config.database.url.includes('supabase') ||
+                        config.database.url.includes('sslmode=require');
 
 export const sequelize = new Sequelize(config.database.url, {
   dialect: 'postgres',
   logging: config.nodeEnv === 'development' ? console.log : false,
   
   // SSL configuration for cloud databases (Neon, Supabase, etc.)
-  dialectOptions: isProduction ? {
+  // Enable SSL for production OR cloud databases
+  dialectOptions: (isProduction || isCloudDatabase) ? {
     ssl: {
       require: true,
       rejectUnauthorized: false, // Required for most cloud PostgreSQL providers
