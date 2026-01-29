@@ -7,6 +7,9 @@ import { testConnection, syncDatabase } from './config/database';
 import { initRedis, closeRedis, isRedisAvailable } from './config/redis';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 
+// Import models to ensure they're registered with Sequelize before sync
+import './models';
+
 // Import routes
 import authRoutes from './routes/auth';
 import teamRoutes from './routes/teams';
@@ -110,13 +113,12 @@ if (process.env.NETLIFY !== 'true') {
   // Handle uncaught exceptions
   process.on('uncaughtException', (error) => {
     console.error('❌ Uncaught Exception:', error);
-    closeRedis().finally(() => process.exit(1));
+    process.exit(1);
   });
 
-  // Handle unhandled promise rejections
   process.on('unhandledRejection', (reason, promise) => {
     console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
-    closeRedis().finally(() => process.exit(1));
+    process.exit(1);
   });
 
   // Graceful shutdown
@@ -132,14 +134,13 @@ if (process.env.NETLIFY !== 'true') {
     process.exit(0);
   });
 
-  // Start the server
   startServer();
 } else {
-  // In Netlify environment, just initialize connections
-  // The serverless-express wrapper will handle requests
-  console.log('🌐 Running in Netlify serverless mode');
-  initializeConnections().catch(error => {
-    console.error('❌ Failed to initialize in serverless mode:', error);
+  // In Netlify serverless environment, initialize connections immediately
+  // This ensures database tables are created on first function invocation
+  console.log('🔧 Netlify serverless mode detected - initializing connections...');
+  initializeConnections().catch((error) => {
+    console.error('❌ Failed to initialize serverless connections:', error);
   });
 }
 
