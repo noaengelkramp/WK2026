@@ -16,6 +16,8 @@
   node_bundler = "esbuild"
   # Include server source files in function bundle
   included_files = ["server/src/**/*", "server/dist/**/*"]
+  # External node modules that should not be bundled (native modules)
+  external_node_modules = ["pg", "pg-hstore", "bcrypt", "sequelize"]
 
 # Redirect all API calls to the serverless function
 [[redirects]]
