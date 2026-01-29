@@ -9,7 +9,7 @@
 
 import { Handler, HandlerEvent, HandlerContext } from '@netlify/functions';
 import serverlessExpress from '@vendia/serverless-express';
-import app from '../../server/src/server';
+import app, { initPromise } from '../../server/src/server';
 
 // Create the serverless handler
 const serverlessHandler = serverlessExpress({ app });
@@ -17,8 +17,15 @@ const serverlessHandler = serverlessExpress({ app });
 /**
  * Export the Netlify handler
  * Converts Netlify event format to AWS Lambda format for serverless-express
+ * 
+ * IMPORTANT: Waits for database initialization before processing requests
+ * This ensures tables exist before any API calls are made
  */
 export const handler: Handler = async (event: HandlerEvent, context: HandlerContext) => {
+  // Wait for database initialization to complete
+  // This is critical to ensure tables exist before processing requests
+  await initPromise;
+
   // Convert Netlify event to AWS Lambda event format
   const lambdaEvent = {
     ...event,

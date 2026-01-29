@@ -135,13 +135,12 @@ if (process.env.NETLIFY !== 'true') {
   });
 
   startServer();
-} else {
-  // In Netlify serverless environment, initialize connections immediately
-  // This ensures database tables are created on first function invocation
-  console.log('🔧 Netlify serverless mode detected - initializing connections...');
-  initializeConnections().catch((error) => {
-    console.error('❌ Failed to initialize serverless connections:', error);
-  });
 }
+
+// Export initialization promise for serverless environments
+// This allows the Netlify function to wait for initialization before handling requests
+export const initPromise = process.env.NETLIFY === 'true' 
+  ? initializeConnections()
+  : Promise.resolve();
 
 export default app;
