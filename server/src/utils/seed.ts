@@ -8,6 +8,7 @@ import {
   UserStatistics,
 } from '../models';
 import bcrypt from 'bcrypt';
+import { testConnection } from '../config/database';
 
 /**
  * Seed database with initial data for World Cup 2026 Prediction Game
@@ -15,6 +16,11 @@ import bcrypt from 'bcrypt';
 export async function seedDatabase() {
   try {
     console.log('🌱 Starting database seed...');
+
+    // Initialize database connection
+    await testConnection();
+    // Note: Don't sync here - tables should already exist from migration
+    // await syncDatabase(false);
 
     // Clear existing data (in correct order to respect foreign keys)
     await UserStatistics.destroy({ where: {} });
