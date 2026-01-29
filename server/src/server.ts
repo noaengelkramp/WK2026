@@ -77,9 +77,14 @@ const initializeConnections = async () => {
     // Initialize Redis (optional - graceful degradation if not available)
     await initRedis();
 
-    // Don't force sync in production - use migrations instead
-    const shouldForceSync = config.nodeEnv === 'development';
-    await syncDatabase(shouldForceSync);
+    // Only sync database in development
+    // In production, tables should already exist from migrations
+    if (config.nodeEnv === 'development') {
+      await syncDatabase(true); // Force sync in development
+      console.log('✅ Database synced (development mode)');
+    } else {
+      console.log('✅ Skipping database sync (production mode - using migrations)');
+    }
 
     console.log('✅ Database and connections initialized');
   } catch (error) {

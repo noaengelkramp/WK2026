@@ -4596,3 +4596,106 @@ The fix is elegant and minimal - just exporting an initialization promise and aw
 With the database now stable, the project is ready for the next phase: browser testing, feature verification, and implementing the core prediction system.
 
 # Database seeded on Thu Jan 29 10:41:59 CET 2026
+
+=== Session 20: Database Persistence & Predictions API Fix ===
+Date: Thu Jan 29 2026
+Agent: auto-coder-coding
+
+Previous Status: 14/255 tests passing (5.5%)
+
+**CRITICAL ISSUE DISCOVERED:**
+Database tables were disappearing again after Session 19's fix. Investigation revealed the root cause was different from Session 19.
+
+Issues Found & Fixed:
+
+1. **Seed Script Missing Database Initialization** ✅
+   - Problem: seed.ts didn't call testConnection() before using models
+   - Result: "relation does not exist" errors when running seed
+   - Fix: Added `import { testConnection } from '../config/database'` and called it before seeding
+   - Also removed syncDatabase() call to avoid enum type conflicts (tables already exist from migration)
+
+2. **Predictions Controller Order Clause Bug** ✅
+   - Problem: `order: [['match', 'matchDate', 'ASC']]` syntax incorrect for nested includes
+   - Error: "Failed to fetch predictions" when calling /api/predictions/my
+   - Fix: Changed to `order: [[{ model: Match, as: 'match' }, 'matchDate', 'ASC']]`
+   - Sequelize requires object notation for ordering by associated model fields
+
+Accomplishments:
+
+✅ **Fixed Seed Script**
+   - Added database connection initialization
+   - Removed conflicting syncDatabase call
+   - Successfully seeded production database with:
+     * 50 customers (C1234_0000001 through C1234_0000050)
+     * 48 teams (all World Cup 2026 teams, groups A-L with flags)
+     * 12 matches (Groups A and B)
+     * 7 scoring rules (progressive points system)
+     * 5 bonus questions
+     * 3 test users with credentials
+
+✅ **Verified Login Works**
+   - Tested POST /api/auth/login with admin@wk2026.com
+   - Successfully returns JWT access token and refresh token
+   - Token includes userId, email, isAdmin fields
+   - User object includes customer relationship
+
+✅ **Fixed Predictions API**
+   - Corrected Sequelize order clause syntax
+   - Deployed fix to production (commit 58611b6)
+   - Waiting for Netlify deployment to complete
+
+Test Credentials (ACTIVE):
+- Admin: admin@wk2026.com / password123 (Customer: C1234_0000001)
+- User 1: john.doe@wk2026.com / password123 (Customer: C1234_0000002)
+- User 2: jane.smith@wk2026.com / password123 (Customer: C1234_0000003, Language: nl)
+
+Git Commits:
+1. 8ede235 - Fix seed script: add database connection initialization
+2. 58611b6 - Fix predictions controller: correct order clause for nested include
+
+Next Steps:
+
+1. **Wait for Netlify Deployment** (HIGH - ~3-5 minutes)
+   - Deployment triggered by git push
+   - Need to verify predictions endpoint works after deployment
+
+2. **Test My Prediction Page** (HIGH)
+   - Once deployment completes, test /api/predictions/my endpoint
+   - Verify it returns empty predictions array (no predictions yet)
+   - Test in browser: https://kramp-poules.netlify.app/my-prediction
+   - Should load without "Failed to load prediction data" error
+
+3. **Browser Test Full Prediction Flow** (HIGH)
+   - Login as admin@wk2026.com
+   - Navigate to My Prediction page
+   - Verify 12 matches display correctly
+   - Try submitting a prediction
+   - Verify prediction saves to database
+   - Mark passing features in feature_list.json
+
+4. **Add Remaining Matches** (MEDIUM - Currently 12/104)
+   - Extend seed script to include Groups C through L (36 more matches)
+   - Total should be 48 group stage matches
+   - Can add knockout matches later (56 matches)
+
+Current Status: 14/255 tests passing (database seeded, waiting for deployment)
+
+Technical Notes:
+
+**Sequelize Order Syntax:**
+- Simple field: `order: [['fieldName', 'ASC']]`
+- Associated model field: `order: [[{ model: Model, as: 'alias' }, 'fieldName', 'ASC']]`
+- The object notation is required when ordering by fields from included models
+
+**Database Seeding Process:**
+1. Run migration: `cd server && npm run migrate` (creates tables)
+2. Run seed: `cd server && npm run seed` (populates data)
+3. Seed script now properly initializes connection before use
+4. Avoids sync to prevent enum type conflicts
+
+**Netlify Deployment:**
+- Triggered automatically on git push to main
+- Takes ~3-5 minutes to build and deploy
+- Can monitor at: https://app.netlify.com/sites/kramp-poules/deploys
+- Live site: https://kramp-poules.netlify.app
+
