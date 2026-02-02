@@ -75,7 +75,7 @@ async function sync2022Data() {
         name: apiTeam.name,
         countryCode: apiTeam.code,
         flagUrl: apiTeam.logo,
-        groupLetter: null, // Will be set based on fixtures
+        groupLetter: '', // Will be set based on fixtures
         fifaRank: 0, // Not in API response
         apiTeamId: apiTeam.id.toString(),
       });
@@ -131,19 +131,19 @@ async function sync2022Data() {
       }
 
       // Create match
-      const match = await Match.create({
+      await Match.create({
         matchNumber: matchNumber++,
         stage: stage as any,
         homeTeamId: homeTeamMapping.dbId,
         awayTeamId: awayTeamMapping.dbId,
-        venue: apiFixture.fixture.venue.name || 'Unknown',
-        city: apiFixture.fixture.venue.city || 'Unknown',
+        venue: apiFixture.fixture.venue.name ?? 'Unknown',
+        city: apiFixture.fixture.venue.city ?? 'Unknown',
         matchDate: new Date(apiFixture.fixture.date),
-        homeScore: apiFixture.goals.home,
-        awayScore: apiFixture.goals.away,
+        homeScore: apiFixture.goals.home ?? undefined,
+        awayScore: apiFixture.goals.away ?? undefined,
         status: apiFixture.fixture.status.short === 'FT' ? 'finished' : 
                 apiFixture.fixture.status.short === 'NS' ? 'scheduled' : 'live',
-        groupLetter: groupLetter,
+        groupLetter: groupLetter ?? undefined,
         apiMatchId: apiFixture.fixture.id.toString(),
       });
 
@@ -159,19 +159,24 @@ async function sync2022Data() {
     console.log('📥 Step 6: Updating team groups...');
     const groupMatches = await Match.findAll({
       where: { stage: 'group' },
-      include: [
-        { model: Team, as: 'homeTeam' },
-        { model: Team, as: 'awayTeam' },
-      ],
     });
 
     for (const match of groupMatches) {
       if (match.groupLetter) {
-        if (match.homeTeam && !match.homeTeam.groupLetter) {
-          await match.homeTeam.update({ groupLetter: match.groupLetter });
+        // Update home team group
+        if (match.homeTeamId) {
+          const homeTeam = await Team.findByPk(match.homeTeamId);
+          if (homeTeam && (!homeTeam.groupLetter || homeTeam.groupLetter === '')) {
+            await homeTeam.update({ groupLetter: match.groupLetter });
+          }
         }
-        if (match.awayTeam && !match.awayTeam.groupLetter) {
-          await match.awayTeam.update({ groupLetter: match.groupLetter });
+        
+        // Update away team group
+        if (match.awayTeamId) {
+          const awayTeam = await Team.findByPk(match.awayTeamId);
+          if (awayTeam && (!awayTeam.groupLetter || awayTeam.groupLetter === '')) {
+            await awayTeam.update({ groupLetter: match.groupLetter });
+          }
         }
       }
     }
