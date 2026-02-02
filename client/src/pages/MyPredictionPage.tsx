@@ -117,21 +117,27 @@ export default function MyPredictionPage() {
     setPredictions({
       ...predictions,
       [matchId]: {
-        home: team === 'home' ? (numValue ?? predictions[matchId]?.home ?? 0) : (predictions[matchId]?.home ?? 0),
-        away: team === 'away' ? (numValue ?? predictions[matchId]?.away ?? 0) : (predictions[matchId]?.away ?? 0),
+        home: team === 'home' ? numValue : (predictions[matchId]?.home ?? undefined),
+        away: team === 'away' ? numValue : (predictions[matchId]?.away ?? undefined),
       },
     });
   };
 
   // Auto-save prediction
   const handleSavePrediction = async (matchId: string) => {
-    if (!predictions[matchId]) return;
+    const prediction = predictions[matchId];
+    if (!prediction) return;
+    
+    // Only save if both scores are filled (not undefined)
+    if (prediction.home === undefined || prediction.away === undefined) {
+      return; // Don't save incomplete predictions
+    }
 
     try {
       await predictionService.submitPrediction({
         matchId,
-        homeScore: predictions[matchId].home,
-        awayScore: predictions[matchId].away,
+        homeScore: prediction.home,
+        awayScore: prediction.away,
       });
       
       setSaveMessage('Prediction saved! ✓');
@@ -174,14 +180,16 @@ export default function MyPredictionPage() {
       setSaving(true);
       setError(null);
 
-      // Save all predictions
-      const predictionPromises = Object.entries(predictions).map(([matchId, scores]) =>
-        predictionService.submitPrediction({
-          matchId,
-          homeScore: scores.home,
-          awayScore: scores.away,
-        })
-      );
+      // Save all predictions (skip incomplete ones with undefined scores)
+      const predictionPromises = Object.entries(predictions)
+        .filter(([_, scores]) => scores.home !== undefined && scores.away !== undefined)
+        .map(([matchId, scores]) =>
+          predictionService.submitPrediction({
+            matchId,
+            homeScore: scores.home!,
+            awayScore: scores.away!,
+          })
+        );
 
       // Save all bonus answers
       const bonusPromises = Object.entries(bonusAnswers).map(([questionId, answer]) =>
