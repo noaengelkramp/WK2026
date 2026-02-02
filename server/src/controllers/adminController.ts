@@ -1093,3 +1093,149 @@ export async function syncFromApi(req: Request, res: Response) {
     });
   }
 }
+
+// ==================== TEAM MANAGEMENT ====================
+
+/**
+ * Get all teams (admin view)
+ * GET /api/admin/teams
+ */
+export async function getAllTeamsAdmin(_req: Request, res: Response) {
+  try {
+    const teams = await Team.findAll({
+      order: [['groupLetter', 'ASC'], ['fifaRank', 'ASC']],
+    });
+
+    res.status(200).json({
+      success: true,
+      count: teams.length,
+      teams,
+    });
+  } catch (error) {
+    console.error('Error fetching teams:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch teams',
+    });
+  }
+}
+
+/**
+ * Update team details
+ * PUT /api/admin/teams/:id
+ */
+export async function updateTeam(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    const updates = req.body;
+
+    const team = await Team.findOne({
+      where: { id },
+    });
+
+    if (!team) {
+      res.status(404).json({
+        success: false,
+        error: `Team not found with ID: ${id}`,
+      });
+      return;
+    }
+
+    // Update team
+    await team.update(updates);
+
+    console.log(`✅ Team updated: ${team.name}`);
+
+    res.status(200).json({
+      success: true,
+      message: 'Team updated successfully',
+      team,
+    });
+  } catch (error) {
+    console.error('Error updating team:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to update team',
+    });
+  }
+}
+
+/**
+ * Create new team
+ * POST /api/admin/teams
+ */
+export async function createTeam(req: Request, res: Response) {
+  try {
+    const { name, countryCode, flagUrl, groupLetter, fifaRank } = req.body;
+
+    // Validation
+    if (!name || !countryCode) {
+      res.status(400).json({
+        success: false,
+        error: 'Name and country code are required',
+      });
+      return;
+    }
+
+    // Create team
+    const team = await Team.create({
+      name,
+      countryCode,
+      flagUrl: flagUrl || `https://flagcdn.com/w320/${countryCode.toLowerCase()}.png`,
+      groupLetter: groupLetter || null,
+      fifaRank: fifaRank || null,
+    });
+
+    console.log(`✅ Team created: ${team.name}`);
+
+    res.status(201).json({
+      success: true,
+      message: 'Team created successfully',
+      team,
+    });
+  } catch (error) {
+    console.error('Error creating team:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to create team',
+    });
+  }
+}
+
+/**
+ * Delete team
+ * DELETE /api/admin/teams/:id
+ */
+export async function deleteTeam(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+
+    const team = await Team.findOne({
+      where: { id },
+    });
+
+    if (!team) {
+      res.status(404).json({
+        success: false,
+        error: `Team not found with ID: ${id}`,
+      });
+      return;
+    }
+
+    const teamName = team.name;
+    await team.destroy();
+
+    console.log(`✅ Team deleted: ${teamName}`);
+
+    res.status(200).json({
+      success: true,
+      message: 'Team deleted successfully',
+    });
+  } catch (error) {
+    console.error('Error deleting team:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to delete team',
+    });
+  }
+}

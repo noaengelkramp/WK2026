@@ -6,8 +6,6 @@ import {
   Tabs,
   Tab,
   Alert,
-  CardContent,
-  Chip,
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
@@ -21,6 +19,9 @@ import {
 import UserManagement from '../components/admin/UserManagement';
 import CustomerManagement from '../components/admin/CustomerManagement';
 import ApiDashboard from '../components/admin/ApiDashboard';
+import MatchManagement from '../components/admin/MatchManagement';
+import TeamManagement from '../components/admin/TeamManagement';
+import Settings from '../components/admin/Settings';
 
 type TabValue = 'dashboard' | 'users' | 'customers' | 'matches' | 'teams' | 'settings';
 
@@ -70,61 +71,14 @@ export default function AdminPanel() {
       {/* Customer Management Tab */}
       {selectedTab === 'customers' && <CustomerManagement />}
 
-      {/* Other Tabs - Placeholder */}
-      {(selectedTab === 'matches' || selectedTab === 'teams' || selectedTab === 'settings') && (
-        <Card>
-          <CardContent>
-            <Alert severity="info" icon={<SettingsIcon />}>
-              <Typography variant="h6" gutterBottom>
-                {selectedTab === 'matches' && 'Match Management'}
-                {selectedTab === 'teams' && 'Team Management'}
-                {selectedTab === 'settings' && 'System Settings'}
-              </Typography>
-              <Typography variant="body2" sx={{ mb: 2 }}>
-                This section allows administrators to:
-              </Typography>
-              <Box component="ul" sx={{ pl: 2, mb: 2 }}>
-                {selectedTab === 'matches' && (
-                  <>
-                    <li>View all 104 World Cup matches</li>
-                    <li>Edit match details (date, time, venue)</li>
-                    <li>Enter match results manually (home/away scores)</li>
-                    <li>Update match status (scheduled/live/finished)</li>
-                    <li>Trigger scoring recalculation after results</li>
-                    <li>Import fixtures from Live-Score API</li>
-                  </>
-                )}
-                {selectedTab === 'teams' && (
-                  <>
-                    <li>View all 48 teams</li>
-                    <li>Edit team details (name, group, FIFA ranking)</li>
-                    <li>Upload team flags</li>
-                    <li>Sync team data from API</li>
-                  </>
-                )}
-                {selectedTab === 'settings' && (
-                  <>
-                    <li>Configure scoring rules (points per prediction type)</li>
-                    <li>Set tournament dates and deadlines</li>
-                    <li>Configure email notifications</li>
-                    <li>Manage API integration settings</li>
-                    <li>View audit logs</li>
-                  </>
-                )}
-              </Box>
-              <Chip
-                label="Coming Soon"
-                color="primary"
-                size="small"
-                sx={{ mt: 1 }}
-              />
-              <Typography variant="body2" sx={{ mt: 2 }}>
-                Full implementation requires additional backend API endpoints.
-              </Typography>
-            </Alert>
-          </CardContent>
-        </Card>
-      )}
+      {/* Match Management Tab */}
+      {selectedTab === 'matches' && <MatchManagement />}
+
+      {/* Team Management Tab */}
+      {selectedTab === 'teams' && <TeamManagement />}
+
+      {/* Settings Tab */}
+      {selectedTab === 'settings' && <Settings />}
     </Box>
   );
 }

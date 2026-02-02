@@ -18,6 +18,10 @@ import {
   getDashboardStats,
   getApiStatus,
   syncFromApi,
+  getAllTeamsAdmin,
+  updateTeam,
+  createTeam,
+  deleteTeam,
 } from '../controllers/adminController';
 import { authenticate, requireAdmin } from '../middleware/auth';
 
@@ -84,5 +88,18 @@ router.delete('/customers/:id', deleteCustomer);
 
 // POST /api/admin/customers/bulk-import - Bulk import customers
 router.post('/customers/bulk-import', bulkImportCustomers);
+
+// ==================== TEAM MANAGEMENT ====================
+// GET /api/admin/teams - Get all teams (admin view)
+router.get('/teams', getAllTeamsAdmin);
+
+// PUT /api/admin/teams/:id - Update team
+router.put('/teams/:id', updateTeam);
+
+// POST /api/admin/teams - Create new team
+router.post('/teams', createTeam);
+
+// DELETE /api/admin/teams/:id - Delete team
+router.delete('/teams/:id', deleteTeam);
 
 export default router;

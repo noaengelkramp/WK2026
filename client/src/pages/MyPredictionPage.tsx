@@ -44,7 +44,7 @@ export default function MyPredictionPage() {
   // Data states
   const [matches, setMatches] = useState<Match[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
-  const [predictions, setPredictions] = useState<Record<string, { home: number; away: number }>>({});
+  const [predictions, setPredictions] = useState<Record<string, { home: number | undefined; away: number | undefined }>>({});
   const [bonusQuestions, setBonusQuestions] = useState<BonusQuestion[]>([]);
   const [bonusAnswers, setBonusAnswers] = useState<Record<string, string>>({});
   const [champion, setChampion] = useState('');

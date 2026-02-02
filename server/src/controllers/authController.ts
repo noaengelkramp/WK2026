@@ -247,8 +247,8 @@ export const verifyEmail = async (req: Request, res: Response, next: NextFunctio
     // Verify email
     await user.update({
       isEmailVerified: true,
-      emailVerificationToken: null,
-      emailVerificationExpires: null,
+      emailVerificationToken: undefined,
+      emailVerificationExpires: undefined,
     });
 
     // Send welcome email (async, don't wait)
