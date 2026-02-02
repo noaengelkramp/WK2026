@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
+import crypto from 'crypto';
 import { User, UserStatistics, Customer } from '../models';
 import { generateTokens } from '../utils/jwt';
 import { AppError } from '../middleware/errorHandler';
+import emailService from '../services/emailService';
 
 /**
  * Register a new user
@@ -46,6 +48,10 @@ export const register = async (req: Request, res: Response, next: NextFunction):
     // Hash password
     const passwordHash = await User.hashPassword(password);
 
+    // Generate email verification token
+    const emailVerificationToken = crypto.randomBytes(32).toString('hex');
+    const emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
     // Create user
     const user = await User.create({
       email,
@@ -55,6 +61,9 @@ export const register = async (req: Request, res: Response, next: NextFunction):
       customerNumber,
       languagePreference: languagePreference || 'en',
       isAdmin: false,
+      isEmailVerified: false,
+      emailVerificationToken,
+      emailVerificationExpires,
     });
 
     // Create user statistics
@@ -67,7 +76,18 @@ export const register = async (req: Request, res: Response, next: NextFunction):
       bonusPoints: 0,
     });
 
-    // Generate tokens
+    // Send verification email (async, don't wait)
+    emailService.sendVerificationEmail(
+      user.email,
+      user.firstName,
+      emailVerificationToken,
+      user.languagePreference
+    ).catch(err => {
+      console.error('Failed to send verification email:', err);
+      // Don't block registration if email fails
+    });
+
+    // Generate tokens (allow login even without verification)
     const tokens = generateTokens({
       userId: user.id,
       email: user.email,
@@ -75,8 +95,9 @@ export const register = async (req: Request, res: Response, next: NextFunction):
     });
 
     res.status(201).json({
-      message: 'Registration successful',
+      message: 'Registration successful. Please check your email to verify your account.',
       user: user.toJSON(),
+      emailVerificationSent: true,
       ...tokens,
     });
   } catch (error) {
@@ -181,6 +202,112 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
     res.json({
       message: 'Profile updated successfully',
       user: user.toJSON(),
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Verify email with token
+ */
+export const verifyEmail = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      throw new AppError('Verification token is required', 400);
+    }
+
+    // Find user with this verification token
+    const user = await User.findOne({
+      where: {
+        emailVerificationToken: token,
+      },
+    });
+
+    if (!user) {
+      throw new AppError('Invalid or expired verification token', 400);
+    }
+
+    // Check if token expired
+    if (user.emailVerificationExpires && user.emailVerificationExpires < new Date()) {
+      throw new AppError('Verification token has expired. Please request a new one.', 400);
+    }
+
+    // Check if already verified
+    if (user.isEmailVerified) {
+      res.json({
+        message: 'Email already verified',
+        user: user.toJSON(),
+      });
+      return;
+    }
+
+    // Verify email
+    await user.update({
+      isEmailVerified: true,
+      emailVerificationToken: null,
+      emailVerificationExpires: null,
+    });
+
+    // Send welcome email (async, don't wait)
+    emailService.sendWelcomeEmail(
+      user.email,
+      user.firstName,
+      user.languagePreference
+    ).catch(err => {
+      console.error('Failed to send welcome email:', err);
+    });
+
+    res.json({
+      message: 'Email verified successfully!',
+      user: user.toJSON(),
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Resend verification email
+ */
+export const resendVerificationEmail = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    if (!req.user) {
+      throw new AppError('Authentication required', 401);
+    }
+
+    const user = await User.findByPk(req.user.userId);
+
+    if (!user) {
+      throw new AppError('User not found', 404);
+    }
+
+    if (user.isEmailVerified) {
+      throw new AppError('Email already verified', 400);
+    }
+
+    // Generate new verification token
+    const emailVerificationToken = crypto.randomBytes(32).toString('hex');
+    const emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+    await user.update({
+      emailVerificationToken,
+      emailVerificationExpires,
+    });
+
+    // Send verification email
+    await emailService.sendVerificationEmail(
+      user.email,
+      user.firstName,
+      emailVerificationToken,
+      user.languagePreference
+    );
+
+    res.json({
+      message: 'Verification email sent successfully',
+      emailVerificationSent: true,
     });
   } catch (error) {
     next(error);

@@ -10,12 +10,15 @@ interface UserAttributes {
   lastName: string;
   customerNumber: string;
   isAdmin: boolean;
+  isEmailVerified: boolean;
+  emailVerificationToken?: string;
+  emailVerificationExpires?: Date;
   languagePreference: 'en' | 'nl';
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'isAdmin' | 'languagePreference' | 'createdAt' | 'updatedAt'> {}
+interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'isAdmin' | 'isEmailVerified' | 'emailVerificationToken' | 'emailVerificationExpires' | 'languagePreference' | 'createdAt' | 'updatedAt'> {}
 
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
   public id!: string;
@@ -25,6 +28,9 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public lastName!: string;
   public customerNumber!: string;
   public isAdmin!: boolean;
+  public isEmailVerified!: boolean;
+  public emailVerificationToken?: string;
+  public emailVerificationExpires?: Date;
   public languagePreference!: 'en' | 'nl';
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -89,6 +95,18 @@ User.init(
     isAdmin: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
+    },
+    isEmailVerified: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    emailVerificationToken: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    emailVerificationExpires: {
+      type: DataTypes.DATE,
+      allowNull: true,
     },
     languagePreference: {
       type: DataTypes.ENUM('en', 'nl'),

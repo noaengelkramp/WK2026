@@ -10,6 +10,11 @@ export const config = {
   nodeEnv: process.env.NODE_ENV || 'development',
   clientUrl: process.env.CLIENT_URL || 'http://localhost:3000',
 
+  // Client
+  client: {
+    url: process.env.CLIENT_URL || 'http://localhost:5173',
+  },
+
   // Database
   database: {
     host: process.env.DATABASE_HOST || 'localhost',
@@ -54,7 +59,7 @@ export const config = {
   },
 
   // Email (SMTP)
-  email: {
+  smtp: {
     host: process.env.SMTP_HOST || 'smtp.gmail.com',
     port: parseInt(process.env.SMTP_PORT || '587'),
     secure: process.env.SMTP_SECURE === 'true',
