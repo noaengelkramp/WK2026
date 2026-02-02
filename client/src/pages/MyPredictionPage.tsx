@@ -106,12 +106,19 @@ export default function MyPredictionPage() {
 
   // Handle prediction change
   const handlePredictionChange = (matchId: string, team: 'home' | 'away', value: string) => {
-    const numValue = parseInt(value) || 0;
+    // Parse the value - handle empty string and zero correctly
+    const numValue = value === '' ? undefined : parseInt(value, 10);
+    
+    // Only update if it's a valid number (including 0) or undefined
+    if (numValue !== undefined && (isNaN(numValue) || numValue < 0)) {
+      return; // Ignore invalid inputs
+    }
+    
     setPredictions({
       ...predictions,
       [matchId]: {
-        home: team === 'home' ? numValue : predictions[matchId]?.home || 0,
-        away: team === 'away' ? numValue : predictions[matchId]?.away || 0,
+        home: team === 'home' ? (numValue ?? predictions[matchId]?.home ?? 0) : (predictions[matchId]?.home ?? 0),
+        away: team === 'away' ? (numValue ?? predictions[matchId]?.away ?? 0) : (predictions[matchId]?.away ?? 0),
       },
     });
   };
@@ -339,7 +346,7 @@ export default function MyPredictionPage() {
                         <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', justifyContent: 'center' }}>
                           <TextField
                             type="number"
-                            value={predictions[match.id]?.home || ''}
+                            value={predictions[match.id]?.home ?? ''}
                             onChange={(e) => handlePredictionChange(match.id, 'home', e.target.value)}
                             onBlur={() => handleSavePrediction(match.id)}
                             inputProps={{ min: 0, max: 20, style: { textAlign: 'center' } }}
@@ -349,7 +356,7 @@ export default function MyPredictionPage() {
                           <Typography variant="h6">-</Typography>
                           <TextField
                             type="number"
-                            value={predictions[match.id]?.away || ''}
+                            value={predictions[match.id]?.away ?? ''}
                             onChange={(e) => handlePredictionChange(match.id, 'away', e.target.value)}
                             onBlur={() => handleSavePrediction(match.id)}
                             inputProps={{ min: 0, max: 20, style: { textAlign: 'center' } }}
