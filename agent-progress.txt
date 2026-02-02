@@ -5397,3 +5397,173 @@ curl https://kramp-poules.netlify.app/api/health
 
 ---
 
+
+=== Session 22 Extended: Netlify Build Fix - @types/pg Dependency ===
+Date: February 2, 2026 (continued)
+Agent: auto-coder-coding (claude-sonnet-4.5)
+
+## Issue Identified by User
+
+**Report**: TypeScript fails during `npm run build:netlify` on Netlify
+**Error**: TS7016 - Cannot find module 'pg' type declarations
+**Location**: `src/scripts/migrate-email-verification.ts` line 91
+**Exit Code**: Build exits with code 2
+
+## Root Cause Analysis
+
+The migration script (`migrate-email-verification.ts`) imports the `pg` module:
+```typescript
+import pg from 'pg';
+const { Client } = pg;
+```
+
+TypeScript requires type definitions to compile this import. The `@types/pg` package was initially installed in `devDependencies`, but Netlify's build environment requires it in `dependencies`.
+
+**Why This Matters**:
+- Netlify runs `npm install --production` for serverless functions
+- devDependencies are NOT installed in production builds
+- TypeScript compilation happens during the build phase
+- Without @types/pg, TypeScript cannot compile the migration script
+
+## Pattern Recognition
+
+This follows the same issue that occurred with `@types/nodemailer` in commit `3a847c7`:
+- Initial attempt: @types in devDependencies → Build fails
+- Solution: Move to dependencies → Build succeeds
+
+**Project Convention**: ALL @types packages are in dependencies:
+- @types/bcrypt ✅ dependencies
+- @types/cors ✅ dependencies  
+- @types/express ✅ dependencies
+- @types/jsonwebtoken ✅ dependencies
+- @types/morgan ✅ dependencies
+- @types/node ✅ dependencies
+- @types/nodemailer ✅ dependencies (moved in commit 3a847c7)
+- @types/pg ❌ was in devDependencies → ✅ NOW in dependencies
+- @types/validator ✅ dependencies
+
+## Solution Implemented
+
+### Step 1: Verify Local State ✅
+```bash
+cd server && npm list @types/pg
+# Result: @types/pg@8.16.0 in devDependencies
+```
+
+### Step 2: Move to Dependencies ✅
+```bash
+cd server
+npm uninstall --save-dev @types/pg  # Remove from devDependencies
+npm install --save @types/pg        # Add to dependencies
+```
+
+### Step 3: Verify Build ✅
+```bash
+npm run build:netlify
+# Result: ✅ Build successful
+# - Server TypeScript compilation: SUCCESS
+# - Client Vite build: SUCCESS (924.89 kB)
+```
+
+### Step 4: Commit and Deploy ✅
+```bash
+git add server/package.json
+git commit -m "Move @types/pg to dependencies for Netlify build compatibility"
+git push origin main
+```
+
+**Commit**: `cf1ee86`
+
+## Alternative Solution (Not Used)
+
+If we didn't want to install @types/pg, we could create a custom declaration:
+
+**File**: `server/types/pg.d.ts`
+```typescript
+declare module 'pg';
+```
+
+**Update**: `server/tsconfig.json`
+```json
+{
+  "compilerOptions": {
+    "typeRoots": ["./node_modules/@types", "./types"]
+  }
+}
+```
+
+**Why We Chose the Package Approach**:
+1. Provides actual type safety and IntelliSense
+2. Matches project convention
+3. No custom type maintenance required
+4. Better developer experience
+
+## Verification Checklist
+
+- [x] Local build passes: `npm run build:netlify` ✅
+- [x] TypeScript compiles migration script ✅
+- [x] @types/pg in dependencies section ✅
+- [x] Pattern matches other @types packages ✅
+- [x] Git commit pushed to trigger Netlify deploy ✅
+- [ ] Netlify build succeeds (waiting for deployment)
+- [ ] Site updated with new bundle
+
+## Expected Netlify Build Result
+
+**Before Fix** (Predicted):
+```
+Build failed with exit code 2
+Error: TS7016 Cannot find module 'pg'
+```
+
+**After Fix** (Expected):
+```
+✅ Server TypeScript compilation successful
+✅ Client build successful
+✅ Deployment published
+```
+
+## Files Modified
+
+- `server/package.json` - Moved @types/pg from devDependencies to dependencies
+
+## Git Commits
+
+1. **cf1ee86** - Move @types/pg to dependencies for Netlify build compatibility
+
+## Technical Notes
+
+**Why Netlify Needs @types in dependencies**:
+1. Netlify builds serverless functions with `npm install --production`
+2. This flag skips devDependencies
+3. TypeScript compilation happens DURING build (not just in dev)
+4. Therefore, type definitions needed for compilation must be in dependencies
+
+**Project Pattern Established**:
+- All @types/* packages → dependencies (not devDependencies)
+- Runtime packages → dependencies
+- Development tools only → devDependencies (e.g., nodemon)
+
+**Lesson Learned**:
+When adding new npm packages that require TypeScript types, ALWAYS add @types packages to dependencies, not devDependencies, to ensure Netlify builds succeed.
+
+## Prevention for Future
+
+**Checklist when adding new dependencies**:
+1. Install package: `npm install <package>`
+2. Check if @types needed: `npm search @types/<package>`
+3. Install types in dependencies: `npm install --save @types/<package>`
+4. Verify local build: `npm run build:netlify`
+5. Commit both package.json changes
+6. Monitor Netlify build logs after push
+
+## Status Update
+
+**Database Migration**: ✅ Completed successfully (ran earlier in session)
+**Login Functionality**: ✅ Working correctly
+**Local Build**: ✅ Passing
+**Netlify Build**: ⏳ Waiting for deployment to complete
+**Production Site**: ⏳ Will update after successful build
+
+---
+
