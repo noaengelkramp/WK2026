@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
-import { Match, User, Customer } from '../models';
+import { Match, User, Customer, Team, Prediction } from '../models';
 import { processMatchScoring } from '../services/scoringService';
+import footballApiService from '../services/footballApiService';
 import { Op } from 'sequelize';
 
 /**
@@ -851,6 +852,244 @@ export async function bulkImportCustomers(req: Request, res: Response) {
     res.status(500).json({
       success: false,
       error: 'Failed to bulk import customers',
+    });
+  }
+}
+
+// ==================== DASHBOARD ====================
+
+/**
+ * Get dashboard statistics
+ * GET /api/admin/dashboard/stats
+ */
+export async function getDashboardStats(_req: Request, res: Response) {
+  try {
+    // Get counts
+    const [
+      totalUsers,
+      totalCustomers,
+      totalMatches,
+      totalTeams,
+      totalPredictions,
+      finishedMatches,
+      activeCustomers,
+    ] = await Promise.all([
+      User.count(),
+      Customer.count(),
+      Match.count(),
+      Team.count(),
+      Prediction.count(),
+      Match.count({ where: { status: 'finished' } }),
+      Customer.count({ where: { isActive: true } }),
+    ]);
+
+    // Get recent registrations (last 7 days)
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    const recentUsers = await User.count({
+      where: { createdAt: { [Op.gte]: weekAgo } },
+    });
+
+    // Get predictions percentage
+    const usersWithPredictions = await Prediction.count({
+      distinct: true,
+      col: 'userId',
+    });
+    const predictionParticipation = totalUsers > 0 
+      ? Math.round((usersWithPredictions / totalUsers) * 100) 
+      : 0;
+
+    // Calculate average predictions per user
+    const avgPredictionsPerUser = totalUsers > 0 
+      ? Math.round(totalPredictions / totalUsers) 
+      : 0;
+
+    res.status(200).json({
+      success: true,
+      stats: {
+        users: {
+          total: totalUsers,
+          recentSignups: recentUsers,
+          withPredictions: usersWithPredictions,
+          participationRate: predictionParticipation,
+        },
+        customers: {
+          total: totalCustomers,
+          active: activeCustomers,
+        },
+        matches: {
+          total: totalMatches,
+          finished: finishedMatches,
+          upcoming: totalMatches - finishedMatches,
+        },
+        teams: {
+          total: totalTeams,
+        },
+        predictions: {
+          total: totalPredictions,
+          averagePerUser: avgPredictionsPerUser,
+        },
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching dashboard stats:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch dashboard statistics',
+    });
+  }
+}
+
+/**
+ * Get API-Football status and usage
+ * GET /api/admin/dashboard/api-status
+ */
+export async function getApiStatus(_req: Request, res: Response) {
+  try {
+    // Check if API key is configured
+    if (!footballApiService.isConfigured()) {
+      res.status(200).json({
+        success: true,
+        apiStatus: {
+          configured: false,
+          message: 'API key not configured',
+        },
+      });
+      return;
+    }
+
+    // Get API status
+    const statusResponse = await footballApiService['client'].get('/status');
+    const apiData = statusResponse.data.response;
+
+    // Get request count from service
+    const requestCount = footballApiService.getRequestCount();
+
+    res.status(200).json({
+      success: true,
+      apiStatus: {
+        configured: true,
+        account: {
+          name: `${apiData.account.firstname} ${apiData.account.lastname}`,
+          email: apiData.account.email,
+        },
+        subscription: {
+          plan: apiData.subscription.plan,
+          active: apiData.subscription.active,
+          expires: apiData.subscription.end,
+        },
+        requests: {
+          today: apiData.requests.current,
+          limit: apiData.requests.limit_day,
+          remaining: apiData.requests.limit_day - apiData.requests.current,
+          sessionCount: requestCount,
+        },
+        status: apiData.requests.current < 70 ? 'healthy' : 
+                apiData.requests.current < 90 ? 'warning' : 'critical',
+      },
+    });
+  } catch (error: any) {
+    console.error('Error fetching API status:', error);
+    
+    // Check if it's an API error
+    if (error.response?.data) {
+      res.status(200).json({
+        success: false,
+        apiStatus: {
+          configured: true,
+          error: error.response.data.errors || 'API request failed',
+        },
+      });
+      return;
+    }
+
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch API status',
+    });
+  }
+}
+
+/**
+ * Sync data from API-Football (teams, fixtures)
+ * POST /api/admin/dashboard/sync
+ * Body: { syncType: 'teams' | 'fixtures' | 'standings' | 'all', season?: '2022' | '2026' }
+ */
+export async function syncFromApi(req: Request, res: Response) {
+  try {
+    const { syncType = 'all', season = '2022' } = req.body;
+
+    if (!footballApiService.isConfigured()) {
+      res.status(400).json({
+        success: false,
+        error: 'API-Football is not configured',
+      });
+      return;
+    }
+
+    const results: any = {
+      syncType,
+      season,
+      success: false,
+      data: {},
+      errors: [],
+    };
+
+    // Sync teams
+    if (syncType === 'teams' || syncType === 'all') {
+      try {
+        const teams = await footballApiService.getTeams(season);
+        results.data.teams = {
+          count: teams.length,
+          synced: new Date().toISOString(),
+        };
+      } catch (error) {
+        results.errors.push(`Teams sync failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    }
+
+    // Sync fixtures
+    if (syncType === 'fixtures' || syncType === 'all') {
+      try {
+        const fixtures = await footballApiService.getFixtures(season);
+        results.data.fixtures = {
+          count: fixtures.length,
+          synced: new Date().toISOString(),
+        };
+      } catch (error) {
+        results.errors.push(`Fixtures sync failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    }
+
+    // Sync standings
+    if (syncType === 'standings' || syncType === 'all') {
+      try {
+        const standings = await footballApiService.getStandings(season);
+        results.data.standings = {
+          count: standings.length,
+          synced: new Date().toISOString(),
+        };
+      } catch (error) {
+        results.errors.push(`Standings sync failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    }
+
+    results.success = results.errors.length === 0;
+
+    console.log(`✅ API sync completed: ${syncType} (${season})`);
+
+    res.status(200).json({
+      success: true,
+      message: results.success 
+        ? 'Data synced successfully from API-Football' 
+        : 'Sync completed with errors',
+      results,
+    });
+  } catch (error) {
+    console.error('Error syncing from API:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to sync data from API',
     });
   }
 }

@@ -15,6 +15,9 @@ import {
   updateCustomer,
   deleteCustomer,
   bulkImportCustomers,
+  getDashboardStats,
+  getApiStatus,
+  syncFromApi,
 } from '../controllers/adminController';
 import { authenticate, requireAdmin } from '../middleware/auth';
 
@@ -23,6 +26,16 @@ const router = express.Router();
 // All admin routes require authentication and admin privileges
 router.use(authenticate);
 router.use(requireAdmin);
+
+// ==================== DASHBOARD ====================
+// GET /api/admin/dashboard/stats - Get dashboard statistics
+router.get('/dashboard/stats', getDashboardStats);
+
+// GET /api/admin/dashboard/api-status - Get API-Football status
+router.get('/dashboard/api-status', getApiStatus);
+
+// POST /api/admin/dashboard/sync - Sync data from API-Football
+router.post('/dashboard/sync', syncFromApi);
 
 // ==================== MATCH MANAGEMENT ====================
 // POST /api/admin/matches/:id/result - Update match result

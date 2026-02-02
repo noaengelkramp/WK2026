@@ -216,3 +216,31 @@ export const adminCustomerService = {
     return response.data.results;
   },
 };
+
+// ==================== ADMIN DASHBOARD ====================
+
+export const adminService = {
+  /**
+   * Get dashboard statistics
+   */
+  async getDashboardStats() {
+    const response = await api.get('/admin/dashboard/stats');
+    return response.data;
+  },
+
+  /**
+   * Get API-Football status and request usage
+   */
+  async getApiStatus() {
+    const response = await api.get('/admin/dashboard/api-status');
+    return response.data;
+  },
+
+  /**
+   * Sync data from API-Football
+   */
+  async syncFromApi(data: { syncType: string; season: string }) {
+    const response = await api.post('/admin/dashboard/sync', data);
+    return response.data;
+  },
+};

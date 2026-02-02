@@ -2,15 +2,12 @@ import { useState } from 'react';
 import {
   Box,
   Card,
-  CardContent,
   Typography,
   Tabs,
   Tab,
-  Grid,
   Alert,
-  Button,
+  CardContent,
   Chip,
-  Divider,
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
@@ -20,10 +17,10 @@ import {
   Flag as FlagIcon,
   Settings as SettingsIcon,
   Warning as WarningIcon,
-  CheckCircle as CheckIcon,
 } from '@mui/icons-material';
 import UserManagement from '../components/admin/UserManagement';
 import CustomerManagement from '../components/admin/CustomerManagement';
+import ApiDashboard from '../components/admin/ApiDashboard';
 
 type TabValue = 'dashboard' | 'users' | 'customers' | 'matches' | 'teams' | 'settings';
 
@@ -65,206 +62,7 @@ export default function AdminPanel() {
       </Card>
 
       {/* Dashboard Tab */}
-      {selectedTab === 'dashboard' && (
-        <Box>
-          <Grid container spacing={3} sx={{ mb: 4 }}>
-            {/* Quick Stats */}
-            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-              <Card sx={{ background: 'linear-gradient(135deg, #9B1915 0%, #C42420 100%)', color: 'white' }}>
-                <CardContent>
-                  <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'white' }}>
-                    0
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: 'white' }}>
-                    Total Users
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-
-            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-              <Card sx={{ background: 'linear-gradient(135deg, #388e3c 0%, #4caf50 100%)', color: 'white' }}>
-                <CardContent>
-                  <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'white' }}>
-                    104
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: 'white' }}>
-                    Total Matches
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-
-            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-              <Card sx={{ background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)', color: 'white' }}>
-                <CardContent>
-                  <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'white' }}>
-                    48
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: 'white' }}>
-                    Total Teams
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-
-            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-              <Card sx={{ background: 'linear-gradient(135deg, #666666 0%, #888888 100%)', color: 'white' }}>
-                <CardContent>
-                  <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'white' }}>
-                    12
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: 'white' }}>
-                    Total Groups
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
-
-          {/* System Status */}
-          <Card sx={{ mb: 3 }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                System Status
-              </Typography>
-              <Divider sx={{ my: 2 }} />
-              <Grid container spacing={2}>
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                    <CheckIcon color="success" />
-                    <Box>
-                      <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                        Database Connection
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Connected and operational
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Grid>
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                    <CheckIcon color="success" />
-                    <Box>
-                      <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                        API Integration
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Live-Score API connected
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Grid>
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                    <CheckIcon color="success" />
-                    <Box>
-                      <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                        Email Service
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        SMTP configured and ready
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Grid>
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                    <CheckIcon color="success" />
-                    <Box>
-                      <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                        Scoring Engine
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Ready to calculate points
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-
-          {/* Quick Actions */}
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Quick Actions
-              </Typography>
-              <Divider sx={{ my: 2 }} />
-              <Grid container spacing={2}>
-                <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                  <Button
-                    fullWidth
-                    variant="outlined"
-                    color="primary"
-                    startIcon={<PeopleIcon />}
-                    sx={{ py: 2 }}
-                  >
-                    View All Users
-                  </Button>
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                  <Button
-                    fullWidth
-                    variant="outlined"
-                    color="primary"
-                    startIcon={<SoccerIcon />}
-                    sx={{ py: 2 }}
-                  >
-                    Update Match Results
-                  </Button>
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                  <Button
-                    fullWidth
-                    variant="outlined"
-                    color="primary"
-                    startIcon={<SettingsIcon />}
-                    sx={{ py: 2 }}
-                  >
-                    Trigger Scoring
-                  </Button>
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                  <Button
-                    fullWidth
-                    variant="outlined"
-                    color="primary"
-                    startIcon={<FlagIcon />}
-                    sx={{ py: 2 }}
-                  >
-                    Sync Teams from API
-                  </Button>
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                  <Button
-                    fullWidth
-                    variant="outlined"
-                    color="primary"
-                    startIcon={<BadgeIcon />}
-                    sx={{ py: 2 }}
-                  >
-                    Manage Customers
-                  </Button>
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                  <Button
-                    fullWidth
-                    variant="outlined"
-                    color="primary"
-                    startIcon={<SettingsIcon />}
-                    sx={{ py: 2 }}
-                  >
-                    Configure Rules
-                  </Button>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-        </Box>
-      )}
+      {selectedTab === 'dashboard' && <ApiDashboard />}
 
       {/* User Management Tab */}
       {selectedTab === 'users' && <UserManagement />}
