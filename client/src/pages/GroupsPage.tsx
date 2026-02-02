@@ -44,7 +44,9 @@ export default function GroupsPage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedGroup, setSelectedGroup] = useState<GroupLetter>('A');
 
-  const groups: GroupLetter[] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
+  // For 2022 World Cup data: 8 groups (A-H)
+  // For 2026 World Cup: will have 12 groups (A-L)
+  const groups: GroupLetter[] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 
   useEffect(() => {
     loadData();
@@ -191,11 +193,11 @@ export default function GroupsPage() {
   return (
     <Box>
       <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-        🏆 World Cup Groups
+        🏆 2022 World Cup Groups
       </Typography>
 
       <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-        View standings and fixtures for all 12 groups
+        Final standings and results from Qatar 2022
       </Typography>
 
       {/* Qualification Info */}
