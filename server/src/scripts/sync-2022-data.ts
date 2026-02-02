@@ -114,6 +114,11 @@ async function sync2022Data() {
       const roundName = apiFixture.league.round;
       let groupLetter = null;
       
+      // Debug: Log first 5 round names to see the format
+      if (matchNumber <= 5) {
+        console.log(`  DEBUG: Round name = "${roundName}"`);
+      }
+      
       for (const [key, value] of Object.entries(groupMapping)) {
         if (roundName.includes(key)) {
           groupLetter = value;
