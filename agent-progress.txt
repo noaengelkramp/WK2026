@@ -4699,3 +4699,172 @@ Technical Notes:
 - Can monitor at: https://app.netlify.com/sites/kramp-poules/deploys
 - Live site: https://kramp-poules.netlify.app
 
+
+=== Session 20: Database Persistence Crisis - Root Cause Found ===
+Date: Thu Jan 29 2026
+Agent: auto-coder-coding
+
+Previous Status: 14/255 tests passing (5.5%)
+
+**CRITICAL DISCOVERY:**
+
+The database tables were being DROPPED on every Netlify deployment! After extensive investigation, found the root cause:
+
+**Root Cause:**
+- `NODE_ENV` is NOT set to 'production' in Netlify environment variables
+- Our code checks `if (config.nodeEnv === 'development')` to decide whether to sync
+- Without NODE_ENV set, it defaults to something other than 'production'
+- This caused `syncDatabase(true)` to run with **force=true**
+- **force=true DROPS ALL TABLES** before recreating them
+- Result: Every deployment wiped the entire database
+
+**The Fix (Commit 7bbe6d5):**
+Changed the condition to check `process.env.NETLIFY === 'true'` FIRST:
+```javascript
+const isNetlify = process.env.NETLIFY === 'true';
+const isProduction = config.nodeEnv === 'production';
+
+if (isNetlify || isProduction) {
+  // Skip sync - use migrations
+} else {
+  // Only sync in local development
+  await syncDatabase(true);
+}
+```
+
+This ensures sync NEVER runs in Netlify, regardless of NODE_ENV value.
+
+**CRITICAL ACTION REQUIRED:**
+User MUST add `NODE_ENV=production` to Netlify environment variables:
+1. Go to https://app.netlify.com/sites/kramp-poules/configuration/env
+2. Add: `NODE_ENV=production`
+3. Redeploy
+
+Without this, the database will continue to be wiped on deployments!
+
+Issues Fixed This Session:
+
+1. **Seed Script Database Connection** ✅
+   - Added testConnection() call before seeding
+   - Removed syncDatabase() to avoid enum conflicts
+   - Commit: 8ede235
+
+2. **Predictions Controller Order Clause** ✅
+   - Fixed Sequelize order syntax for nested includes
+   - Changed from `[['match', 'matchDate', 'ASC']]` to `[[{ model: Match, as: 'match' }, 'matchDate', 'ASC']]`
+   - Commit: 58611b6
+
+3. **Production Database Sync (First Attempt)** ⚠️
+   - Disabled syncDatabase in production based on NODE_ENV
+   - Didn't work because NODE_ENV wasn't set in Netlify
+   - Commit: 8e1fd75
+
+4. **Production Database Sync (Final Fix)** ✅
+   - Use NETLIFY env var as primary check
+   - Added logging to show environment detection
+   - Commit: 7bbe6d5
+
+Current Database State:
+- ✅ All 12 tables created via migration
+- ✅ 50 customers seeded
+- ✅ 48 teams seeded (all World Cup 2026 teams)
+- ✅ 12 matches seeded (Groups A & B only)
+- ✅ 7 scoring rules seeded
+- ✅ 5 bonus questions seeded
+- ✅ 3 test users seeded
+- ✅ Predictions table empty (expected)
+
+Test Credentials:
+- Admin: admin@wk2026.com / password123
+- User 1: john.doe@wk2026.com / password123
+- User 2: jane.smith@wk2026.com / password123
+
+Git Commits:
+1. 8ede235 - Fix seed script: add database connection initialization
+2. 58611b6 - Fix predictions controller: correct order clause for nested include
+3. 8e1fd75 - CRITICAL FIX: Disable database sync in production
+4. 7bbe6d5 - CRITICAL FIX: Use NETLIFY env var to prevent database sync
+
+Netlify Environment Variables (VERIFIED):
+- ✅ DATABASE_URL: postgresql://neondb_owner:npg_QUjzs52YKeaT@ep-late-night-a9956b4q-pooler.gwc.azure.neon.tech/neondb?sslmode=require
+- ❌ NODE_ENV: NOT SET (needs to be added as 'production')
+- ✅ NETLIFY: 'true' (automatically set by Netlify)
+
+**NEXT SESSION MUST DO FIRST:**
+
+1. **Verify NODE_ENV Added** (CRITICAL)
+   - Check if user added NODE_ENV=production to Netlify
+   - If not, remind them to add it immediately
+   - Without this, database will be wiped on next deployment
+
+2. **Wait for Deployment to Complete**
+   - Commit 7bbe6d5 needs to deploy
+   - Wait ~5 minutes after push
+   - Don't test API until deployment completes
+
+3. **Verify Database Persists**
+   - Check: curl https://kramp-poules.netlify.app/api/teams
+   - Should return 48 teams
+   - If empty, check Neon dashboard to see if tables still exist
+   - If tables gone, NODE_ENV wasn't added
+
+4. **Test Full API Flow**
+   - Login: POST /api/auth/login
+   - Get predictions: GET /api/predictions/my (should return empty arrays)
+   - Get matches: GET /api/matches (should return 12 matches)
+   - Get teams: GET /api/teams (should return 48 teams)
+
+5. **Browser Test My Prediction Page**
+   - Navigate to https://kramp-poules.netlify.app/my-prediction
+   - Login as admin@wk2026.com
+   - Verify page loads without errors
+   - Verify 12 matches display
+   - Try making a prediction
+   - Mark passing features in feature_list.json
+
+Next Priority Tasks:
+
+1. **Add Remaining Matches** (HIGH - Currently 12/104)
+   - Extend seed script with Groups C-L (36 more matches)
+   - Total should be 48 group stage matches
+   - File: server/src/utils/seed.ts lines 120-139
+
+2. **Browser Testing** (HIGH)
+   - Test full prediction flow end-to-end
+   - Verify predictions save and persist
+   - Test bonus questions
+   - Target: 25-30 tests passing
+
+3. **Implement Missing Features** (MEDIUM)
+   - Standings pages
+   - Leaderboards
+   - Admin panel features
+
+Current Status: 14/255 tests passing (database seeded, waiting for deployment)
+
+Key Learnings:
+
+**Sequelize Sync Behavior:**
+- `sync({ force: false })` - Creates tables if missing, preserves data
+- `sync({ force: true })` - **DROPS ALL TABLES** then recreates (DANGEROUS!)
+- In production, NEVER call sync - use migrations only
+
+**Netlify Environment:**
+- `process.env.NETLIFY === 'true'` is automatically set
+- `NODE_ENV` must be manually added to environment variables
+- Always check NETLIFY env var first for serverless detection
+
+**Database Seeding Process:**
+1. Run migration: `cd server && npm run migrate --force`
+2. Run seed: `cd server && npm run seed`
+3. Verify in Neon dashboard
+4. Test via API endpoints
+
+**Neon Database Limits (Free Tier):**
+- ✅ NO row limit per table (unlimited rows)
+- ✅ 500 MB total storage (plenty for our use case)
+- ✅ Unlimited tables
+- ⚠️ Compute hours limit (auto-suspend helps)
+
+Session ended at user's request. Database is seeded and ready, but deployment with final fix (7bbe6d5) needs to complete and NODE_ENV needs to be added to Netlify.
+

@@ -50,7 +50,8 @@ Team.init(
       type: DataTypes.STRING(1),
       allowNull: false,
       validate: {
-        is: /^[A-L]$/i,
+        // Allow empty string during import, then A-L after assignment
+        is: /^[A-L]?$/i,
       },
     },
     fifaRank: {
