@@ -220,9 +220,11 @@ export const getMyStatistics = async (req: Request, res: Response) => {
       where: { userId, isCorrectWinner: true },
     });
 
-    // Calculate completion percentage (out of 104 matches)
-    const totalMatches = 104; // World Cup 2026 has 104 matches
-    const completionPercentage = Math.round((totalPredictions / totalMatches) * 100);
+    // Calculate completion percentage based on actual match count
+    const totalMatchesInDB = await Match.count();
+    const completionPercentage = totalMatchesInDB > 0 
+      ? Math.round((totalPredictions / totalMatchesInDB) * 100)
+      : 0;
 
     res.json({
       totalPredictions,
@@ -230,7 +232,7 @@ export const getMyStatistics = async (req: Request, res: Response) => {
       exactScores,
       correctWinners,
       completionPercentage,
-      remainingMatches: totalMatches - totalPredictions,
+      remainingMatches: totalMatchesInDB - totalPredictions,
     });
   } catch (error) {
     console.error('Error fetching statistics:', error);
