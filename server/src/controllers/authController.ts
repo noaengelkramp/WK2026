@@ -146,6 +146,7 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
       ...tokens,
     });
   } catch (error) {
+    console.error('❌ Login error:', error);
     next(error);
   }
 };

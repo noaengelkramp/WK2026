@@ -42,15 +42,71 @@ if (config.nodeEnv === 'development') {
 }
 
 // Health check
-app.get('/health', (_req, res) => {
-  res.json({ 
-    status: 'ok', 
-    timestamp: new Date().toISOString(),
-    redis: isRedisAvailable() ? 'connected' : 'disconnected'
-  });
+app.get('/health', async (_req, res) => {
+  try {
+    const health: any = { 
+      status: 'ok', 
+      timestamp: new Date().toISOString(),
+      environment: config.nodeEnv,
+      netlify: process.env.NETLIFY === 'true',
+      redis: isRedisAvailable() ? 'connected' : 'disconnected',
+      database: 'unknown'
+    };
+
+    // Test database connection
+    try {
+      await testConnection();
+      health.database = 'connected';
+    } catch (error: any) {
+      health.database = 'disconnected';
+      health.status = 'degraded';
+      health.databaseError = error.message;
+      console.error('Health check - database error:', error);
+    }
+
+    const statusCode = health.status === 'ok' ? 200 : 503;
+    res.status(statusCode).json(health);
+  } catch (error) {
+    console.error('Health check failed:', error);
+    res.status(503).json({ 
+      status: 'error', 
+      timestamp: new Date().toISOString(),
+      message: 'Health check failed'
+    });
+  }
 });
 
 // API Routes
+app.use('/api/health', async (_req, res) => {
+  try {
+    const health: any = { 
+      status: 'ok', 
+      timestamp: new Date().toISOString(),
+      environment: config.nodeEnv,
+      netlify: process.env.NETLIFY === 'true',
+      redis: isRedisAvailable() ? 'connected' : 'disconnected',
+      database: 'unknown'
+    };
+
+    // Test database connection
+    try {
+      await testConnection();
+      health.database = 'connected';
+    } catch (error: any) {
+      health.database = 'disconnected';
+      health.status = 'degraded';
+      health.databaseError = error.message;
+    }
+
+    const statusCode = health.status === 'ok' ? 200 : 503;
+    res.status(statusCode).json(health);
+  } catch (error) {
+    res.status(503).json({ 
+      status: 'error', 
+      timestamp: new Date().toISOString()
+    });
+  }
+});
 app.use('/api/auth', authRoutes);
 app.use('/api/teams', teamRoutes);
 app.use('/api/matches', matchRoutes);
