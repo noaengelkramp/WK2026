@@ -171,7 +171,8 @@ export async function populateMatchesFromApi(): Promise<void> {
     }
     
     // Clear existing matches
-    console.log('🗑️  Clearing existing matches...');
+    const existingMatchCount = await Match.count();
+    console.log(`🗑️  Clearing ${existingMatchCount} existing matches...`);
     await Match.destroy({ where: {} });
     console.log('✅ Cleared existing matches\n');
     

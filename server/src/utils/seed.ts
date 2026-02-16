@@ -23,26 +23,18 @@ export async function seedDatabase() {
     // await syncDatabase(false);
 
     // Clear existing data (in correct order to respect foreign keys)
+    // Note: Customer table is NOT cleared to preserve production customers
     await UserStatistics.destroy({ where: {} });
     await User.destroy({ where: {} });
     await Match.destroy({ where: {} });
     await Team.destroy({ where: {} });
-    await Customer.destroy({ where: {} });
     await ScoringRule.destroy({ where: {} });
     await BonusQuestion.destroy({ where: {} });
 
-    // 1. Seed Customers (50 test customers)
-    console.log('🏢 Seeding customers...');
-    const customers = [];
-    for (let i = 1; i <= 50; i++) {
-      customers.push({
-        customerNumber: `C1234_${String(i).padStart(7, '0')}`,
-        companyName: `Test Company ${i}`,
-        isActive: true,
-      });
-    }
-    const createdCustomers = await Customer.bulkCreate(customers);
-    console.log(`✅ Created ${createdCustomers.length} customers`);
+    // 1. Customers (not seeded - must be imported from production data)
+    console.log('🏢 Checking customers...');
+    const existingCustomers = await Customer.findAll();
+    console.log(`✅ Found ${existingCustomers.length} existing customers`);
 
     // 2. Seed Teams (48 World Cup 2026 teams)
     console.log('⚽ Seeding teams...');
@@ -121,29 +113,9 @@ export async function seedDatabase() {
     ]);
     console.log(`✅ Created ${teams.length} teams`);
 
-    // 3. Seed Matches (Sample - 48 group stage matches)
-    console.log('📅 Seeding matches...');
-    const matches = await Match.bulkCreate([
-      // Group A matches
-      { matchNumber: 1, stage: 'group', homeTeamId: teams[0].id, awayTeamId: teams[1].id, venue: 'Estadio Azteca', city: 'Mexico City', matchDate: new Date('2026-06-11T19:00:00Z'), status: 'scheduled', groupLetter: 'A' },
-      { matchNumber: 2, stage: 'group', homeTeamId: teams[2].id, awayTeamId: teams[3].id, venue: 'SoFi Stadium', city: 'Los Angeles', matchDate: new Date('2026-06-11T22:00:00Z'), status: 'scheduled', groupLetter: 'A' },
-      { matchNumber: 17, stage: 'group', homeTeamId: teams[0].id, awayTeamId: teams[2].id, venue: 'AT&T Stadium', city: 'Dallas', matchDate: new Date('2026-06-16T19:00:00Z'), status: 'scheduled', groupLetter: 'A' },
-      { matchNumber: 18, stage: 'group', homeTeamId: teams[1].id, awayTeamId: teams[3].id, venue: 'BMO Field', city: 'Toronto', matchDate: new Date('2026-06-16T22:00:00Z'), status: 'scheduled', groupLetter: 'A' },
-      { matchNumber: 33, stage: 'group', homeTeamId: teams[0].id, awayTeamId: teams[3].id, venue: 'Estadio Azteca', city: 'Mexico City', matchDate: new Date('2026-06-21T20:00:00Z'), status: 'scheduled', groupLetter: 'A' },
-      { matchNumber: 34, stage: 'group', homeTeamId: teams[1].id, awayTeamId: teams[2].id, venue: 'BC Place', city: 'Vancouver', matchDate: new Date('2026-06-21T20:00:00Z'), status: 'scheduled', groupLetter: 'A' },
-      
-      // Group B matches
-      { matchNumber: 3, stage: 'group', homeTeamId: teams[4].id, awayTeamId: teams[5].id, venue: 'Rose Bowl', city: 'Los Angeles', matchDate: new Date('2026-06-12T18:00:00Z'), status: 'scheduled', groupLetter: 'B' },
-      { matchNumber: 4, stage: 'group', homeTeamId: teams[6].id, awayTeamId: teams[7].id, venue: 'Arrowhead Stadium', city: 'Kansas City', matchDate: new Date('2026-06-12T21:00:00Z'), status: 'scheduled', groupLetter: 'B' },
-      { matchNumber: 19, stage: 'group', homeTeamId: teams[4].id, awayTeamId: teams[6].id, venue: 'MetLife Stadium', city: 'New York', matchDate: new Date('2026-06-17T18:00:00Z'), status: 'scheduled', groupLetter: 'B' },
-      { matchNumber: 20, stage: 'group', homeTeamId: teams[5].id, awayTeamId: teams[7].id, venue: 'Gillette Stadium', city: 'Boston', matchDate: new Date('2026-06-17T21:00:00Z'), status: 'scheduled', groupLetter: 'B' },
-      { matchNumber: 35, stage: 'group', homeTeamId: teams[4].id, awayTeamId: teams[7].id, venue: 'Lincoln Financial Field', city: 'Philadelphia', matchDate: new Date('2026-06-22T20:00:00Z'), status: 'scheduled', groupLetter: 'B' },
-      { matchNumber: 36, stage: 'group', homeTeamId: teams[5].id, awayTeamId: teams[6].id, venue: 'Mercedes-Benz Stadium', city: 'Atlanta', matchDate: new Date('2026-06-22T20:00:00Z'), status: 'scheduled', groupLetter: 'B' },
-      
-      // Add more matches for other groups...
-      // (Abbreviated for seed script - in production, all 104 matches would be here)
-    ]);
-    console.log(`✅ Created ${matches.length} matches`);
+    // 3. Matches (not seeded - will be populated from Football API via setup endpoint)
+    console.log('📅 Matches will be populated from Football API...');
+    console.log('   Use POST /api/setup?matchesOnly=true to populate matches');
 
     // 4. Seed Scoring Rules
     console.log('📊 Seeding scoring rules...');
@@ -253,12 +225,12 @@ export async function seedDatabase() {
     console.log('  User 1: john.doe@wk2026.com / password123');
     console.log('  User 2: jane.smith@wk2026.com / password123');
     console.log('\n📊 Summary:');
-    console.log(`  - ${createdCustomers.length} customers`);
+    console.log(`  - ${existingCustomers.length} customers (preserved)`);
     console.log(`  - ${teams.length} teams`);
-    console.log(`  - ${matches.length} matches`);
     console.log(`  - ${scoringRules.length} scoring rules`);
     console.log(`  - ${bonusQuestions.length} bonus questions`);
     console.log(`  - ${users.length} test users`);
+    console.log('\n⚠️  Next step: Run POST /api/setup?matchesOnly=true to populate matches from Football API');
   } catch (error) {
     console.error('❌ Error seeding database:', error);
     throw error;
