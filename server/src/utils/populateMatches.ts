@@ -141,10 +141,25 @@ function getRandomVenue(): { name: string; city: string } {
 
 /**
  * Main function to populate matches from Football API
+ * @param asOfDate Optional date to populate matches as they were on that date (format: YYYY-MM-DD)
  */
-export async function populateMatchesFromApi(): Promise<void> {
+export async function populateMatchesFromApi(asOfDate?: string): Promise<void> {
   try {
     console.log('🏆 Populating matches from Football API...\n');
+    
+    // Parse cutoff date if provided
+    const cutoffDate = asOfDate ? new Date(asOfDate + 'T23:59:59Z') : null;
+    
+    // Tournament milestone dates for TBD team logic (2022 World Cup)
+    const GROUP_STAGE_END = new Date('2022-12-02T23:59:59Z');
+    const ROUND16_END = new Date('2022-12-06T23:59:59Z');
+    const QUARTER_END = new Date('2022-12-10T23:59:59Z');
+    const SEMI_END = new Date('2022-12-14T23:59:59Z');
+    
+    if (cutoffDate) {
+      console.log(`📅 Populating as of date: ${asOfDate}`);
+      console.log(`   Matches after this date will be 'scheduled' with potential TBD teams\n`);
+    }
     
     // Check if API is configured
     if (!config.footballApi.key || config.footballApi.key === 'your-api-key-here') {
@@ -185,6 +200,9 @@ export async function populateMatchesFromApi(): Promise<void> {
     let matchNumber = 1;
     let created = 0;
     let skipped = 0;
+    let finishedCount = 0;
+    let scheduledCount = 0;
+    let tbdTeamsCount = 0;
     
     for (const fixture of fixtures) {
       try {
@@ -202,35 +220,88 @@ export async function populateMatchesFromApi(): Promise<void> {
         const stage = mapRoundToStage(fixture.league.round) as 'group' | 'round32' | 'round16' | 'quarter' | 'semi' | 'final' | 'third_place';
         const groupLetter = extractGroupLetter(fixture.league.round);
         
+        // Get the original 2022 match date
+        const matchDate2022 = new Date(fixture.fixture.date);
+        
         // Adjust date to 2026
-        const matchDate = adjustDateTo2026(fixture.fixture.date);
+        const matchDate2026 = adjustDateTo2026(fixture.fixture.date);
         
         // Get venue
         const venue = getRandomVenue();
         
-        // Determine status
+        // Determine status and scores based on cutoff date
         let status: 'scheduled' | 'live' | 'finished' = 'scheduled';
-        if (fixture.goals.home !== null && fixture.goals.away !== null) {
-          status = 'finished';
+        let homeScore: number | undefined;
+        let awayScore: number | undefined;
+        let shouldSetTeamsTBD = false;
+        let finalHomeTeamId: string | undefined = homeTeam.id;
+        let finalAwayTeamId: string | undefined = awayTeam.id;
+        
+        if (cutoffDate && matchDate2022 > cutoffDate) {
+          // Match hasn't happened yet as of the cutoff date
+          status = 'scheduled';
+          homeScore = undefined;
+          awayScore = undefined;
+          
+          // Determine if teams should be TBD based on stage and cutoff date
+          if (stage !== 'group') {
+            if (stage === 'round16' && cutoffDate < GROUP_STAGE_END) {
+              shouldSetTeamsTBD = true;
+            } else if (stage === 'quarter' && cutoffDate < ROUND16_END) {
+              shouldSetTeamsTBD = true;
+            } else if (stage === 'semi' && cutoffDate < QUARTER_END) {
+              shouldSetTeamsTBD = true;
+            } else if ((stage === 'final' || stage === 'third_place') && cutoffDate < SEMI_END) {
+              shouldSetTeamsTBD = true;
+            }
+          }
+          
+          if (shouldSetTeamsTBD) {
+            finalHomeTeamId = undefined;
+            finalAwayTeamId = undefined;
+            tbdTeamsCount++;
+          }
+          
+          scheduledCount++;
+        } else {
+          // Match has already happened (or no cutoff date = use all data)
+          if (fixture.goals.home !== null && fixture.goals.away !== null) {
+            status = 'finished';
+            homeScore = fixture.goals.home;
+            awayScore = fixture.goals.away;
+            finishedCount++;
+          } else {
+            status = 'scheduled';
+            homeScore = undefined;
+            awayScore = undefined;
+            scheduledCount++;
+          }
         }
         
         // Create match
         await Match.create({
           matchNumber: matchNumber++,
           stage,
-          homeTeamId: homeTeam.id,
-          awayTeamId: awayTeam.id,
+          homeTeamId: finalHomeTeamId,
+          awayTeamId: finalAwayTeamId,
           venue: venue.name,
           city: venue.city,
-          matchDate,
-          homeScore: fixture.goals.home ?? undefined,
-          awayScore: fixture.goals.away ?? undefined,
+          matchDate: matchDate2026,
+          homeScore,
+          awayScore,
           status,
           groupLetter: groupLetter ?? undefined,
           apiMatchId: fixture.fixture.id.toString(),
         });
         
-        console.log(`✅ Created: ${homeTeam.name} vs ${awayTeam.name} - ${venue.city} (${matchDate.toISOString().split('T')[0]})`);
+        const teamDisplay = shouldSetTeamsTBD 
+          ? 'TBD vs TBD' 
+          : `${homeTeam.name} vs ${awayTeam.name}`;
+        const statusDisplay = status === 'finished' 
+          ? `(${homeScore}-${awayScore})` 
+          : '(scheduled)';
+        
+        console.log(`✅ Created: ${teamDisplay} - ${venue.city} ${statusDisplay}`);
         created++;
         
       } catch (error) {
@@ -242,8 +313,16 @@ export async function populateMatchesFromApi(): Promise<void> {
     console.log('\n📊 Summary:');
     console.log(`   ✅ Created: ${created} matches`);
     console.log(`   ⏭️  Skipped: ${skipped} matches`);
+    console.log(`   ✔️  Finished: ${finishedCount} matches`);
+    console.log(`   📅 Scheduled: ${scheduledCount} matches`);
+    if (tbdTeamsCount > 0) {
+      console.log(`   ❓ TBD Teams: ${tbdTeamsCount} matches`);
+    }
     console.log(`   📅 Date range: June 11 - July 19, 2026`);
     console.log(`   🏟️  Venues: ${VENUES_2026.length} stadiums across USA, Canada, Mexico`);
+    if (cutoffDate) {
+      console.log(`   ⏰ Snapshot date: ${asOfDate}`);
+    }
     console.log('\n✅ Match population completed!');
     
   } catch (error: any) {

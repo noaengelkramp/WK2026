@@ -15,6 +15,7 @@ import {
   Flag as FlagIcon,
   Settings as SettingsIcon,
   Warning as WarningIcon,
+  Science as ScienceIcon,
 } from '@mui/icons-material';
 import UserManagement from '../components/admin/UserManagement';
 import CustomerManagement from '../components/admin/CustomerManagement';
@@ -22,8 +23,9 @@ import ApiDashboard from '../components/admin/ApiDashboard';
 import MatchManagement from '../components/admin/MatchManagement';
 import TeamManagement from '../components/admin/TeamManagement';
 import Settings from '../components/admin/Settings';
+import TestingPanel from '../components/admin/TestingPanel';
 
-type TabValue = 'dashboard' | 'users' | 'customers' | 'matches' | 'teams' | 'settings';
+type TabValue = 'dashboard' | 'users' | 'customers' | 'matches' | 'teams' | 'settings' | 'testing';
 
 export default function AdminPanel() {
   const [selectedTab, setSelectedTab] = useState<TabValue>('dashboard');
@@ -59,6 +61,7 @@ export default function AdminPanel() {
           <Tab icon={<SoccerIcon />} iconPosition="start" label="Matches" value="matches" />
           <Tab icon={<FlagIcon />} iconPosition="start" label="Teams" value="teams" />
           <Tab icon={<SettingsIcon />} iconPosition="start" label="Settings" value="settings" />
+          <Tab icon={<ScienceIcon />} iconPosition="start" label="Testing" value="testing" />
         </Tabs>
       </Card>
 
@@ -79,6 +82,9 @@ export default function AdminPanel() {
 
       {/* Settings Tab */}
       {selectedTab === 'settings' && <Settings />}
+
+      {/* Testing Tab */}
+      {selectedTab === 'testing' && <TestingPanel />}
     </Box>
   );
 }
