@@ -74,9 +74,10 @@ function mapRoundToStage(round: string): string {
 
 /**
  * Extract group letter from round name (e.g., "Group A" -> "A")
+ * Also handles "Group Stage - 1" format by using team's group assignment
  */
 function extractGroupLetter(round: string): string | null {
-  const match = round.match(/Group ([A-L])/i);
+  const match = round.match(/Group ([A-H])/i);
   return match ? match[1].toUpperCase() : null;
 }
 
@@ -218,7 +219,18 @@ export async function populateMatchesFromApi(asOfDate?: string): Promise<void> {
         
         // Map round to stage
         const stage = mapRoundToStage(fixture.league.round) as 'group' | 'round32' | 'round16' | 'quarter' | 'semi' | 'final' | 'third_place';
-        const groupLetter = extractGroupLetter(fixture.league.round);
+        let groupLetter = extractGroupLetter(fixture.league.round);
+        
+        // If this is a group stage match but no group letter found, infer from team's group
+        if (stage === 'group' && !groupLetter && homeTeam.groupLetter) {
+          groupLetter = homeTeam.groupLetter;
+          console.log(`📝 Inferred group ${groupLetter} from team: ${homeTeam.name} vs ${awayTeam.name}`);
+        }
+        
+        // Debug logging for group matches
+        if (stage === 'group' && !groupLetter) {
+          console.log(`⚠️  Group match missing group letter: ${fixture.teams.home.name} vs ${fixture.teams.away.name}, round: "${fixture.league.round}"`);
+        }
         
         // Get the original 2022 match date
         const matchDate2022 = new Date(fixture.fixture.date);
@@ -290,7 +302,7 @@ export async function populateMatchesFromApi(asOfDate?: string): Promise<void> {
           homeScore,
           awayScore,
           status,
-          groupLetter: groupLetter ?? undefined,
+          groupLetter: groupLetter || undefined, // Use || instead of ?? to convert null to undefined
           apiMatchId: fixture.fixture.id.toString(),
         });
         
