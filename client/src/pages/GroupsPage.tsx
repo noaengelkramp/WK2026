@@ -81,6 +81,15 @@ export default function GroupsPage() {
         dataService.getMatches({ stage: 'group' }),
       ]);
 
+      console.log('=== GROUPS PAGE DATA LOADED ===');
+      console.log('Total teams:', teamsData.length);
+      console.log('Total matches:', matchesData.length);
+      console.log('Match statuses:', matchesData.reduce((acc, m) => {
+        acc[m.status] = (acc[m.status] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>));
+      console.log('Sample match:', matchesData[0]);
+
       setTeams(teamsData);
       setMatches(matchesData);
     } catch (err) {
