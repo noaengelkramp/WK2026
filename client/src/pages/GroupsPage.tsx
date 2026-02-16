@@ -17,8 +17,10 @@ import {
   Alert,
   Grid,
   Divider,
+  IconButton,
+  Tooltip,
 } from '@mui/material';
-import { EmojiEvents as TrophyIcon, Info as InfoIcon } from '@mui/icons-material';
+import { EmojiEvents as TrophyIcon, Info as InfoIcon, Refresh as RefreshIcon } from '@mui/icons-material';
 import { dataService } from '../services/dataService';
 import type { Team, Match } from '../types';
 
@@ -50,6 +52,23 @@ export default function GroupsPage() {
 
   useEffect(() => {
     loadData();
+  }, []);
+
+  // Reload data when user returns to this page (e.g., from Testing tab)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        loadData();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', loadData);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', loadData);
+    };
   }, []);
 
   const loadData = async () => {
@@ -192,13 +211,21 @@ export default function GroupsPage() {
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-        🏆 2022 World Cup Groups
-      </Typography>
-
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-        Final standings and results from Qatar 2022
-      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+        <Box>
+          <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main', mb: 0 }}>
+            🏆 2022 World Cup Groups
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Final standings and results from Qatar 2022
+          </Typography>
+        </Box>
+        <Tooltip title="Refresh data">
+          <IconButton onClick={loadData} color="primary" disabled={loading}>
+            <RefreshIcon />
+          </IconButton>
+        </Tooltip>
+      </Box>
 
       {/* Qualification Info */}
       <Alert severity="info" icon={<InfoIcon />} sx={{ mb: 3 }}>
