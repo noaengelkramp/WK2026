@@ -4,6 +4,7 @@ import { populateMatchesFromApi } from '../utils/populateMatches';
 import { Match } from '../models';
 import { sequelize } from '../config/database';
 import { QueryTypes } from 'sequelize';
+import { invalidateMatches, invalidateGroupStandings } from '../services/cacheService';
 
 const router = Router();
 
@@ -91,6 +92,12 @@ router.post('/', async (req: Request, res: Response) => {
     try {
       console.log('⚽ Step 2: Populating matches from Football API...');
       await populateMatchesFromApi(asOfDate);
+      
+      // Clear all match and group standings caches to ensure fresh data
+      console.log('🗑️  Clearing caches...');
+      await invalidateMatches();
+      await invalidateGroupStandings();
+      console.log('✅ Caches cleared');
       
       const matchCount = await Match.count();
       const finishedCount = await Match.count({ where: { status: 'finished' } });
