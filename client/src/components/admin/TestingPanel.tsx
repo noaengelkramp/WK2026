@@ -6,12 +6,12 @@ import {
   Typography,
   Button,
   TextField,
-  Grid,
   Alert,
   CircularProgress,
   Chip,
   Divider,
 } from '@mui/material';
+import Grid from '@mui/material/GridLegacy';
 import {
   Science as ScienceIcon,
   Refresh as RefreshIcon,
