@@ -101,6 +101,10 @@ export default function GroupsPage() {
       (match) => match.groupLetter === groupLetter && match.status === 'finished'
     );
 
+    console.log(`Group ${groupLetter} - Total matches:`, matches.filter(m => m.groupLetter === groupLetter).length);
+    console.log(`Group ${groupLetter} - Finished matches:`, groupMatches.length);
+    console.log(`Group ${groupLetter} - Teams:`, groupTeams.length);
+
     // Initialize standings
     const standings: GroupStanding[] = groupTeams.map((team) => ({
       position: 0,
@@ -117,6 +121,12 @@ export default function GroupsPage() {
 
     // Calculate stats from finished matches
     groupMatches.forEach((match) => {
+      // Defensive check: ensure teams exist
+      if (!match.homeTeam || !match.awayTeam) {
+        console.warn('Match missing team data:', match);
+        return;
+      }
+
       const homeStanding = standings.find((s) => s.team.id === match.homeTeam.id);
       const awayStanding = standings.find((s) => s.team.id === match.awayTeam.id);
 
