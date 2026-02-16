@@ -72,7 +72,8 @@ export default function TestingPanel() {
     setResult(null);
     
     try {
-      const response = await api.post('/admin/populate-historic', { date });
+      // Use extended timeout for this operation (60 seconds) as it fetches data from external API
+      const response = await api.post('/admin/populate-historic', { date }, { timeout: 60000 });
       
       if (response.data.success) {
         setResult(response.data.data);
