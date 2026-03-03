@@ -6,6 +6,7 @@ import {
   BonusQuestion,
   User,
   UserStatistics,
+  sequelize,
 } from '../models';
 import bcrypt from 'bcrypt';
 import { testConnection } from '../config/database';
