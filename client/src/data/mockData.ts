@@ -27,9 +27,9 @@ export const mockDepartments: Department[] = [
 
 // Mock Users
 export const mockUsers: User[] = [
-  { id: '1', email: 'john@company.com', firstName: 'John', lastName: 'Doe', customerNumber: 'C1234_0000001', isAdmin: false, languagePreference: 'en', createdAt: '2026-01-01' },
-  { id: '2', email: 'jane@company.com', firstName: 'Jane', lastName: 'Smith', customerNumber: 'C1234_0000002', isAdmin: false, languagePreference: 'en', createdAt: '2026-01-02' },
-  { id: '3', email: 'admin@company.com', firstName: 'Admin', lastName: 'User', customerNumber: 'C1234_0000003', isAdmin: true, languagePreference: 'en', createdAt: '2026-01-01' },
+  { id: '1', email: 'john@company.com', username: 'johndoe', firstName: 'John', lastName: 'Doe', customerNumber: 'C1234_0000001', isAdmin: false, languagePreference: 'en', createdAt: '2026-01-01' },
+  { id: '2', email: 'jane@company.com', username: 'janesmith', firstName: 'Jane', lastName: 'Smith', customerNumber: 'C1234_0000002', isAdmin: false, languagePreference: 'en', createdAt: '2026-01-02' },
+  { id: '3', email: 'admin@company.com', username: 'admin', firstName: 'Admin', lastName: 'User', customerNumber: 'C1234_0000003', isAdmin: true, languagePreference: 'en', createdAt: '2026-01-01' },
 ];
 
 // Mock Matches
@@ -83,6 +83,7 @@ export const mockLeaderboard: LeaderboardEntry[] = [
   {
     rank: 1,
     userId: '1',
+    username: 'johndoe',
     customerNumber: 'C1234_0000001',
     companyName: 'Test Company 1',
     firstName: 'John',
@@ -97,6 +98,7 @@ export const mockLeaderboard: LeaderboardEntry[] = [
   {
     rank: 2,
     userId: '2',
+    username: 'janesmith',
     customerNumber: 'C1234_0000002',
     companyName: 'Test Company 2',
     firstName: 'Jane',
@@ -111,6 +113,7 @@ export const mockLeaderboard: LeaderboardEntry[] = [
   {
     rank: 3,
     userId: '3',
+    username: 'admin',
     customerNumber: 'C1234_0000003',
     companyName: 'Test Company 3',
     firstName: 'Admin',

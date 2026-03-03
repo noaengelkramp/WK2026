@@ -16,7 +16,6 @@ import {
   CheckCircleOutlined as CheckIcon,
   InfoOutlined as InfoIcon,
   CalendarTodayOutlined as CalendarIcon,
-  GroupsOutlined as GroupsIcon,
 } from '@mui/icons-material';
 
 export default function PrizesPage() {
