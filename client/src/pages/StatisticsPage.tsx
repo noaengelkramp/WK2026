@@ -13,10 +13,10 @@ import {
   Divider,
 } from '@mui/material';
 import {
-  BarChart as BarChartIcon,
-  PieChart as PieChartIcon,
-  TrendingUp as TrendingUpIcon,
-  EmojiEvents as TrophyIcon,
+  BarChartOutlined as BarChartIcon,
+  PieChartOutlined as PieChartIcon,
+  TrendingUpOutlined as TrendingUpIcon,
+  EmojiEventsOutlined as TrophyIcon,
 } from '@mui/icons-material';
 import {
   Chart as ChartJS,
@@ -228,8 +228,8 @@ export default function StatisticsPage() {
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-        📊 Tournament Statistics
+      <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold' }}>
+        Tournament Statistics
       </Typography>
 
       <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
@@ -237,7 +237,7 @@ export default function StatisticsPage() {
       </Typography>
 
       {/* Tabs */}
-      <Card sx={{ mb: 3 }}>
+      <Card sx={{ mb: 3 }} variant="outlined">
         <Tabs
           value={selectedTab}
           onChange={(_, value) => setSelectedTab(value)}
@@ -258,12 +258,12 @@ export default function StatisticsPage() {
           {/* Key Stats Cards */}
           <Grid container spacing={3} sx={{ mb: 4 }}>
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-              <Card sx={{ background: 'linear-gradient(135deg, #9B1915 0%, #C42420 100%)', color: 'white' }}>
+              <Card variant="outlined" sx={{ borderLeft: '4px solid #9B1915' }}>
                 <CardContent>
-                  <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'white' }}>
+                  <Typography variant="h3" sx={{ fontWeight: 'bold' }}>
                     {stats.totalMatches}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: 'white' }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>
                     Total Matches
                   </Typography>
                 </CardContent>
@@ -271,12 +271,12 @@ export default function StatisticsPage() {
             </Grid>
 
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-              <Card sx={{ background: 'linear-gradient(135deg, #388e3c 0%, #4caf50 100%)', color: 'white' }}>
+              <Card variant="outlined" sx={{ borderLeft: '4px solid #4CAF50' }}>
                 <CardContent>
-                  <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'white' }}>
+                  <Typography variant="h3" sx={{ fontWeight: 'bold' }}>
                     {stats.finishedMatches}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: 'white' }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>
                     Matches Played
                   </Typography>
                 </CardContent>
@@ -284,12 +284,12 @@ export default function StatisticsPage() {
             </Grid>
 
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-              <Card sx={{ background: 'linear-gradient(135deg, #666666 0%, #888888 100%)', color: 'white' }}>
+              <Card variant="outlined" sx={{ borderLeft: '4px solid #666666' }}>
                 <CardContent>
-                  <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'white' }}>
+                  <Typography variant="h3" sx={{ fontWeight: 'bold' }}>
                     {stats.totalGoals}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: 'white' }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>
                     Total Goals
                   </Typography>
                 </CardContent>
@@ -297,12 +297,12 @@ export default function StatisticsPage() {
             </Grid>
 
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-              <Card sx={{ background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)', color: 'white' }}>
+              <Card variant="outlined" sx={{ borderLeft: '4px solid #0288D1' }}>
                 <CardContent>
-                  <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'white' }}>
+                  <Typography variant="h3" sx={{ fontWeight: 'bold' }}>
                     {stats.avgGoalsPerMatch.toFixed(2)}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: 'white' }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>
                     Avg Goals/Match
                   </Typography>
                 </CardContent>
@@ -314,10 +314,10 @@ export default function StatisticsPage() {
           <Grid container spacing={3} sx={{ mb: 4 }}>
             {stats.maxGoalsMatch && (
               <Grid size={{ xs: 12, md: 6 }}>
-                <Card>
+                <Card variant="outlined">
                   <CardContent>
-                    <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      🔥 Highest-Scoring Match
+                    <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1 }}>
+                      Highest-Scoring Match
                     </Typography>
                     <Divider sx={{ my: 2 }} />
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
@@ -326,28 +326,30 @@ export default function StatisticsPage() {
                           component="img"
                           src={stats.maxGoalsMatch.homeTeam.flagUrl}
                           alt={stats.maxGoalsMatch.homeTeam.name}
-                          sx={{ width: 32, height: 24, objectFit: 'cover', borderRadius: 0.5 }}
+                          sx={{ width: 32, height: 24, objectFit: 'cover', border: '1px solid #E0E0E0' }}
                         />
-                        <Typography variant="body1">{stats.maxGoalsMatch.homeTeam.name}</Typography>
+                        <Typography variant="body1" sx={{ fontWeight: 500 }}>{stats.maxGoalsMatch.homeTeam.name}</Typography>
                       </Box>
-                      <Typography variant="h5" sx={{ fontWeight: 'bold', px: 2 }}>
-                        {stats.maxGoalsMatch.homeScore} - {stats.maxGoalsMatch.awayScore}
-                      </Typography>
+                      <Box sx={{ px: 2, py: 0.5, backgroundColor: '#F5F5F5', borderRadius: 1, border: '1px solid #E0E0E0' }}>
+                        <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+                          {stats.maxGoalsMatch.homeScore} - {stats.maxGoalsMatch.awayScore}
+                        </Typography>
+                      </Box>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Typography variant="body1">{stats.maxGoalsMatch.awayTeam.name}</Typography>
+                        <Typography variant="body1" sx={{ fontWeight: 500 }}>{stats.maxGoalsMatch.awayTeam.name}</Typography>
                         <Box
                           component="img"
                           src={stats.maxGoalsMatch.awayTeam.flagUrl}
                           alt={stats.maxGoalsMatch.awayTeam.name}
-                          sx={{ width: 32, height: 24, objectFit: 'cover', borderRadius: 0.5 }}
+                          sx={{ width: 32, height: 24, objectFit: 'cover', border: '1px solid #E0E0E0' }}
                         />
                       </Box>
                     </Box>
                     <Chip
                       label={`${stats.maxGoals} Total Goals`}
-                      color="primary"
                       size="small"
-                      sx={{ mt: 1 }}
+                      variant="outlined"
+                      sx={{ mt: 1, borderRadius: 1, fontWeight: 'bold' }}
                     />
                   </CardContent>
                 </Card>
@@ -356,10 +358,10 @@ export default function StatisticsPage() {
 
             {stats.topScoringTeam && (
               <Grid size={{ xs: 12, md: 6 }}>
-                <Card>
+                <Card variant="outlined">
                   <CardContent>
-                    <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      ⚽ Top Scoring Team
+                    <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1 }}>
+                      Top Scoring Team
                     </Typography>
                     <Divider sx={{ my: 2 }} />
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -367,13 +369,13 @@ export default function StatisticsPage() {
                         component="img"
                         src={stats.topScoringTeam.flagUrl}
                         alt={stats.topScoringTeam.name}
-                        sx={{ width: 64, height: 48, objectFit: 'cover', borderRadius: 1, boxShadow: 2 }}
+                        sx={{ width: 64, height: 48, objectFit: 'cover', border: '1px solid #E0E0E0' }}
                       />
                       <Box>
                         <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
                           {stats.topScoringTeam.name}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
                           {stats.topScoringTeamGoals} goals scored
                         </Typography>
                       </Box>
@@ -387,9 +389,9 @@ export default function StatisticsPage() {
           {/* Charts */}
           <Grid container spacing={3}>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Card>
+              <Card variant="outlined">
                 <CardContent>
-                  <Typography variant="h6" gutterBottom>
+                  <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
                     Matches by Stage
                   </Typography>
                   <Box sx={{ height: 300 }}>
@@ -401,6 +403,10 @@ export default function StatisticsPage() {
                         plugins: {
                           legend: { display: false },
                         },
+                        scales: {
+                          y: { beginAtZero: true, grid: { display: false } },
+                          x: { grid: { display: false } }
+                        }
                       }}
                     />
                   </Box>
@@ -409,9 +415,9 @@ export default function StatisticsPage() {
             </Grid>
 
             <Grid size={{ xs: 12, md: 6 }}>
-              <Card>
+              <Card variant="outlined">
                 <CardContent>
-                  <Typography variant="h6" gutterBottom>
+                  <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
                     Match Status
                   </Typography>
                   <Box sx={{ height: 300, display: 'flex', justifyContent: 'center' }}>
@@ -421,7 +427,7 @@ export default function StatisticsPage() {
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
-                          legend: { position: 'bottom' },
+                          legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } },
                         },
                       }}
                     />
@@ -431,9 +437,9 @@ export default function StatisticsPage() {
             </Grid>
 
             <Grid size={{ xs: 12 }}>
-              <Card>
+              <Card variant="outlined">
                 <CardContent>
-                  <Typography variant="h6" gutterBottom>
+                  <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
                     Goals per Stage
                   </Typography>
                   <Box sx={{ height: 300 }}>
@@ -445,6 +451,10 @@ export default function StatisticsPage() {
                         plugins: {
                           legend: { display: false },
                         },
+                        scales: {
+                          y: { beginAtZero: true, grid: { display: false } },
+                          x: { grid: { display: false } }
+                        }
                       }}
                     />
                   </Box>
@@ -457,10 +467,10 @@ export default function StatisticsPage() {
 
       {/* Other tabs placeholder */}
       {selectedTab !== 'overview' && (
-        <Card>
+        <Card variant="outlined">
           <CardContent>
-            <Alert severity="info">
-              <Typography variant="h6" gutterBottom>
+            <Alert severity="info" sx={{ borderRadius: 2 }}>
+              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
                 {selectedTab === 'group' && 'Group Stage Statistics'}
                 {selectedTab === 'knockout' && 'Knockout Stage Statistics'}
                 {selectedTab === 'predictions' && 'Prediction Statistics'}

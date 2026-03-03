@@ -16,11 +16,11 @@ import {
   Pagination,
 } from '@mui/material';
 import {
-  SportsSoccer as SoccerIcon,
-  Schedule as ScheduleIcon,
-  CheckCircle as FinishedIcon,
-  PlayCircle as LiveIcon,
-  LocationOn as LocationIcon,
+  SportsSoccerOutlined as SoccerIcon,
+  ScheduleOutlined as ScheduleIcon,
+  CheckCircleOutlined as FinishedIcon,
+  PlayCircleOutlined as LiveIcon,
+  LocationOnOutlined as LocationIcon,
 } from '@mui/icons-material';
 import { dataService } from '../services/dataService';
 import type { Match, Team } from '../types';
@@ -163,8 +163,8 @@ export default function MatchesPage() {
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-        ⚽ World Cup Matches
+      <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold' }}>
+        World Cup Matches
       </Typography>
 
       <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
@@ -228,13 +228,13 @@ export default function MatchesPage() {
       </Card>
 
       {/* Match Count */}
-      <Alert severity="info" icon={<SoccerIcon />} sx={{ mb: 3 }}>
+      <Alert severity="info" icon={<SoccerIcon />} sx={{ mb: 3, borderRadius: 2 }}>
         Showing <strong>{(page - 1) * matchesPerPage + 1}-{Math.min(page * matchesPerPage, sortedMatches.length)}</strong> of <strong>{sortedMatches.length}</strong> matches
       </Alert>
 
       {/* Matches List */}
       {paginatedMatches.length === 0 ? (
-        <Alert severity="warning">No matches found matching your filters.</Alert>
+        <Alert severity="warning" sx={{ borderRadius: 2 }}>No matches found matching your filters.</Alert>
       ) : (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           {paginatedMatches.map((match) => {
@@ -243,11 +243,11 @@ export default function MatchesPage() {
             return (
               <Card
                 key={match.id}
+                variant="outlined"
                 sx={{
-                  transition: 'transform 0.2s, box-shadow 0.2s',
+                  transition: 'border-color 0.2s',
                   '&:hover': {
-                    transform: 'translateY(-2px)',
-                    boxShadow: 3,
+                    borderColor: 'primary.main',
                   },
                 }}
               >
@@ -256,19 +256,19 @@ export default function MatchesPage() {
                     {/* Match Number & Stage */}
                     <Grid size={{ xs: 12, md: 2 }}>
                       <Box sx={{ textAlign: { xs: 'left', md: 'center' } }}>
-                        <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+                        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
                           Match #{match.matchNumber}
                         </Typography>
                         <Chip
                           label={stageLabels[match.stage as StageFilter] || match.stage}
                           size="small"
-                          sx={{ mt: 0.5, backgroundColor: '#F5F5F5' }}
+                          sx={{ mt: 0.5, backgroundColor: '#F5F5F5', borderRadius: 1 }}
                         />
                         {match.groupLetter && (
                           <Chip
                             label={`Group ${match.groupLetter}`}
                             size="small"
-                            sx={{ mt: 0.5, ml: 0.5, backgroundColor: '#F5F5F5' }}
+                            sx={{ mt: 0.5, ml: 0.5, backgroundColor: '#F5F5F5', borderRadius: 1 }}
                           />
                         )}
                       </Box>
@@ -280,14 +280,14 @@ export default function MatchesPage() {
                         {/* Home Team */}
                         <Box sx={{ flex: 1, textAlign: 'right' }}>
                           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 1 }}>
-                            <Typography variant="h6" sx={{ fontWeight: match.status === 'live' ? 'bold' : 'normal' }}>
+                            <Typography variant="h6" sx={{ fontWeight: match.status === 'live' ? 'bold' : 600 }}>
                               {match.homeTeam.name}
                             </Typography>
                             <Box
                               component="img"
                               src={match.homeTeam.flagUrl}
                               alt={match.homeTeam.name}
-                              sx={{ width: 40, height: 30, objectFit: 'cover', borderRadius: 0.5, boxShadow: 1 }}
+                              sx={{ width: 40, height: 30, objectFit: 'cover', borderRadius: 0, border: '1px solid #E0E0E0' }}
                             />
                           </Box>
                         </Box>
@@ -299,8 +299,10 @@ export default function MatchesPage() {
                             textAlign: 'center',
                             px: 2,
                             py: 1,
-                            backgroundColor: match.status === 'live' ? '#d32f2f' : '#F5F5F5',
+                            backgroundColor: match.status === 'live' ? 'primary.main' : '#F5F5F5',
                             borderRadius: 1,
+                            border: '1px solid',
+                            borderColor: match.status === 'live' ? 'primary.main' : '#E0E0E0',
                           }}
                         >
                           {match.status === 'finished' || match.status === 'live' ? (
@@ -327,9 +329,9 @@ export default function MatchesPage() {
                               component="img"
                               src={match.awayTeam.flagUrl}
                               alt={match.awayTeam.name}
-                              sx={{ width: 40, height: 30, objectFit: 'cover', borderRadius: 0.5, boxShadow: 1 }}
+                              sx={{ width: 40, height: 30, objectFit: 'cover', borderRadius: 0, border: '1px solid #E0E0E0' }}
                             />
-                            <Typography variant="h6" sx={{ fontWeight: match.status === 'live' ? 'bold' : 'normal' }}>
+                            <Typography variant="h6" sx={{ fontWeight: match.status === 'live' ? 'bold' : 600 }}>
                               {match.awayTeam.name}
                             </Typography>
                           </Box>
@@ -337,7 +339,7 @@ export default function MatchesPage() {
                       </Box>
                     </Grid>
 
-                    <Divider orientation="vertical" flexItem sx={{ display: { xs: 'none', md: 'block' } }} />
+                    <Divider orientation="vertical" flexItem sx={{ display: { xs: 'none', md: 'block' }, mx: 1 }} />
 
                     {/* Match Details */}
                     <Grid size={{ xs: 12, md: 3 }}>
@@ -348,10 +350,12 @@ export default function MatchesPage() {
                             icon={statusInfo.icon}
                             label={statusInfo.label}
                             size="small"
+                            variant="outlined"
                             sx={{
-                              backgroundColor: statusInfo.color,
-                              color: 'white',
+                              borderColor: statusInfo.color,
+                              color: statusInfo.color,
                               fontWeight: 'bold',
+                              borderRadius: 1,
                             }}
                           />
                         </Box>

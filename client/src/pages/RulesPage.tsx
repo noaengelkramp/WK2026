@@ -21,9 +21,9 @@ import {
 } from '@mui/material';
 import {
   ExpandMore as ExpandIcon,
-  EmojiEvents as TrophyIcon,
-  SportsSoccer as SoccerIcon,
-  Help as HelpIcon,
+  EmojiEventsOutlined as TrophyIcon,
+  SportsSoccerOutlined as SoccerIcon,
+  HelpOutlined as HelpIcon,
 } from '@mui/icons-material';
 import { dataService } from '../services/dataService';
 import type { ScoringRule, BonusQuestion } from '../types';
@@ -74,8 +74,8 @@ export default function RulesPage() {
   }
   return (
     <Box>
-      <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-        📋 Game Rules & Scoring
+      <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold' }}>
+        Game Rules & Scoring
       </Typography>
 
       <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
@@ -83,12 +83,12 @@ export default function RulesPage() {
       </Typography>
 
       {/* Overview Card */}
-      <Card sx={{ mb: 3, background: 'linear-gradient(135deg, #9B1915 0%, #C42420 100%)', color: 'white' }}>
+      <Card variant="outlined" sx={{ mb: 3, borderLeft: '4px solid #9B1915' }}>
         <CardContent>
-          <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'white' }}>
-            <SoccerIcon sx={{ color: 'white' }} /> How to Play
+          <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, fontWeight: 'bold' }}>
+            <SoccerIcon color="primary" /> How to Play
           </Typography>
-          <Typography variant="body1" sx={{ color: 'white' }}>
+          <Typography variant="body1">
             1. <strong>Make your predictions</strong> for all 104 World Cup matches before the deadline
             <br />
             2. <strong>Answer bonus questions</strong> about the tournament (top scorer, champion, etc.)
@@ -105,8 +105,8 @@ export default function RulesPage() {
       </Card>
 
       {/* Deadline Card */}
-      <Alert severity="warning" sx={{ mb: 3 }}>
-        <Typography variant="h6">⏰ Important Deadline</Typography>
+      <Alert severity="warning" variant="outlined" sx={{ mb: 3, borderRadius: 2, backgroundColor: 'rgba(255, 152, 0, 0.05)' }}>
+        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Important Deadline</Typography>
         <Typography variant="body2">
           All predictions must be submitted by <strong>June 11, 2026 at 23:00</strong>. 
           After this time, predictions are locked and cannot be changed. The tournament starts on June 11, 2026.
@@ -114,10 +114,10 @@ export default function RulesPage() {
       </Alert>
 
       {/* Scoring System */}
-      <Accordion defaultExpanded>
+      <Accordion defaultExpanded variant="outlined" sx={{ mb: 2 }}>
         <AccordionSummary expandIcon={<ExpandIcon />}>
           <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-            🎯 Scoring System
+            Scoring System
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
@@ -129,19 +129,19 @@ export default function RulesPage() {
           <Divider sx={{ my: 2 }} />
 
           {/* All Stages Scoring */}
-          <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
+          <Typography variant="h6" gutterBottom sx={{ mt: 2, fontWeight: 'bold' }}>
             Match Prediction Scoring
           </Typography>
           <Typography variant="body2" color="text.secondary" gutterBottom sx={{ mb: 2 }}>
             Points are progressive - you earn more in later rounds! The scoring system rewards accuracy with higher stakes.
           </Typography>
-          <TableContainer component={Paper} sx={{ mb: 3 }}>
+          <TableContainer component={Paper} variant="outlined" sx={{ mb: 3 }}>
             <Table size="small">
               <TableHead>
-                <TableRow sx={{ backgroundColor: 'primary.main' }}>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Round</TableCell>
-                  <TableCell align="right" sx={{ color: 'white', fontWeight: 'bold' }}>Exact Score</TableCell>
-                  <TableCell align="right" sx={{ color: 'white', fontWeight: 'bold' }}>Correct Winner/Draw</TableCell>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 'bold' }}>Round</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 'bold' }}>Exact Score</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 'bold' }}>Correct Winner/Draw</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -154,10 +154,10 @@ export default function RulesPage() {
                     <TableRow key={rule.id}>
                       <TableCell><strong>{getStageDisplayName(rule.stage)}</strong></TableCell>
                       <TableCell align="right">
-                        <Chip label={`${rule.exactScorePoints} pts`} color="primary" size="small" />
+                        <Chip label={`${rule.exactScorePoints} pts`} color="primary" size="small" sx={{ borderRadius: 1, fontWeight: 'bold' }} />
                       </TableCell>
                       <TableCell align="right">
-                        <Chip label={`${rule.correctWinnerPoints} pts`} size="small" />
+                        <Chip label={`${rule.correctWinnerPoints} pts`} size="small" sx={{ borderRadius: 1 }} />
                       </TableCell>
                     </TableRow>
                   ))}
@@ -165,7 +165,7 @@ export default function RulesPage() {
             </Table>
           </TableContainer>
 
-          <Alert severity="info" sx={{ mb: 3 }}>
+          <Alert severity="info" variant="outlined" sx={{ mb: 3, borderRadius: 2 }}>
             <Typography variant="body2">
               <strong>How it works:</strong> If you predict the exact score, you get full points. 
               If you predict the correct winner (or draw), you get partial points. Wrong predictions earn 0 points.
@@ -173,15 +173,15 @@ export default function RulesPage() {
           </Alert>
 
           {/* Bonus Points */}
-          <Typography variant="h6" gutterBottom>
+          <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
             Bonus Questions
           </Typography>
-          <TableContainer component={Paper}>
+          <TableContainer component={Paper} variant="outlined">
             <Table size="small">
               <TableHead>
-                <TableRow sx={{ backgroundColor: 'primary.main' }}>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Question</TableCell>
-                  <TableCell align="right" sx={{ color: 'white', fontWeight: 'bold' }}>Points</TableCell>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 'bold' }}>Question</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 'bold' }}>Points</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -193,6 +193,7 @@ export default function RulesPage() {
                         label={`${question.points} pts`} 
                         color={question.points >= 20 ? "primary" : "default"} 
                         size="small" 
+                        sx={{ borderRadius: 1, fontWeight: question.points >= 20 ? 'bold' : 'normal' }}
                       />
                     </TableCell>
                   </TableRow>
@@ -204,10 +205,10 @@ export default function RulesPage() {
       </Accordion>
 
       {/* Tie-Breaking Rules */}
-      <Accordion sx={{ mt: 2 }}>
+      <Accordion variant="outlined" sx={{ mb: 2 }}>
         <AccordionSummary expandIcon={<ExpandIcon />}>
           <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-            🏅 Tie-Breaking Rules
+            Tie-Breaking Rules
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
@@ -235,10 +236,10 @@ export default function RulesPage() {
       </Accordion>
 
       {/* How to Update Predictions */}
-      <Accordion sx={{ mt: 2 }}>
+      <Accordion variant="outlined" sx={{ mb: 2 }}>
         <AccordionSummary expandIcon={<ExpandIcon />}>
           <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-            ✏️ Updating Your Predictions
+            Updating Your Predictions
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
@@ -269,10 +270,10 @@ export default function RulesPage() {
       </Accordion>
 
       {/* Prizes */}
-      <Accordion sx={{ mt: 2 }}>
+      <Accordion variant="outlined" sx={{ mb: 2 }}>
         <AccordionSummary expandIcon={<ExpandIcon />}>
-          <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-            <TrophyIcon sx={{ verticalAlign: 'middle', mr: 1 }} />
+          <Typography variant="h5" sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1 }}>
+            <TrophyIcon color="primary" />
             Prizes & Winners
           </Typography>
         </AccordionSummary>
@@ -280,45 +281,45 @@ export default function RulesPage() {
           <Typography variant="body1" gutterBottom>
             Winners will be announced after the World Cup Final on July 19, 2026.
           </Typography>
-          <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
+          <Typography variant="h6" gutterBottom sx={{ mt: 2, fontWeight: 'bold' }}>
             Individual Prizes:
           </Typography>
           <Box component="ul" sx={{ pl: 2 }}>
             <Typography component="li" variant="body1">
-              🥇 <strong>1st Place:</strong> Professional Foosball Table
+               <strong>1st Place:</strong> Professional Foosball Table
             </Typography>
             <Typography component="li" variant="body1">
-              🥈 <strong>2nd Place:</strong> 55" Smart TV
+               <strong>2nd Place:</strong> 55" Smart TV
             </Typography>
             <Typography component="li" variant="body1">
-              🥉 <strong>3rd Place:</strong> iPad Pro
+               <strong>3rd Place:</strong> iPad Pro
             </Typography>
           </Box>
-          <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
+          <Typography variant="h6" gutterBottom sx={{ mt: 2, fontWeight: 'bold' }}>
             Department Prize:
           </Typography>
           <Box component="ul" sx={{ pl: 2 }}>
             <Typography component="li" variant="body1">
-              🏆 <strong>Winning Department:</strong> Team Dinner Voucher (€500)
+               <strong>Winning Department:</strong> Team Dinner Voucher (€500)
             </Typography>
           </Box>
-          <Alert severity="info" sx={{ mt: 2 }}>
+          <Alert severity="info" variant="outlined" sx={{ mt: 2, borderRadius: 2 }}>
             Visit the <strong>Prizes</strong> page to see all prizes and eligibility rules!
           </Alert>
         </AccordionDetails>
       </Accordion>
 
       {/* FAQ */}
-      <Accordion sx={{ mt: 2 }}>
+      <Accordion variant="outlined" sx={{ mb: 2 }}>
         <AccordionSummary expandIcon={<ExpandIcon />}>
-          <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-            <HelpIcon sx={{ verticalAlign: 'middle', mr: 1 }} />
+          <Typography variant="h5" sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1 }}>
+            <HelpIcon color="primary" />
             Frequently Asked Questions
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Box>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
               Q: What happens if I don't predict all 104 matches?
             </Typography>
             <Typography variant="body1" color="text.secondary" gutterBottom>
@@ -326,7 +327,7 @@ export default function RulesPage() {
               all matches gives you the best chance to win.
             </Typography>
 
-            <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
+            <Typography variant="h6" gutterBottom sx={{ mt: 2, fontWeight: 'bold' }}>
               Q: Do I score points for matches that happen after extra time or penalties?
             </Typography>
             <Typography variant="body1" color="text.secondary" gutterBottom>
@@ -334,7 +335,7 @@ export default function RulesPage() {
               However, you do predict which team advances (even if it's via penalties).
             </Typography>
 
-            <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
+            <Typography variant="h6" gutterBottom sx={{ mt: 2, fontWeight: 'bold' }}>
               Q: When are points calculated?
             </Typography>
             <Typography variant="body1" color="text.secondary" gutterBottom>
@@ -342,14 +343,14 @@ export default function RulesPage() {
               updates in real-time.
             </Typography>
 
-            <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
+            <Typography variant="h6" gutterBottom sx={{ mt: 2, fontWeight: 'bold' }}>
               Q: Can I see other people's predictions?
             </Typography>
             <Typography variant="body1" color="text.secondary" gutterBottom>
               A: No. All predictions are private until after the tournament deadline.
             </Typography>
 
-            <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
+            <Typography variant="h6" gutterBottom sx={{ mt: 2, fontWeight: 'bold' }}>
               Q: What if there's a technical issue?
             </Typography>
             <Typography variant="body1" color="text.secondary">
@@ -360,10 +361,10 @@ export default function RulesPage() {
       </Accordion>
 
       {/* Maximum Points */}
-      <Card sx={{ mt: 3, background: 'linear-gradient(135deg, #F5F5F5 0%, #E0E0E0 100%)' }}>
+      <Card variant="outlined" sx={{ mt: 3, borderLeft: '4px solid #666666' }}>
         <CardContent>
-          <Typography variant="h6" gutterBottom sx={{ color: 'primary.main' }}>
-            💯 Maximum Possible Points
+          <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+            Maximum Possible Points
           </Typography>
           <Typography variant="body1">
             If you predict everything perfectly (which is nearly impossible!), you could earn approximately 

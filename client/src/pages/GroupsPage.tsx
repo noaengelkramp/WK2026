@@ -20,7 +20,7 @@ import {
   IconButton,
   Tooltip,
 } from '@mui/material';
-import { EmojiEvents as TrophyIcon, Info as InfoIcon, Refresh as RefreshIcon } from '@mui/icons-material';
+import { EmojiEventsOutlined as TrophyIcon, InfoOutlined as InfoIcon, RefreshOutlined as RefreshIcon } from '@mui/icons-material';
 import { dataService } from '../services/dataService';
 import type { Team, Match } from '../types';
 
@@ -232,8 +232,8 @@ export default function GroupsPage() {
     <Box>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
         <Box>
-          <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main', mb: 0 }}>
-            🏆 2022 World Cup Groups
+          <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', mb: 0 }}>
+            2022 World Cup Groups
           </Typography>
           <Typography variant="body1" color="text.secondary">
             Final standings and results from Qatar 2022
@@ -247,13 +247,13 @@ export default function GroupsPage() {
       </Box>
 
       {/* Qualification Info */}
-      <Alert severity="info" icon={<InfoIcon />} sx={{ mb: 3 }}>
+      <Alert severity="info" icon={<InfoIcon />} sx={{ mb: 3, borderRadius: 2 }}>
         <strong>Qualification Rules:</strong> The top 2 teams from each group advance to the knockout stage, plus
         the best 8 third-place teams. Win = 3 points, Draw = 1 point, Loss = 0 points.
       </Alert>
 
       {/* Group Tabs */}
-      <Card sx={{ mb: 3 }}>
+      <Card sx={{ mb: 3 }} variant="outlined">
         <Tabs
           value={selectedGroup}
           onChange={(_, value) => setSelectedGroup(value)}
@@ -270,14 +270,14 @@ export default function GroupsPage() {
       <Grid container spacing={3}>
         {/* Standings Table */}
         <Grid size={{ xs: 12, lg: 7 }}>
-          <Card>
+          <Card variant="outlined">
             <CardContent>
-              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <TrophyIcon color="primary" />
+              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, fontWeight: 'bold' }}>
+                <TrophyIcon />
                 Group {selectedGroup} Standings
               </Typography>
 
-              <TableContainer component={Paper} variant="outlined" sx={{ mt: 2 }}>
+              <TableContainer component={Paper} variant="outlined" sx={{ mt: 2, borderRadius: 1 }}>
                 <Table size="small">
                   <TableHead>
                     <TableRow sx={{ backgroundColor: '#F5F5F5' }}>
@@ -316,10 +316,11 @@ export default function GroupsPage() {
                         sx={{
                           backgroundColor:
                             standing.position <= 2
-                              ? '#e8f5e9' // Top 2 qualify (light green)
-                              : standing.position === 3
-                              ? '#fff9c4' // 3rd place (light yellow - may qualify)
+                              ? 'rgba(76, 175, 80, 0.08)' // Subtle green for qualification
                               : 'transparent',
+                          '&:hover': {
+                            backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                          },
                         }}
                       >
                         <TableCell sx={{ fontWeight: 'bold' }}>{standing.position}</TableCell>
@@ -329,9 +330,9 @@ export default function GroupsPage() {
                               component="img"
                               src={standing.team.flagUrl}
                               alt={standing.team.name}
-                              sx={{ width: 24, height: 18, objectFit: 'cover', borderRadius: 0.5 }}
+                              sx={{ width: 24, height: 18, objectFit: 'cover', borderRadius: 0, border: '1px solid #E0E0E0' }}
                             />
-                            <Typography variant="body2">{standing.team.name}</Typography>
+                            <Typography variant="body2" sx={{ fontWeight: 500 }}>{standing.team.name}</Typography>
                           </Box>
                         </TableCell>
                         <TableCell align="center">{standing.played}</TableCell>
@@ -362,12 +363,8 @@ export default function GroupsPage() {
               {/* Legend */}
               <Box sx={{ mt: 2, display: 'flex', gap: 3, flexWrap: 'wrap' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Box sx={{ width: 16, height: 16, backgroundColor: '#e8f5e9', border: '1px solid #ddd' }} />
-                  <Typography variant="caption">Qualified</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Box sx={{ width: 16, height: 16, backgroundColor: '#fff9c4', border: '1px solid #ddd' }} />
-                  <Typography variant="caption">Possible (3rd place)</Typography>
+                  <Box sx={{ width: 12, height: 12, backgroundColor: 'rgba(76, 175, 80, 0.15)', border: '1px solid #4CAF50' }} />
+                  <Typography variant="caption">Qualified for Knockout Stage</Typography>
                 </Box>
               </Box>
             </CardContent>
@@ -376,9 +373,9 @@ export default function GroupsPage() {
 
         {/* Group Fixtures */}
         <Grid size={{ xs: 12, lg: 5 }}>
-          <Card>
+          <Card variant="outlined">
             <CardContent>
-              <Typography variant="h6" gutterBottom>
+              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
                 Group {selectedGroup} Fixtures
               </Typography>
 
@@ -391,54 +388,65 @@ export default function GroupsPage() {
               ) : (
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                   {groupMatches.map((match) => (
-                    <Box key={match.id} sx={{ p: 2, backgroundColor: '#F5F5F5', borderRadius: 1 }}>
-                      <Typography variant="caption" color="text.secondary">
-                        Match #{match.matchNumber} • {formatDate(match.matchDate)}
+                    <Box key={match.id} sx={{ p: 2, border: '1px solid #E0E0E0', borderRadius: 1, backgroundColor: '#FFFFFF' }}>
+                      <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
+                        MATCH #{match.matchNumber} • {formatDate(match.matchDate)}
                       </Typography>
 
-                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 1 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 1.5 }}>
                         {/* Home Team */}
                         <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
                           <Box
                             component="img"
                             src={match.homeTeam.flagUrl}
                             alt={match.homeTeam.name}
-                            sx={{ width: 24, height: 18, objectFit: 'cover', borderRadius: 0.5 }}
+                            sx={{ width: 24, height: 18, objectFit: 'cover', borderRadius: 0, border: '1px solid #E0E0E0' }}
                           />
-                          <Typography variant="body2" noWrap>
+                          <Typography variant="body2" noWrap sx={{ fontWeight: 500 }}>
                             {match.homeTeam.name}
                           </Typography>
                         </Box>
 
                         {/* Score or vs */}
-                        <Box sx={{ minWidth: 60, textAlign: 'center', mx: 1 }}>
+                        <Box 
+                          sx={{ 
+                            minWidth: 50, 
+                            textAlign: 'center', 
+                            mx: 1, 
+                            py: 0.5, 
+                            px: 1, 
+                            backgroundColor: '#F5F5F5',
+                            borderRadius: 1,
+                            border: '1px solid #E0E0E0'
+                          }}
+                        >
                           {match.status === 'finished' ? (
-                            <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                            <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
                               {match.homeScore} - {match.awayScore}
                             </Typography>
                           ) : (
-                            <Typography variant="body2" color="text.secondary">
-                              vs
+                            <Typography variant="caption" sx={{ fontWeight: 'bold', color: 'text.secondary' }}>
+                              VS
                             </Typography>
                           )}
                         </Box>
 
                         {/* Away Team */}
                         <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'flex-end' }}>
-                          <Typography variant="body2" noWrap>
+                          <Typography variant="body2" noWrap sx={{ fontWeight: 500 }}>
                             {match.awayTeam.name}
                           </Typography>
                           <Box
                             component="img"
                             src={match.awayTeam.flagUrl}
                             alt={match.awayTeam.name}
-                            sx={{ width: 24, height: 18, objectFit: 'cover', borderRadius: 0.5 }}
+                            sx={{ width: 24, height: 18, objectFit: 'cover', borderRadius: 0, border: '1px solid #E0E0E0' }}
                           />
                         </Box>
                       </Box>
 
-                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
-                        {match.venue}, {match.city}
+                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1, fontSize: '0.7rem' }}>
+                        {match.venue.toUpperCase()}, {match.city.toUpperCase()}
                       </Typography>
                     </Box>
                   ))}
