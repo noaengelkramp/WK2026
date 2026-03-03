@@ -5693,3 +5693,19 @@ Next Steps:
 - Verify that registration and login now work correctly in production.
 
 Current Status: 14/255 tests passing. Seeding script fixed to support dynamic schema updates in production.
+
+=== Session 30: Seed Validation Fix ===
+Date: Tue Mar 03 17:45:00 CET 2026
+Agent: auto-coder-coding
+
+Accomplished:
+- Diagnosed a "Validation error" during the `POST /api/setup?force=true` call on production.
+- Identified that the error was caused by the `Customers` table not being cleared during the force-seed process, leading to unique constraint violations on `customerNumber`.
+- Modified `server/src/utils/seed.ts` to explicitly clear the `Customers` table when seeding is triggered.
+- Pushed the fix to the remote repository.
+
+Next Steps:
+- Wait for the Netlify deployment to finish.
+- Re-run `POST https://poules.kramp.com/api/setup?force=true` to confirm the production database is correctly initialized and the `username` column is added.
+
+Current Status: 14/255 tests passing. Seeding script improved to handle full database resets correctly.
