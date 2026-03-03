@@ -31,10 +31,14 @@ export async function seedDatabase() {
     await ScoringRule.destroy({ where: {} });
     await BonusQuestion.destroy({ where: {} });
 
-    // 1. Customers (not seeded - must be imported from production data)
-    console.log('🏢 Checking customers...');
-    const existingCustomers = await Customer.findAll();
-    console.log(`✅ Found ${existingCustomers.length} existing customers`);
+    // 1. Customers
+    console.log('🏢 Seeding customers...');
+    const customers = await Customer.bulkCreate([
+      { customerNumber: 'C1234_0000001', companyName: 'Kramp Admin', isActive: true },
+      { customerNumber: 'C1234_0000002', companyName: 'Kramp Customer 1', isActive: true },
+      { customerNumber: 'C1234_0000003', companyName: 'Kramp Customer 2', isActive: true },
+    ]);
+    console.log(`✅ Created ${customers.length} customers`);
 
     // 2. Seed Teams (48 World Cup 2026 teams)
     console.log('⚽ Seeding teams...');

@@ -5605,3 +5605,27 @@ Next Steps:
 - Push changes to remote and monitor Netlify deployment.
 
 Current Status: Application is build-ready and UI overhaul is 95% complete.
+
+=== Session 25: Username Privacy & Customer Branding Implementation ===
+Date: Tue Mar 03 17:30:00 CET 2026
+Agent: auto-coder-coding
+
+Previous Status: 14/255 tests passing
+
+Accomplished:
+- Refactored Individual Standings (`StandingsIndividualPage.tsx`) and Home Page Leaderboard (`HomePage.tsx`) to display 'username' instead of real names or customer numbers, ensuring user privacy for the customer-facing transition.
+- Updated `client/src/types/index.ts` to include `username` in `User` and `LeaderboardEntry` interfaces.
+- Modified `LoginPage.tsx` and `PrizesPage.tsx` copy to align with the Kramp customer competition, highlighting high-end prizes like 65" Smart TVs and Tablets.
+- Investigated Group F standings issue: Found that the `matches` table is currently empty in the database, which explains why no standings are updating.
+- Verified that the Group F teams (Belgium, Panama, Switzerland, South Korea) exist but have no associated matches in the current database state.
+
+Issues Found:
+- Database `matches` table is empty (`count = 0`). Standings cannot update until matches are populated from the Football API using `populateMatches.ts`.
+
+Next Steps:
+- Execute `npm run populate-matches` to pull real tournament data (or use 2022 template as defined in `populateMatches.ts`).
+- Verify `username` field is correctly populated and displayed after match scoring is processed.
+- Final review of all customer-facing branding and copy.
+
+Current Status: 14/255 tests passing. User privacy and customer branding implemented. Database matches need population.
+
