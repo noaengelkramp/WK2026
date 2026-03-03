@@ -277,17 +277,10 @@ export async function populateMatchesFromApi(asOfDate?: string): Promise<void> {
           scheduledCount++;
         } else {
           // Match has already happened (or no cutoff date = use all data)
-          if (fixture.goals.home !== null && fixture.goals.away !== null) {
-            status = 'finished';
-            homeScore = fixture.goals.home;
-            awayScore = fixture.goals.away;
-            finishedCount++;
-          } else {
-            status = 'scheduled';
-            homeScore = undefined;
-            awayScore = undefined;
-            scheduledCount++;
-          }
+          status = 'scheduled';
+          homeScore = undefined;
+          awayScore = undefined;
+          scheduledCount++;
         }
         
         // Create match
@@ -309,9 +302,7 @@ export async function populateMatchesFromApi(asOfDate?: string): Promise<void> {
         const teamDisplay = shouldSetTeamsTBD 
           ? 'TBD vs TBD' 
           : `${homeTeam.name} vs ${awayTeam.name}`;
-        const statusDisplay = status === 'finished' 
-          ? `(${homeScore}-${awayScore})` 
-          : '(scheduled)';
+        const statusDisplay = '(scheduled)';
         
         console.log(`✅ Created: ${teamDisplay} - ${venue.city} ${statusDisplay}`);
         created++;
