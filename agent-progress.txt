@@ -5661,3 +5661,20 @@ Next Steps:
 - Verify the live site once the deployment is green.
 
 Current Status: 14/255 tests passing. Build configuration optimized for Netlify stability.
+
+=== Session 28: Login Column Error Diagnosis ===
+Date: Tue Mar 03 17:15:00 CET 2026
+Agent: auto-coder-coding
+
+Accomplished:
+- Diagnosed the login error `{"error":"column User.username does not exist"}`.
+- Verified that the local database schema *does* have the `username` column in the `users` table.
+- Confirmed that the `User` model correctly defines the `username` field.
+- Identified that the error likely stems from the production database (Neon Tech) not being in sync with the latest Sequelize model changes, specifically missing the `username` column which was added in a recent update.
+- Checked `authController.ts` and confirmed the `login` function does not explicitly reference `username` in the query, but Sequelize includes all model attributes by default.
+
+Next Steps:
+- The user needs to sync the production database schema. Since `sync({ force: true })` is disabled in production for safety, a migration or a manual schema update on the production database is required to add the `username` column.
+- Suggest running a setup script or a dedicated migration to add the missing column to the production `users` table.
+
+Current Status: 14/255 tests passing. Diagnosis for login error completed; production database schema out of sync.
