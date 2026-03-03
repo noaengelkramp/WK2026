@@ -330,10 +330,10 @@ export default function HomePage() {
                 <TableContainer>
                   <Table size="small">
                     <TableHead>
-                      <TableRow>
-                        <TableCell width={80}>Rank</TableCell>
-                        <TableCell>Participant</TableCell>
-                        <TableCell align="right">Total Points</TableCell>
+                      <TableRow sx={{ backgroundColor: '#9B1915' }}>
+                        <TableCell width={80} sx={{ color: 'white', fontWeight: 'bold' }}>Rank</TableCell>
+                        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Participant</TableCell>
+                        <TableCell align="right" sx={{ color: 'white', fontWeight: 'bold' }}>Total Points</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
