@@ -31,6 +31,11 @@ export async function seedDatabase() {
     await ScoringRule.destroy({ where: {} });
     await BonusQuestion.destroy({ where: {} });
 
+    // Sync database schema to ensure columns like 'username' exist
+    console.log('🔄 Syncing database schema...');
+    await sequelize.sync({ alter: true });
+    console.log('✅ Database schema synced');
+
     // 1. Customers
     console.log('🏢 Seeding customers...');
     const customers = await Customer.bulkCreate([
