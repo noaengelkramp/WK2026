@@ -99,7 +99,7 @@ export default function StandingsIndividualPage() {
   return (
     <Box>
       <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-        🏆 Individual Standings
+        Individual Standings
       </Typography>
 
       <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
@@ -160,41 +160,53 @@ export default function StandingsIndividualPage() {
               <TableContainer component={Paper} elevation={0}>
                 <Table>
                   <TableHead>
-                    <TableRow sx={{ backgroundColor: 'primary.main' }}>
-                      <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rank</TableCell>
-                      <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Customer</TableCell>
-                      <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Name</TableCell>
-                      <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Company</TableCell>
-                      <TableCell sx={{ color: 'white', fontWeight: 'bold' }} align="right">Total Points</TableCell>
-                      <TableCell sx={{ color: 'white', fontWeight: 'bold' }} align="right">Exact Scores</TableCell>
-                      <TableCell sx={{ color: 'white', fontWeight: 'bold' }} align="right">Correct Winners</TableCell>
-                      <TableCell sx={{ color: 'white', fontWeight: 'bold' }} align="right">Predictions</TableCell>
-                    </TableRow>
+            <TableRow sx={{ backgroundColor: '#9B1915' }}>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rank</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Customer</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Name</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Company</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }} align="right">Total Points</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }} align="right">Exact Scores</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }} align="right">Correct Winners</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }} align="right">Predictions</TableCell>
+            </TableRow>
                   </TableHead>
                   <TableBody>
                     {standings.map((entry, index) => (
                       <TableRow
                         key={entry.userId || `anon-${index}`}
-                        sx={{
-                          backgroundColor: entry.isCurrentUser
-                            ? 'rgba(33, 150, 243, 0.08)' // Light blue highlight for current user
-                            : entry.rank === 1
-                            ? '#FFD700'
-                            : entry.rank === 2
-                            ? '#C0C0C0'
-                            : entry.rank === 3
-                            ? '#CD7F32'
-                            : 'inherit',
-                          borderLeft: entry.isCurrentUser ? '4px solid #2196F3' : 'none',
-                          '&:hover': { backgroundColor: 'action.hover' },
-                        }}
-                      >
+                          sx={{
+                            backgroundColor: entry.isCurrentUser
+                              ? 'rgba(155, 25, 21, 0.08)'
+                              : 'inherit',
+                            borderLeft: entry.isCurrentUser ? '4px solid #9B1915' : 'none',
+                            '&:hover': { backgroundColor: '#F5F5F5' },
+                          }}
+                        >
                         <TableCell>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            {entry.rank === 1 && '🥇'}
-                            {entry.rank === 2 && '🥈'}
-                            {entry.rank === 3 && '🥉'}
-                            {entry.rank && entry.rank > 3 && `#${entry.rank}`}
+                            <Box
+                              sx={{
+                                width: 28,
+                                height: 28,
+                                borderRadius: '50%',
+                                bgcolor:
+                                  entry.rank === 1
+                                    ? '#FFD700'
+                                    : entry.rank === 2
+                                    ? '#C0C0C0'
+                                    : entry.rank === 3
+                                    ? '#CD7F32'
+                                    : '#E0E0E0',
+                                color: '#212121',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontWeight: 700,
+                              }}
+                            >
+                              {entry.rank ?? index + 1}
+                            </Box>
                             {entry.isCurrentUser && (
                               <Chip label="YOU" size="small" color="primary" sx={{ ml: 1 }} />
                             )}

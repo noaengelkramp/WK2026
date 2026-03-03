@@ -46,7 +46,7 @@ export const theme = createTheme({
     divider: '#E0E0E0',
   },
   typography: {
-    fontFamily: '"Roboto", "Open Sans", "Helvetica", "Arial", sans-serif',
+    fontFamily: '"Source Sans 3", "Open Sans", "Helvetica", "Arial", sans-serif',
     h1: {
       fontSize: '2.5rem',
       fontWeight: 700,
@@ -60,7 +60,7 @@ export const theme = createTheme({
     h3: {
       fontSize: '1.75rem',
       fontWeight: 600,
-      color: '#194461', // Kramp Blue
+      color: '#212121',
     },
     h4: {
       fontSize: '1.5rem',
@@ -87,14 +87,14 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           textTransform: 'none',
-          borderRadius: 8,
+          borderRadius: 4,
           fontWeight: 600,
           padding: '10px 24px',
         },
         contained: {
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          boxShadow: 'none',
           '&:hover': {
-            boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
+            boxShadow: 'none',
           },
         },
         containedPrimary: {
@@ -109,17 +109,22 @@ export const theme = createTheme({
             backgroundColor: '#808080',
           },
         },
+        outlined: {
+          borderWidth: 2,
+          borderStyle: 'solid',
+          '&:hover': {
+            borderWidth: 2,
+          },
+        },
       },
     },
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
+          borderRadius: 8,
+          border: '1px solid #E0E0E0',
           boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-          transition: 'box-shadow 0.3s ease',
-          '&:hover': {
-            boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
-          },
+          transition: 'box-shadow 0.3s ease, transform 0.3s ease',
         },
       },
     },

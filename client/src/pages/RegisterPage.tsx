@@ -10,6 +10,9 @@ import {
   Container,
   Alert,
   CircularProgress,
+  Grid,
+  Chip,
+  Divider,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -115,119 +118,207 @@ export default function RegisterPage() {
   }
 
   return (
-    <Container maxWidth="sm">
-      <Box
-        sx={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          py: 4,
-        }}
-      >
-        <Card sx={{ width: '100%' }}>
-          <CardContent sx={{ p: 4 }}>
-            <Box sx={{ textAlign: 'center', mb: 3 }}>
-              <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold' }}>
-                Create Account
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                Join the World Cup 2026 Prediction Game
-              </Typography>
+    <Box sx={{ minHeight: '100vh', bgcolor: '#FFFFFF' }}>
+      <Container maxWidth="lg" sx={{ minHeight: '100vh', py: { xs: 4, md: 8 } }}>
+        <Grid container spacing={0} sx={{ minHeight: 'calc(100vh - 120px)' }}>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Box
+              sx={{
+                height: '100%',
+                border: '1px solid #E0E0E0',
+                borderRight: { md: 'none' },
+                borderRadius: { xs: 2, md: '8px 0 0 8px' },
+                bgcolor: '#F5F5F5',
+                p: { xs: 3, md: 5 },
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Box>
+                <Typography variant="overline" sx={{ color: '#666666', letterSpacing: '0.18em' }}>
+                  JOIN THE COMPETITION
+                </Typography>
+                <Typography variant="h3" sx={{ mt: 1, fontWeight: 700 }}>
+                  Create your account
+                </Typography>
+                <Typography variant="h5" sx={{ mt: 1, color: '#666666' }}>
+                  Get access to matches, standings, and prizes.
+                </Typography>
+
+                <Box sx={{ mt: 4 }}>
+                  <Typography variant="h6" sx={{ mb: 2 }}>
+                    Benefits
+                  </Typography>
+                  <Grid container spacing={1.5}>
+                    {[
+                      'Track your progress across all matches',
+                      'Earn points and climb the leaderboard',
+                      'Join your department rankings',
+                    ].map((item) => (
+                      <Grid key={item} size={12}>
+                        <Chip
+                          label={item}
+                          variant="outlined"
+                          sx={{
+                            width: '100%',
+                            justifyContent: 'flex-start',
+                            borderColor: '#E0E0E0',
+                            color: '#212121',
+                            bgcolor: '#FFFFFF',
+                          }}
+                        />
+                      </Grid>
+                    ))}
+                  </Grid>
+                </Box>
+              </Box>
+
+              <Box sx={{ mt: 4 }}>
+                <Divider sx={{ mb: 2 }} />
+                <Typography variant="body2" color="text.secondary">
+                  Company-only challenge • It&apos;s that easy.
+                </Typography>
+              </Box>
             </Box>
+          </Grid>
 
-            {error && (
-              <Alert severity="error" sx={{ mb: 2 }}>
-                {error}
-              </Alert>
-            )}
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Card
+              sx={{
+                height: '100%',
+                borderRadius: { xs: 2, md: '0 8px 8px 0' },
+                borderLeft: { md: 'none' },
+              }}
+            >
+              <CardContent sx={{ p: { xs: 3, md: 5 } }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                  <Box
+                    component="img"
+                    src="/assets/kramp-logo-red.svg"
+                    alt="Kramp"
+                    sx={{ height: 36, width: 'auto' }}
+                  />
+                  <Typography variant="body2" color="text.secondary">
+                    It&apos;s that easy.
+                  </Typography>
+                </Box>
 
-            <form onSubmit={handleSubmit}>
-              <TextField
-                fullWidth
-                label="First Name"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-                margin="normal"
-                required
-              />
-              <TextField
-                fullWidth
-                label="Last Name"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                margin="normal"
-                required
-              />
-              <TextField
-                fullWidth
-                label="Email Address"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                margin="normal"
-                required
-              />
-              <TextField
-                fullWidth
-                label="Customer Number"
-                name="customerNumber"
-                value={formData.customerNumber}
-                onChange={handleChange}
-                margin="normal"
-                required
-                placeholder="C1234_1234567"
-                helperText="Format: C1234_1234567"
-              />
-              <TextField
-                fullWidth
-                label="Password"
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-                margin="normal"
-                required
-                helperText="Minimum 8 characters"
-              />
-              <TextField
-                fullWidth
-                label="Confirm Password"
-                name="confirmPassword"
-                type="password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                margin="normal"
-                required
-              />
-              <Button
-                fullWidth
-                variant="contained"
-                size="large"
-                type="submit"
-                disabled={loading}
-                sx={{ mt: 3, mb: 2 }}
-              >
-                {loading ? <CircularProgress size={24} /> : 'Register'}
-              </Button>
-            </form>
+                <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+                  Register
+                </Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+                  Use your company details to create your account.
+                </Typography>
 
-            <Box sx={{ textAlign: 'center' }}>
-              <Link
-                component="button"
-                variant="body2"
-                onClick={() => navigate('/login')}
-                sx={{ cursor: 'pointer' }}
-              >
-                Already have an account? Sign in
-              </Link>
-            </Box>
-          </CardContent>
-        </Card>
-      </Box>
-    </Container>
+                {error && (
+                  <Alert severity="error" sx={{ mb: 2 }}>
+                    {error}
+                  </Alert>
+                )}
+
+                <form onSubmit={handleSubmit}>
+                  <Grid container spacing={2}>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                      <TextField
+                        fullWidth
+                        label="First Name"
+                        name="firstName"
+                        value={formData.firstName}
+                        onChange={handleChange}
+                        margin="normal"
+                        required
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                      <TextField
+                        fullWidth
+                        label="Last Name"
+                        name="lastName"
+                        value={formData.lastName}
+                        onChange={handleChange}
+                        margin="normal"
+                        required
+                      />
+                    </Grid>
+                    <Grid size={12}>
+                      <TextField
+                        fullWidth
+                        label="Email Address"
+                        name="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        margin="normal"
+                        required
+                      />
+                    </Grid>
+                    <Grid size={12}>
+                      <TextField
+                        fullWidth
+                        label="Customer Number"
+                        name="customerNumber"
+                        value={formData.customerNumber}
+                        onChange={handleChange}
+                        margin="normal"
+                        required
+                        placeholder="C1234_1234567"
+                        helperText="Format: C1234_1234567"
+                      />
+                    </Grid>
+                    <Grid size={12}>
+                      <TextField
+                        fullWidth
+                        label="Password"
+                        name="password"
+                        type="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        margin="normal"
+                        required
+                        helperText="Minimum 8 characters"
+                      />
+                    </Grid>
+                    <Grid size={12}>
+                      <TextField
+                        fullWidth
+                        label="Confirm Password"
+                        name="confirmPassword"
+                        type="password"
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        margin="normal"
+                        required
+                      />
+                    </Grid>
+                  </Grid>
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    size="large"
+                    type="submit"
+                    disabled={loading}
+                    sx={{ mt: 3 }}
+                  >
+                    {loading ? <CircularProgress size={24} /> : 'Create account'}
+                  </Button>
+                </form>
+
+                <Box sx={{ textAlign: 'center', mt: 3 }}>
+                  <Link
+                    component="button"
+                    variant="body2"
+                    onClick={() => navigate('/login')}
+                    sx={{ cursor: 'pointer' }}
+                  >
+                    Already have an account? Sign in
+                  </Link>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      </Container>
+    </Box>
   );
 }

@@ -14,7 +14,6 @@ import {
 } from '@mui/material';
 import {
   EmojiEvents as TrophyIcon,
-  Star as StarIcon,
   CheckCircle as CheckIcon,
   Info as InfoIcon,
   CalendarToday as CalendarIcon,
@@ -24,30 +23,26 @@ import {
 export default function PrizesPage() {
   const prizes = [
     {
-      place: '1st Place',
+      place: '1',
       prize: 'Foosball Table',
-      emoji: '🥇',
       description: 'Professional-grade foosball table for the ultimate champion',
       color: '#FFD700', // Gold
     },
     {
-      place: '2nd Place',
+      place: '2',
       prize: 'Smart TV (55")',
-      emoji: '🥈',
       description: '4K Ultra HD Smart TV to watch future tournaments in style',
       color: '#C0C0C0', // Silver
     },
     {
-      place: '3rd Place',
+      place: '3',
       prize: 'Premium Tablet',
-      emoji: '🥉',
       description: 'Latest tablet for entertainment and productivity',
       color: '#CD7F32', // Bronze
     },
     {
       place: 'Department Winner',
       prize: 'Team Dinner Voucher',
-      emoji: '🍽️',
       description: '€500 voucher for a celebratory team dinner',
       color: '#9B1915', // Kramp Red
     },
@@ -56,7 +51,7 @@ export default function PrizesPage() {
   return (
     <Box>
       <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-        🏆 Prizes & Awards
+        Prizes & Awards
       </Typography>
 
       <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
@@ -81,28 +76,42 @@ export default function PrizesPage() {
             <Card
               sx={{
                 height: '100%',
-                background: `linear-gradient(135deg, ${prize.color}20 0%, ${prize.color}10 100%)`,
-                border: `2px solid ${prize.color}`,
-                transition: 'transform 0.2s',
+                border: `1px solid #E0E0E0`,
+                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
                 '&:hover': {
                   transform: 'translateY(-4px)',
-                  boxShadow: 4,
+                  boxShadow: 3,
                 },
               }}
             >
               <CardContent>
                 <Box sx={{ textAlign: 'center', mb: 2 }}>
-                  <Typography variant="h1" sx={{ fontSize: '4rem', mb: 1 }}>
-                    {prize.emoji}
-                  </Typography>
-                  <Chip
-                    label={prize.place}
+                  <Box
                     sx={{
-                      backgroundColor: prize.color,
-                      color: 'white',
+                      width: 64,
+                      height: 64,
+                      borderRadius: '50%',
+                      bgcolor: prize.color,
+                      color: '#212121',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: 700,
+                      fontSize: '1.5rem',
+                      mb: 2,
+                    }}
+                  >
+                    {prize.place}
+                  </Box>
+                  <Chip
+                    label={`${prize.place}${prize.place === '1' ? 'st' : prize.place === '2' ? 'nd' : 'rd'} Place`}
+                    sx={{
+                      backgroundColor: '#FFFFFF',
+                      color: '#212121',
                       fontWeight: 'bold',
-                      fontSize: '0.9rem',
+                      fontSize: '0.8rem',
                       px: 1,
+                      border: '1px solid #E0E0E0',
                     }}
                   />
                 </Box>
@@ -128,17 +137,29 @@ export default function PrizesPage() {
       <Card
         sx={{
           mb: 4,
-          background: 'linear-gradient(135deg, #9B191520 0%, #9B191510 100%)',
-          border: '2px solid #9B1915',
+          border: '1px solid #E0E0E0',
         }}
       >
         <CardContent>
           <Grid container spacing={3} alignItems="center">
             <Grid size={{ xs: 12, md: 3 }}>
               <Box sx={{ textAlign: 'center' }}>
-                <Typography variant="h1" sx={{ fontSize: '5rem' }}>
-                  {prizes[3].emoji}
-                </Typography>
+                <Box
+                  sx={{
+                    width: 72,
+                    height: 72,
+                    borderRadius: '50%',
+                    bgcolor: '#9B1915',
+                    color: '#FFFFFF',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: 700,
+                    fontSize: '1.5rem',
+                  }}
+                >
+                  Dept
+                </Box>
               </Box>
             </Grid>
             <Grid size={{ xs: 12, md: 9 }}>
@@ -169,7 +190,14 @@ export default function PrizesPage() {
           <List>
             <ListItem>
               <ListItemIcon>
-                <StarIcon color="primary" />
+                <Box
+                  sx={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: '50%',
+                    bgcolor: '#9B1915',
+                  }}
+                />
               </ListItemIcon>
               <ListItemText
                 primary="All Employees Eligible"
@@ -179,7 +207,14 @@ export default function PrizesPage() {
 
             <ListItem>
               <ListItemIcon>
-                <StarIcon color="primary" />
+                <Box
+                  sx={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: '50%',
+                    bgcolor: '#9B1915',
+                  }}
+                />
               </ListItemIcon>
               <ListItemText
                 primary="Final Standings Determine Winners"
@@ -189,7 +224,14 @@ export default function PrizesPage() {
 
             <ListItem>
               <ListItemIcon>
-                <StarIcon color="primary" />
+                <Box
+                  sx={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: '50%',
+                    bgcolor: '#9B1915',
+                  }}
+                />
               </ListItemIcon>
               <ListItemText
                 primary="Tie-Breaking Rules Apply"
@@ -199,7 +241,14 @@ export default function PrizesPage() {
 
             <ListItem>
               <ListItemIcon>
-                <StarIcon color="primary" />
+                <Box
+                  sx={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: '50%',
+                    bgcolor: '#9B1915',
+                  }}
+                />
               </ListItemIcon>
               <ListItemText
                 primary="Department Minimum Requirement"
@@ -209,7 +258,14 @@ export default function PrizesPage() {
 
             <ListItem>
               <ListItemIcon>
-                <StarIcon color="primary" />
+                <Box
+                  sx={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: '50%',
+                    bgcolor: '#9B1915',
+                  }}
+                />
               </ListItemIcon>
               <ListItemText
                 primary="Prize Claim Period"
@@ -219,7 +275,14 @@ export default function PrizesPage() {
 
             <ListItem>
               <ListItemIcon>
-                <StarIcon color="primary" />
+                <Box
+                  sx={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: '50%',
+                    bgcolor: '#9B1915',
+                  }}
+                />
               </ListItemIcon>
               <ListItemText
                 primary="Non-Transferable"
@@ -251,7 +314,7 @@ export default function PrizesPage() {
       {/* Fun Fact */}
       <Alert severity="success" icon={<TrophyIcon />} sx={{ mt: 3 }}>
         <strong>Fun Fact:</strong> The maximum possible score in this game is approximately 1,200 points! Do you have
-        what it takes to be the prediction champion? 🏆
+        what it takes to be the prediction champion?
       </Alert>
     </Box>
   );

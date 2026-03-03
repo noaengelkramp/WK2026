@@ -122,23 +122,31 @@ export default function HomePage() {
   }, []);
 
   return (
-    <Box>
-      <Typography variant="h4" gutterBottom sx={{ mb: 3, fontWeight: 'bold' }}>
-        🏆 Welcome to World Cup 2026 Prediction Game
-      </Typography>
+    <Box sx={{ pb: 4 }}>
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h4" gutterBottom sx={{ fontWeight: 700 }}>
+          World Cup 2026 Prediction Challenge
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Compete with colleagues and win amazing prizes.
+        </Typography>
+      </Box>
 
       <Grid container spacing={3}>
         {/* Next Match Card */}
         <Grid size={12}>
-          <Card sx={{ background: 'linear-gradient(135deg, #9B1915 0%, #C42420 100%)', color: 'white' }}>
+          <Card>
             <CardContent>
-              <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'white' }}>
-                <ClockIcon sx={{ color: 'white' }} /> Next Match
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <ClockIcon sx={{ color: '#9B1915' }} /> Next Match
+                </Typography>
+                <Chip label="LIVE SOON" color="warning" size="small" />
+              </Box>
               
               {loadingMatches ? (
                 <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-                  <CircularProgress sx={{ color: 'white' }} />
+                  <CircularProgress />
                 </Box>
               ) : matchError ? (
                 <Alert severity="warning" sx={{ mt: 2 }}>
@@ -153,20 +161,19 @@ export default function HomePage() {
                         src={nextMatch.homeTeam.flagUrl}
                         alt={`${nextMatch.homeTeam.name} flag`}
                         sx={{
-                          width: 80,
-                          height: 60,
+                          width: 100,
+                          height: 75,
                           objectFit: 'cover',
                           borderRadius: 1,
-                          boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                          border: '1px solid #E0E0E0',
                           mb: 1,
                         }}
                       />
-                      <Typography variant="h6" sx={{ color: 'white' }}>{nextMatch.homeTeam.name}</Typography>
+                      <Typography variant="h6">{nextMatch.homeTeam.name}</Typography>
                     </Grid>
                     <Grid size={{ xs: 12, sm: 4 }} sx={{ textAlign: 'center' }}>
-                      <Chip label={nextMatch.status.toUpperCase()} color="warning" sx={{ mb: 1 }} />
-                      <Typography variant="h5" sx={{ color: 'white' }}>VS</Typography>
-                      <Typography variant="body2" sx={{ mt: 1, color: 'white' }}>
+                      <Typography variant="h5">VS</Typography>
+                      <Typography variant="body2" sx={{ mt: 1, color: 'text.secondary' }}>
                         {new Date(nextMatch.matchDate).toLocaleDateString('en-US', {
                           month: 'long',
                           day: 'numeric',
@@ -174,7 +181,7 @@ export default function HomePage() {
                           minute: '2-digit',
                         })}
                       </Typography>
-                      <Typography variant="body2" sx={{ color: 'white' }}>{nextMatch.venue}, {nextMatch.city}</Typography>
+                      <Typography variant="body2" sx={{ color: 'text.secondary' }}>{nextMatch.venue}, {nextMatch.city}</Typography>
                     </Grid>
                     <Grid size={{ xs: 12, sm: 4 }} sx={{ textAlign: 'center' }}>
                       <Box
@@ -182,25 +189,25 @@ export default function HomePage() {
                         src={nextMatch.awayTeam.flagUrl}
                         alt={`${nextMatch.awayTeam.name} flag`}
                         sx={{
-                          width: 80,
-                          height: 60,
+                          width: 100,
+                          height: 75,
                           objectFit: 'cover',
                           borderRadius: 1,
-                          boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                          border: '1px solid #E0E0E0',
                           mb: 1,
                         }}
                       />
-                      <Typography variant="h6" sx={{ color: 'white' }}>{nextMatch.awayTeam.name}</Typography>
+                      <Typography variant="h6">{nextMatch.awayTeam.name}</Typography>
                     </Grid>
                   </Grid>
                   <Box sx={{ textAlign: 'center', mt: 3 }}>
                     <Button
                       variant="contained"
-                      color="secondary"
+                      color="primary"
                       size="large"
                       onClick={() => navigate('/my-prediction')}
                     >
-                      Submit Your Predictions
+                      Make your predictions now
                     </Button>
                   </Box>
                 </>
@@ -214,48 +221,45 @@ export default function HomePage() {
         </Grid>
 
         {/* Deadline Countdown Card */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Card sx={{ background: 'linear-gradient(135deg, #F5F5F5 0%, #E0E0E0 100%)', height: '100%' }}>
+        <Grid size={{ xs: 12, md: 4 }}>
+          <Card sx={{ height: '100%' }}>
             <CardContent>
-              <Typography variant="h5" gutterBottom sx={{ color: '#9B1915' }}>
-                ⏰ Prediction Deadline
+              <Typography variant="overline" color="text.secondary">
+                Prediction Deadline
               </Typography>
-              <Typography variant="h3" sx={{ my: 2, color: '#9B1915' }}>
-                15 Days 4 Hours
+              <Typography variant="h3" sx={{ my: 1, color: '#9B1915', fontWeight: 700 }}>
+                15
               </Typography>
-              <Typography variant="body1" sx={{ color: '#212121' }}>
+              <Typography variant="body1" sx={{ fontWeight: 600 }}>Days 4 Hours</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
                 June 11, 2026 at 23:00
-              </Typography>
-              <Typography variant="body2" sx={{ mt: 2, color: '#666666' }}>
-                Make sure to submit all your predictions before the deadline!
               </Typography>
             </CardContent>
           </Card>
         </Grid>
 
         {/* Prize Info Card */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Card sx={{ background: 'linear-gradient(135deg, #C42420 0%, #9B1915 100%)', color: 'white', height: '100%' }}>
+        <Grid size={{ xs: 12, md: 8 }}>
+          <Card sx={{ height: '100%', background: 'linear-gradient(135deg, #C42420 0%, #9B1915 100%)', color: 'white' }}>
             <CardContent>
               <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'white' }}>
-                <TrophyIcon sx={{ color: 'white' }} /> Prizes to Win!
+                <TrophyIcon sx={{ color: 'white' }} /> Prizes to Win
               </Typography>
               <Typography variant="h6" sx={{ mt: 2, color: 'white' }}>
-                🎯 1st: Professional Foosball Table
+                1st: Professional Foosball Table
               </Typography>
               <Typography variant="h6" sx={{ mt: 1, color: 'white' }}>
-                📺 2nd: Smart TV 55"
+                2nd: Smart TV 55"
               </Typography>
               <Typography variant="h6" sx={{ mt: 1, color: 'white' }}>
-                📱 3rd: iPad Pro
+                3rd: iPad Pro
               </Typography>
               <Button
-                variant="contained"
-                color="secondary"
-                sx={{ mt: 2 }}
+                variant="outlined"
+                sx={{ mt: 2, color: 'white', borderColor: 'rgba(255,255,255,0.6)' }}
                 onClick={() => navigate('/prizes')}
               >
-                View All Prizes
+                View all prizes
               </Button>
             </CardContent>
           </Card>
@@ -265,9 +269,19 @@ export default function HomePage() {
         <Grid size={12}>
           <Card>
             <CardContent>
-              <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <TrophyIcon color="primary" /> Top Individual Players
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                <Box>
+                  <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <TrophyIcon color="primary" /> Top Players
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Live snapshot of the current leaderboard.
+                  </Typography>
+                </Box>
+                <Button variant="outlined" onClick={() => navigate('/standings/individual')}>
+                  View all standings
+                </Button>
+              </Box>
               
               {loadingPlayers ? (
                 <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
@@ -292,10 +306,28 @@ export default function HomePage() {
                         {topPlayers.map((entry, index) => (
                           <TableRow key={entry.userId || `player-${index}`}>
                             <TableCell>
-                              {entry.rank === 1 && '🥇'}
-                              {entry.rank === 2 && '🥈'}
-                              {entry.rank === 3 && '🥉'}
-                              {entry.rank && entry.rank > 3 && entry.rank}
+                              <Box
+                                sx={{
+                                  width: 28,
+                                  height: 28,
+                                  borderRadius: '50%',
+                                  bgcolor:
+                                    entry.rank === 1
+                                      ? '#FFD700'
+                                      : entry.rank === 2
+                                      ? '#C0C0C0'
+                                      : entry.rank === 3
+                                      ? '#CD7F32'
+                                      : '#E0E0E0',
+                                  color: '#212121',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  fontWeight: 700,
+                                }}
+                              >
+                                {entry.rank ?? index + 1}
+                              </Box>
                             </TableCell>
                             <TableCell>
                               {entry.firstName && entry.lastName 
@@ -311,13 +343,6 @@ export default function HomePage() {
                       </TableBody>
                     </Table>
                   </TableContainer>
-                  <Button
-                    fullWidth
-                    sx={{ mt: 2 }}
-                    onClick={() => navigate('/standings/individual')}
-                  >
-                    View Full Standings
-                  </Button>
                 </>
               ) : (
                 <Alert severity="info" sx={{ mt: 2 }}>
@@ -330,35 +355,36 @@ export default function HomePage() {
 
         {/* Quick Links */}
         <Grid size={12}>
-          <Card>
-            <CardContent>
-              <Typography variant="h5" gutterBottom>
-                Quick Links
-              </Typography>
-              <Grid container spacing={2} sx={{ mt: 1 }}>
-                <Grid size={{ xs: 6, sm: 3 }}>
-                  <Button fullWidth variant="outlined" onClick={() => navigate('/matches')}>
-                    View Matches
-                  </Button>
-                </Grid>
-                <Grid size={{ xs: 6, sm: 3 }}>
-                  <Button fullWidth variant="outlined" onClick={() => navigate('/groups')}>
-                    Group Standings
-                  </Button>
-                </Grid>
-                <Grid size={{ xs: 6, sm: 3 }}>
-                  <Button fullWidth variant="outlined" onClick={() => navigate('/statistics')}>
-                    Statistics
-                  </Button>
-                </Grid>
-                <Grid size={{ xs: 6, sm: 3 }}>
-                  <Button fullWidth variant="outlined" onClick={() => navigate('/rules')}>
-                    How to Play
-                  </Button>
-                </Grid>
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Quick access
+          </Typography>
+          <Grid container spacing={2}>
+            {[
+              { label: 'View matches', path: '/matches' },
+              { label: 'Group standings', path: '/groups' },
+              { label: 'Statistics', path: '/statistics' },
+              { label: 'How to play', path: '/rules' },
+            ].map((item) => (
+              <Grid key={item.path} size={{ xs: 12, sm: 6, md: 3 }}>
+                <Card
+                  sx={{
+                    height: '100%',
+                    transition: 'transform 0.2s ease',
+                    '&:hover': { transform: 'translateY(-2px)' },
+                  }}
+                >
+                  <CardContent>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
+                      {item.label}
+                    </Typography>
+                    <Button variant="outlined" onClick={() => navigate(item.path)}>
+                      Open
+                    </Button>
+                  </CardContent>
+                </Card>
               </Grid>
-            </CardContent>
-          </Card>
+            ))}
+          </Grid>
         </Grid>
       </Grid>
     </Box>

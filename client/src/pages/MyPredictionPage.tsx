@@ -244,9 +244,9 @@ export default function MyPredictionPage() {
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-        ⚽ My Predictions
-      </Typography>
+        <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+          My Predictions
+        </Typography>
 
       <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
         Predict the scores for all 104 matches and answer bonus questions to earn points!
@@ -254,8 +254,8 @@ export default function MyPredictionPage() {
 
       {/* Deadline Warning */}
       <Alert severity="warning" sx={{ mb: 3 }}>
-        <Typography variant="h6">⏰ Prediction Deadline: June 11, 2026 at 23:00</Typography>
-        <Typography variant="body2">Make sure to submit all your predictions before the deadline!</Typography>
+        <Typography variant="h6">Prediction Deadline: June 11, 2026 at 23:00</Typography>
+        <Typography variant="body2">Make sure to submit all your predictions before the deadline.</Typography>
       </Alert>
 
       {/* Save message */}
@@ -273,10 +273,10 @@ export default function MyPredictionPage() {
       )}
 
       {/* Progress Card */}
-      <Card sx={{ mb: 3, background: 'linear-gradient(135deg, #F5F5F5 0%, #E0E0E0 100%)' }}>
+      <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom sx={{ color: 'primary.main' }}>
-            📊 Completion Progress
+            Completion Progress
           </Typography>
           <Typography variant="body1" color="text.secondary" gutterBottom>
             {predictedMatches} / {totalMatches} matches predicted ({progress.toFixed(1)}%)
@@ -310,17 +310,17 @@ export default function MyPredictionPage() {
       </Card>
 
       {/* Group Stage Predictions */}
-      <Accordion defaultExpanded>
+      <Accordion defaultExpanded sx={{ border: '1px solid #E0E0E0', boxShadow: 'none' }}>
         <AccordionSummary expandIcon={<ExpandIcon />}>
           <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-            🏟️ Group Stage Predictions ({groupMatches.length} matches)
+            Group Stage Predictions ({groupMatches.length} matches)
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Grid container spacing={2}>
             {groupMatches.map((match) => (
               <Grid size={{ xs: 12, md: 6 }} key={match.id}>
-                <Card variant="outlined" sx={{ '&:hover': { boxShadow: 2 } }}>
+                <Card variant="outlined" sx={{ borderColor: '#E0E0E0', '&:hover': { boxShadow: 2 } }}>
                   <CardContent>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
                       <Chip 
@@ -404,10 +404,10 @@ export default function MyPredictionPage() {
       </Accordion>
 
       {/* Knockout Stage Predictions */}
-      <Accordion sx={{ mt: 2 }}>
+      <Accordion sx={{ mt: 2, border: '1px solid #E0E0E0', boxShadow: 'none' }}>
         <AccordionSummary expandIcon={<ExpandIcon />}>
           <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-            🏆 Knockout Stage Predictions ({knockoutMatches.length} matches)
+            Knockout Stage Predictions ({knockoutMatches.length} matches)
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
@@ -421,10 +421,10 @@ export default function MyPredictionPage() {
       </Accordion>
 
       {/* Champion Prediction */}
-      <Accordion sx={{ mt: 2 }}>
+      <Accordion sx={{ mt: 2, border: '1px solid #E0E0E0', boxShadow: 'none' }}>
         <AccordionSummary expandIcon={<ExpandIcon />}>
           <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-            🥇 Champion Prediction (30 points)
+            Champion Prediction (30 points)
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
@@ -462,10 +462,10 @@ export default function MyPredictionPage() {
       </Accordion>
 
       {/* Bonus Questions */}
-      <Accordion sx={{ mt: 2 }}>
+      <Accordion sx={{ mt: 2, border: '1px solid #E0E0E0', boxShadow: 'none' }}>
         <AccordionSummary expandIcon={<ExpandIcon />}>
           <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-            ❓ Bonus Questions ({bonusQuestions.length} questions)
+            Bonus Questions ({bonusQuestions.length} questions)
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
