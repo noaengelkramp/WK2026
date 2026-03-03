@@ -12,14 +12,12 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
   Button,
   CircularProgress,
   Alert,
 } from '@mui/material';
 import {
   EmojiEventsOutlined as TrophyIcon,
-  ScheduleOutlined as ClockIcon,
   ChevronRight as ChevronRightIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
@@ -234,7 +232,7 @@ export default function HomePage() {
                       variant="contained"
                       color="primary"
                       size="large"
-                      endIcon={<ChevronRightIcon />}
+                      endIcon={<ChevronRightIcon fontSize="small" />}
                       onClick={() => navigate('/my-prediction')}
                       sx={{ px: 4 }}
                     >
@@ -404,7 +402,7 @@ export default function HomePage() {
                     <Typography variant="body2" sx={{ fontWeight: 700 }}>
                       {item.label}
                     </Typography>
-                    <ChevronRightIcon size="small" sx={{ color: '#9B1915' }} />
+                    <ChevronRightIcon fontSize="small" sx={{ color: '#9B1915' }} />
                   </CardContent>
                 </Card>
               </Grid>

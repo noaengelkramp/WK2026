@@ -7,7 +7,6 @@ import {
   Grid,
   TextField,
   Button,
-  Chip,
   Alert,
   LinearProgress,
   MenuItem,
@@ -225,7 +224,6 @@ export default function MyPredictionPage() {
 
   // Group matches by stage
   const groupMatches = matches.filter(m => m.stage === 'group');
-  const knockoutMatches = matches.filter(m => m.stage !== 'group');
 
   if (loading) {
     return (

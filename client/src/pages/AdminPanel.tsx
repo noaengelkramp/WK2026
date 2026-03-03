@@ -8,14 +8,14 @@ import {
   Alert,
 } from '@mui/material';
 import {
-  Dashboard as DashboardIcon,
-  People as PeopleIcon,
-  Badge as BadgeIcon,
-  SportsSoccer as SoccerIcon,
-  Flag as FlagIcon,
-  Settings as SettingsIcon,
-  Warning as WarningIcon,
-  Science as ScienceIcon,
+  DashboardOutlined as DashboardIcon,
+  PeopleOutlined as PeopleIcon,
+  BadgeOutlined as BadgeIcon,
+  SportsSoccerOutlined as SoccerIcon,
+  FlagOutlined as FlagIcon,
+  SettingsOutlined as SettingsIcon,
+  ReportProblemOutlined as WarningIcon,
+  ScienceOutlined as ScienceIcon,
 } from '@mui/icons-material';
 import UserManagement from '../components/admin/UserManagement';
 import CustomerManagement from '../components/admin/CustomerManagement';
@@ -31,29 +31,32 @@ export default function AdminPanel() {
   const [selectedTab, setSelectedTab] = useState<TabValue>('dashboard');
 
   return (
-    <Box>
-      <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-        🔧 Admin Panel
-      </Typography>
-
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-        Manage users, matches, teams, and tournament settings
-      </Typography>
+    <Box sx={{ pb: 4 }}>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, color: '#212121' }}>
+          Admin Control Center
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Manage users, matches, teams, and tournament configurations.
+        </Typography>
+      </Box>
 
       {/* Admin Access Notice */}
-      <Alert severity="warning" icon={<WarningIcon />} sx={{ mb: 3 }}>
-        <strong>Admin Access Required</strong> - This panel is restricted to administrators only. All actions are logged
-        for security purposes.
+      <Alert severity="warning" variant="outlined" icon={<WarningIcon />} sx={{ mb: 4, borderRadius: 0 }}>
+        <strong>Admin Access Restricted</strong> - This panel is for authorized administrators only. All actions are logged.
       </Alert>
 
       {/* Tabs */}
-      <Card sx={{ mb: 3 }}>
+      <Card variant="outlined" sx={{ mb: 4, borderRadius: 0, borderBottom: 'none' }}>
         <Tabs
           value={selectedTab}
           onChange={(_, value) => setSelectedTab(value)}
           variant="scrollable"
           scrollButtons="auto"
-          sx={{ borderBottom: 1, borderColor: 'divider' }}
+          sx={{ 
+            '& .MuiTabs-indicator': { backgroundColor: '#9B1915' },
+            '& .MuiTab-root.Mui-selected': { color: '#9B1915' }
+          }}
         >
           <Tab icon={<DashboardIcon />} iconPosition="start" label="Dashboard" value="dashboard" />
           <Tab icon={<PeopleIcon />} iconPosition="start" label="Users" value="users" />
@@ -65,26 +68,28 @@ export default function AdminPanel() {
         </Tabs>
       </Card>
 
-      {/* Dashboard Tab */}
-      {selectedTab === 'dashboard' && <ApiDashboard />}
+      <Box sx={{ border: '1px solid #E0E0E0', p: 3, backgroundColor: '#FFFFFF' }}>
+        {/* Dashboard Tab */}
+        {selectedTab === 'dashboard' && <ApiDashboard />}
 
-      {/* User Management Tab */}
-      {selectedTab === 'users' && <UserManagement />}
+        {/* User Management Tab */}
+        {selectedTab === 'users' && <UserManagement />}
 
-      {/* Customer Management Tab */}
-      {selectedTab === 'customers' && <CustomerManagement />}
+        {/* Customer Management Tab */}
+        {selectedTab === 'customers' && <CustomerManagement />}
 
-      {/* Match Management Tab */}
-      {selectedTab === 'matches' && <MatchManagement />}
+        {/* Match Management Tab */}
+        {selectedTab === 'matches' && <MatchManagement />}
 
-      {/* Team Management Tab */}
-      {selectedTab === 'teams' && <TeamManagement />}
+        {/* Team Management Tab */}
+        {selectedTab === 'teams' && <TeamManagement />}
 
-      {/* Settings Tab */}
-      {selectedTab === 'settings' && <Settings />}
+        {/* Settings Tab */}
+        {selectedTab === 'settings' && <Settings />}
 
-      {/* Testing Tab */}
-      {selectedTab === 'testing' && <TestingPanel />}
+        {/* Testing Tab */}
+        {selectedTab === 'testing' && <TestingPanel />}
+      </Box>
     </Box>
   );
 }
