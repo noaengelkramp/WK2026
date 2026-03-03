@@ -91,28 +91,25 @@ export default function RegisterPage() {
   if (success) {
     return (
       <Container maxWidth="sm">
-        <Box
-          sx={{
-            minHeight: '100vh',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Card>
-            <CardContent sx={{ p: 4, textAlign: 'center' }}>
-              <Typography variant="h3" gutterBottom>
-                ✅
-              </Typography>
-              <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold' }}>
-                Registration Successful!
-              </Typography>
-              <Typography color="text.secondary">
-                Redirecting to home page...
-              </Typography>
-            </CardContent>
-          </Card>
-        </Box>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <Card variant="outlined" sx={{ borderRadius: 0 }}>
+        <CardContent sx={{ p: 4, textAlign: 'center' }}>
+          <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold' }}>
+            Registration Successful
+          </Typography>
+          <Typography color="text.secondary">
+            Redirecting to home page...
+          </Typography>
+        </CardContent>
+      </Card>
+    </Box>
       </Container>
     );
   }
@@ -127,7 +124,7 @@ export default function RegisterPage() {
                 height: '100%',
                 border: '1px solid #E0E0E0',
                 borderRight: { md: 'none' },
-                borderRadius: { xs: 2, md: '8px 0 0 8px' },
+                borderRadius: 0,
                 bgcolor: '#F5F5F5',
                 p: { xs: 3, md: 5 },
                 display: 'flex',
@@ -136,48 +133,40 @@ export default function RegisterPage() {
               }}
             >
               <Box>
-                <Typography variant="overline" sx={{ color: '#666666', letterSpacing: '0.18em' }}>
+                <Typography variant="overline" sx={{ color: '#9B1915', fontWeight: 700, letterSpacing: '0.1em' }}>
                   JOIN THE COMPETITION
                 </Typography>
-                <Typography variant="h3" sx={{ mt: 1, fontWeight: 700 }}>
+                <Typography variant="h3" sx={{ mt: 1, fontWeight: 700, color: '#212121' }}>
                   Create your account
                 </Typography>
-                <Typography variant="h5" sx={{ mt: 1, color: '#666666' }}>
-                  Get access to matches, standings, and prizes.
+                <Typography variant="body1" sx={{ mt: 2, color: '#666666', fontSize: '1.1rem' }}>
+                  Get access to matches, standings, and exclusive prizes by joining the Kramp prediction challenge.
                 </Typography>
 
-                <Box sx={{ mt: 4 }}>
-                  <Typography variant="h6" sx={{ mb: 2 }}>
+                <Box sx={{ mt: 6 }}>
+                  <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 700, textTransform: 'uppercase', color: '#212121' }}>
                     Benefits
                   </Typography>
-                  <Grid container spacing={1.5}>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                     {[
-                      'Track your progress across all matches',
-                      'Earn points and climb the leaderboard',
-                      'Join your department rankings',
+                      'Track your progress across all 104 matches',
+                      'Earn points and climb the global leaderboard',
+                      'Compete for the department ranking',
                     ].map((item) => (
-                      <Grid key={item} size={12}>
-                        <Chip
-                          label={item}
-                          variant="outlined"
-                          sx={{
-                            width: '100%',
-                            justifyContent: 'flex-start',
-                            borderColor: '#E0E0E0',
-                            color: '#212121',
-                            bgcolor: '#FFFFFF',
-                          }}
-                        />
-                      </Grid>
+                      <Box key={item} sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                        <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#9B1915' }} />
+                        <Typography variant="body2" sx={{ color: '#444', fontWeight: 500 }}>
+                          {item}
+                        </Typography>
+                      </Box>
                     ))}
-                  </Grid>
+                  </Box>
                 </Box>
               </Box>
 
               <Box sx={{ mt: 4 }}>
-                <Divider sx={{ mb: 2 }} />
-                <Typography variant="body2" color="text.secondary">
-                  Company-only challenge • It&apos;s that easy.
+                <Typography variant="caption" sx={{ color: '#999', fontWeight: 500 }}>
+                  © 2026 Kramp Groep B.V. • It&apos;s that easy.
                 </Typography>
               </Box>
             </Box>
@@ -185,34 +174,32 @@ export default function RegisterPage() {
 
           <Grid size={{ xs: 12, md: 6 }}>
             <Card
+              variant="outlined"
               sx={{
                 height: '100%',
-                borderRadius: { xs: 2, md: '0 8px 8px 0' },
+                borderRadius: 0,
                 borderLeft: { md: 'none' },
               }}
             >
-              <CardContent sx={{ p: { xs: 3, md: 5 } }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+              <CardContent sx={{ p: { xs: 3, md: 6 } }}>
+                <Box sx={{ mb: 6 }}>
                   <Box
                     component="img"
                     src="/assets/kramp-logo-red.svg"
                     alt="Kramp"
-                    sx={{ height: 36, width: 'auto' }}
+                    sx={{ height: 32, width: 'auto' }}
                   />
-                  <Typography variant="body2" color="text.secondary">
-                    It&apos;s that easy.
-                  </Typography>
                 </Box>
 
-                <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+                <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, color: '#212121' }}>
                   Register
                 </Typography>
-                <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-                  Use your company details to create your account.
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
+                  Enter your details below to create your participant account.
                 </Typography>
 
                 {error && (
-                  <Alert severity="error" sx={{ mb: 2 }}>
+                  <Alert severity="error" variant="outlined" sx={{ mb: 3, borderRadius: 0 }}>
                     {error}
                   </Alert>
                 )}
@@ -224,10 +211,11 @@ export default function RegisterPage() {
                         fullWidth
                         label="First Name"
                         name="firstName"
+                        variant="outlined"
                         value={formData.firstName}
                         onChange={handleChange}
-                        margin="normal"
                         required
+                        sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
                       />
                     </Grid>
                     <Grid size={{ xs: 12, md: 6 }}>
@@ -235,10 +223,11 @@ export default function RegisterPage() {
                         fullWidth
                         label="Last Name"
                         name="lastName"
+                        variant="outlined"
                         value={formData.lastName}
                         onChange={handleChange}
-                        margin="normal"
                         required
+                        sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
                       />
                     </Grid>
                     <Grid size={12}>
@@ -247,10 +236,11 @@ export default function RegisterPage() {
                         label="Email Address"
                         name="email"
                         type="email"
+                        variant="outlined"
                         value={formData.email}
                         onChange={handleChange}
-                        margin="normal"
                         required
+                        sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
                       />
                     </Grid>
                     <Grid size={12}>
@@ -258,12 +248,13 @@ export default function RegisterPage() {
                         fullWidth
                         label="Customer Number"
                         name="customerNumber"
+                        variant="outlined"
                         value={formData.customerNumber}
                         onChange={handleChange}
-                        margin="normal"
                         required
                         placeholder="C1234_1234567"
                         helperText="Format: C1234_1234567"
+                        sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
                       />
                     </Grid>
                     <Grid size={12}>
@@ -272,11 +263,12 @@ export default function RegisterPage() {
                         label="Password"
                         name="password"
                         type="password"
+                        variant="outlined"
                         value={formData.password}
                         onChange={handleChange}
-                        margin="normal"
                         required
                         helperText="Minimum 8 characters"
+                        sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
                       />
                     </Grid>
                     <Grid size={12}>
@@ -285,10 +277,11 @@ export default function RegisterPage() {
                         label="Confirm Password"
                         name="confirmPassword"
                         type="password"
+                        variant="outlined"
                         value={formData.confirmPassword}
                         onChange={handleChange}
-                        margin="normal"
                         required
+                        sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
                       />
                     </Grid>
                   </Grid>
@@ -298,18 +291,18 @@ export default function RegisterPage() {
                     size="large"
                     type="submit"
                     disabled={loading}
-                    sx={{ mt: 3 }}
+                    sx={{ mt: 4, height: 48 }}
                   >
-                    {loading ? <CircularProgress size={24} /> : 'Create account'}
+                    {loading ? <CircularProgress size={24} color="inherit" /> : 'Create Account'}
                   </Button>
                 </form>
 
-                <Box sx={{ textAlign: 'center', mt: 3 }}>
+                <Box sx={{ textAlign: 'center', mt: 4 }}>
                   <Link
                     component="button"
                     variant="body2"
                     onClick={() => navigate('/login')}
-                    sx={{ cursor: 'pointer' }}
+                    sx={{ cursor: 'pointer', color: '#666', textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
                   >
                     Already have an account? Sign in
                   </Link>

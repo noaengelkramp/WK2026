@@ -1,0 +1,868 @@
+{
+  "name": "WK2026",
+  "type": "directory",
+  "children": [
+    {
+      "name": ".env",
+      "type": "file"
+    },
+    {
+      "name": ".env.example",
+      "type": "file"
+    },
+    {
+      "name": ".gitignore",
+      "type": "file"
+    },
+    {
+      "name": "API_FOOTBALL_INTEGRATION_REPORT.md",
+      "type": "file"
+    },
+    {
+      "name": "API_FOOTBALL_QUICK_START.md",
+      "type": "file"
+    },
+    {
+      "name": "API_REQUEST_FLOW.md",
+      "type": "file"
+    },
+    {
+      "name": "API_REQUEST_PREDICTIONS.md",
+      "type": "file"
+    },
+    {
+      "name": "API_SETUP_SUMMARY.md",
+      "type": "file"
+    },
+    {
+      "name": "API_TEST_RESULTS.md",
+      "type": "file"
+    },
+    {
+      "name": "API_USAGE_STRATEGY.md",
+      "type": "file"
+    },
+    {
+      "name": "API_USAGE_SUMMARY.md",
+      "type": "file"
+    },
+    {
+      "name": "BOOT_TEST_RESULTS.txt",
+      "type": "file"
+    },
+    {
+      "name": "CONTENT_FIX.md",
+      "type": "file"
+    },
+    {
+      "name": "CUSTOMER_MESSAGING_UPDATE.md",
+      "type": "file"
+    },
+    {
+      "name": "EMAIL_VERIFICATION_COMPLETE.md",
+      "type": "file"
+    },
+    {
+      "name": "GRID_FIX.md",
+      "type": "file"
+    },
+    {
+      "name": "INITIALIZATION_COMPLETE.md",
+      "type": "file"
+    },
+    {
+      "name": "JSX_FIX.md",
+      "type": "file"
+    },
+    {
+      "name": "KRAMP_BRAND_COLORS.md",
+      "type": "file"
+    },
+    {
+      "name": "MANUAL_TESTING_CHECKLIST.md",
+      "type": "file"
+    },
+    {
+      "name": "MANUAL_TEST_CHECKLIST.md",
+      "type": "file"
+    },
+    {
+      "name": "NETLIFY_DEPLOYMENT.md",
+      "type": "file"
+    },
+    {
+      "name": "NETLIFY_DEPLOYMENT_CHECKLIST.md",
+      "type": "file"
+    },
+    {
+      "name": "NETLIFY_ENV_VARS.md",
+      "type": "file"
+    },
+    {
+      "name": "PHASE_1_AND_2_SUMMARY.md",
+      "type": "file"
+    },
+    {
+      "name": "PHASE_2_COMPLETE.md",
+      "type": "file"
+    },
+    {
+      "name": "QUICK_START.md",
+      "type": "file"
+    },
+    {
+      "name": "README.md",
+      "type": "file"
+    },
+    {
+      "name": "REDIS_CACHING_SUMMARY.md",
+      "type": "file"
+    },
+    {
+      "name": "SESSION_11_SUMMARY.md",
+      "type": "file"
+    },
+    {
+      "name": "SESSION_9_SUMMARY.md",
+      "type": "file"
+    },
+    {
+      "name": "TESTING_GUIDE.md",
+      "type": "file"
+    },
+    {
+      "name": "TESTING_PLAN_2022_DATA.md",
+      "type": "file"
+    },
+    {
+      "name": "TROUBLESHOOTING.md",
+      "type": "file"
+    },
+    {
+      "name": "UI_CHANGES_PREVIEW.md",
+      "type": "file"
+    },
+    {
+      "name": "agent-progress.txt",
+      "type": "file"
+    },
+    {
+      "name": "app_spec.txt",
+      "type": "file"
+    },
+    {
+      "name": "client",
+      "type": "directory",
+      "children": [
+        {
+          "name": ".env",
+          "type": "file"
+        },
+        {
+          "name": ".gitignore",
+          "type": "file"
+        },
+        {
+          "name": "README.md",
+          "type": "file"
+        },
+        {
+          "name": "eslint.config.js",
+          "type": "file"
+        },
+        {
+          "name": "index.html",
+          "type": "file"
+        },
+        {
+          "name": "package-lock.json",
+          "type": "file"
+        },
+        {
+          "name": "package.json",
+          "type": "file"
+        },
+        {
+          "name": "public",
+          "type": "directory",
+          "children": [
+            {
+              "name": "assets",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "kramp-logo-white.svg",
+                  "type": "file"
+                }
+              ]
+            },
+            {
+              "name": "locales",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "en",
+                  "type": "directory",
+                  "children": []
+                },
+                {
+                  "name": "nl",
+                  "type": "directory",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "vite.svg",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "src",
+          "type": "directory",
+          "children": [
+            {
+              "name": "App.css",
+              "type": "file"
+            },
+            {
+              "name": "App.tsx",
+              "type": "file"
+            },
+            {
+              "name": "assets",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "react.svg",
+                  "type": "file"
+                }
+              ]
+            },
+            {
+              "name": "components",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "admin",
+                  "type": "directory",
+                  "children": [
+                    {
+                      "name": "ApiDashboard.tsx",
+                      "type": "file"
+                    },
+                    {
+                      "name": "CustomerManagement.tsx",
+                      "type": "file"
+                    },
+                    {
+                      "name": "MatchManagement.tsx",
+                      "type": "file"
+                    },
+                    {
+                      "name": "Settings.tsx",
+                      "type": "file"
+                    },
+                    {
+                      "name": "TeamManagement.tsx",
+                      "type": "file"
+                    },
+                    {
+                      "name": "TestingPanel.tsx",
+                      "type": "file"
+                    },
+                    {
+                      "name": "UserManagement.tsx",
+                      "type": "file"
+                    }
+                  ]
+                },
+                {
+                  "name": "common",
+                  "type": "directory",
+                  "children": []
+                },
+                {
+                  "name": "layout",
+                  "type": "directory",
+                  "children": [
+                    {
+                      "name": "Layout.tsx",
+                      "type": "file"
+                    }
+                  ]
+                },
+                {
+                  "name": "matches",
+                  "type": "directory",
+                  "children": []
+                },
+                {
+                  "name": "predictions",
+                  "type": "directory",
+                  "children": []
+                },
+                {
+                  "name": "standings",
+                  "type": "directory",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "contexts",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "AuthContext.tsx",
+                  "type": "file"
+                }
+              ]
+            },
+            {
+              "name": "data",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "mockData.ts",
+                  "type": "file"
+                }
+              ]
+            },
+            {
+              "name": "hooks",
+              "type": "directory",
+              "children": []
+            },
+            {
+              "name": "index.css",
+              "type": "file"
+            },
+            {
+              "name": "main.tsx",
+              "type": "file"
+            },
+            {
+              "name": "pages",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "AdminPanel.tsx",
+                  "type": "file"
+                },
+                {
+                  "name": "GroupsPage.tsx",
+                  "type": "file"
+                },
+                {
+                  "name": "HomePage.tsx",
+                  "type": "file"
+                },
+                {
+                  "name": "LoginPage.tsx",
+                  "type": "file"
+                },
+                {
+                  "name": "MatchesPage.tsx",
+                  "type": "file"
+                },
+                {
+                  "name": "MyPredictionPage.tsx",
+                  "type": "file"
+                },
+                {
+                  "name": "PrizesPage.tsx",
+                  "type": "file"
+                },
+                {
+                  "name": "RegisterPage.tsx",
+                  "type": "file"
+                },
+                {
+                  "name": "RulesPage.tsx",
+                  "type": "file"
+                },
+                {
+                  "name": "StandingsIndividualPage.tsx",
+                  "type": "file"
+                },
+                {
+                  "name": "StatisticsPage.tsx",
+                  "type": "file"
+                },
+                {
+                  "name": "VerifyEmailPage.tsx",
+                  "type": "file"
+                }
+              ]
+            },
+            {
+              "name": "services",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "adminService.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "api.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "authService.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "dataService.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "predictionService.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "standingsService.ts",
+                  "type": "file"
+                }
+              ]
+            },
+            {
+              "name": "types",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "index.ts",
+                  "type": "file"
+                }
+              ]
+            },
+            {
+              "name": "utils",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "theme.ts",
+                  "type": "file"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "tsconfig.app.json",
+          "type": "file"
+        },
+        {
+          "name": "tsconfig.json",
+          "type": "file"
+        },
+        {
+          "name": "tsconfig.node.json",
+          "type": "file"
+        },
+        {
+          "name": "vite.config.ts",
+          "type": "file"
+        }
+      ]
+    },
+    {
+      "name": "database",
+      "type": "directory",
+      "children": [
+        {
+          "name": "migrations",
+          "type": "directory",
+          "children": []
+        },
+        {
+          "name": "seeders",
+          "type": "directory",
+          "children": []
+        }
+      ]
+    },
+    {
+      "name": "docs",
+      "type": "directory",
+      "children": [
+        {
+          "name": "API_KEY_SETUP.md",
+          "type": "file"
+        }
+      ]
+    },
+    {
+      "name": "feature_list.json",
+      "type": "file"
+    },
+    {
+      "name": "generate_features.py",
+      "type": "file"
+    },
+    {
+      "name": "init.sh",
+      "type": "file"
+    },
+    {
+      "name": "netlify",
+      "type": "directory",
+      "children": [
+        {
+          "name": "functions",
+          "type": "directory",
+          "children": [
+            {
+              "name": "api.ts",
+              "type": "file"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "netlify-env-vars.sh",
+      "type": "file"
+    },
+    {
+      "name": "netlify.toml",
+      "type": "file"
+    },
+    {
+      "name": "package-lock.json",
+      "type": "file"
+    },
+    {
+      "name": "package.json",
+      "type": "file"
+    },
+    {
+      "name": "push-to-github.sh",
+      "type": "file"
+    },
+    {
+      "name": "repo-index.json",
+      "type": "file"
+    },
+    {
+      "name": "server",
+      "type": "directory",
+      "children": [
+        {
+          "name": "check_db.js",
+          "type": "file"
+        },
+        {
+          "name": "check_db_lower.js",
+          "type": "file"
+        },
+        {
+          "name": "check_group_matches.js",
+          "type": "file"
+        },
+        {
+          "name": "list_tables.js",
+          "type": "file"
+        },
+        {
+          "name": "migrations",
+          "type": "directory",
+          "children": [
+            {
+              "name": "add-email-verification-columns.sql",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "package-lock.json",
+          "type": "file"
+        },
+        {
+          "name": "package.json",
+          "type": "file"
+        },
+        {
+          "name": "src",
+          "type": "directory",
+          "children": [
+            {
+              "name": "config",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "database.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "environment.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "redis.ts",
+                  "type": "file"
+                }
+              ]
+            },
+            {
+              "name": "controllers",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "adminController.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "authController.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "bonusQuestionController.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "matchController.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "predictionController.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "scoringRuleController.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "standingsController.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "teamController.ts",
+                  "type": "file"
+                }
+              ]
+            },
+            {
+              "name": "jobs",
+              "type": "directory",
+              "children": []
+            },
+            {
+              "name": "middleware",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "auth.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "errorHandler.ts",
+                  "type": "file"
+                }
+              ]
+            },
+            {
+              "name": "models",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "ApiLog.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "AppSettings.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "BonusAnswer.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "BonusQuestion.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "Customer.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "Match.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "Prediction.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "Prize.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "ScoringRule.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "Team.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "User.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "UserStatistics.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "index.ts",
+                  "type": "file"
+                }
+              ]
+            },
+            {
+              "name": "routes",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "admin.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "auth.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "bonusQuestions.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "health.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "matches.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "predictions.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "scoringRules.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "setup.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "standings.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "teams.ts",
+                  "type": "file"
+                }
+              ]
+            },
+            {
+              "name": "scripts",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "check-groups.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "fix-group-letters.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "migrate-email-verification.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "sync-2022-data.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "test-api-football.ts",
+                  "type": "file"
+                }
+              ]
+            },
+            {
+              "name": "server.ts",
+              "type": "file"
+            },
+            {
+              "name": "services",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "cacheService.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "emailService.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "footballApiService.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "scoringService.ts",
+                  "type": "file"
+                }
+              ]
+            },
+            {
+              "name": "utils",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "jwt.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "migrate.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "populateMatches.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "runMatchSeeder.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "seed.ts",
+                  "type": "file"
+                },
+                {
+                  "name": "seedAllMatches.ts",
+                  "type": "file"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "tsconfig.json",
+          "type": "file"
+        }
+      ]
+    },
+    {
+      "name": "test-api-endpoints.sh",
+      "type": "file"
+    },
+    {
+      "name": "test_api.js",
+      "type": "file"
+    }
+  ]
+}

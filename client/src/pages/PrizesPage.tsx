@@ -4,7 +4,6 @@ import {
   CardContent,
   Typography,
   Grid,
-  Chip,
   Alert,
   Divider,
   List,
@@ -13,114 +12,77 @@ import {
   ListItemText,
 } from '@mui/material';
 import {
-  EmojiEvents as TrophyIcon,
-  CheckCircle as CheckIcon,
-  Info as InfoIcon,
-  CalendarToday as CalendarIcon,
-  Groups as GroupsIcon,
+  EmojiEventsOutlined as TrophyIcon,
+  CheckCircleOutlined as CheckIcon,
+  InfoOutlined as InfoIcon,
+  CalendarTodayOutlined as CalendarIcon,
+  GroupsOutlined as GroupsIcon,
 } from '@mui/icons-material';
 
 export default function PrizesPage() {
   const prizes = [
     {
-      place: '1',
-      prize: 'Foosball Table',
-      description: 'Professional-grade foosball table for the ultimate champion',
-      color: '#FFD700', // Gold
+      place: '1st Place',
+      prize: 'Professional Foosball Table',
+      description: 'The ultimate office companion. High-quality build with professional handles and players.',
+      color: '#9B1915',
     },
     {
-      place: '2',
+      place: '2nd Place',
       prize: 'Smart TV (55")',
-      description: '4K Ultra HD Smart TV to watch future tournaments in style',
-      color: '#C0C0C0', // Silver
+      description: '4K Ultra HD Smart TV featuring the latest streaming apps and HDR technology.',
+      color: '#212121',
     },
     {
-      place: '3',
+      place: '3rd Place',
       prize: 'Premium Tablet',
-      description: 'Latest tablet for entertainment and productivity',
-      color: '#CD7F32', // Bronze
+      description: 'High-performance tablet with a stunning display, perfect for work and entertainment.',
+      color: '#666666',
     },
     {
-      place: 'Department Winner',
-      prize: 'Team Dinner Voucher',
-      description: '€500 voucher for a celebratory team dinner',
-      color: '#9B1915', // Kramp Red
+      place: 'Team Award',
+      prize: 'Department Dinner Voucher',
+      description: 'A celebratory dinner for your entire department (up to €500 value).',
+      color: '#9B1915',
     },
   ];
 
   return (
-    <Box>
-      <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-        Prizes & Awards
-      </Typography>
+    <Box sx={{ pb: 4 }}>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, color: '#212121' }}>
+          Prize Catalog
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Exclusive rewards for the top-performing predictors in the Kramp 2026 Challenge.
+        </Typography>
+      </Box>
 
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-        Compete for amazing prizes in the World Cup 2026 Prediction Game!
-      </Typography>
-
-      {/* Overview Alert */}
-      <Alert severity="info" icon={<InfoIcon />} sx={{ mb: 3 }}>
-        <strong>Winners will be announced after the tournament ends on July 19, 2026.</strong>
-        <br />
-        Prizes will be distributed during the company celebration event in late July 2026.
+      <Alert severity="info" icon={<InfoIcon />} variant="outlined" sx={{ mb: 4, borderRadius: 0 }}>
+        <Typography variant="body2" sx={{ fontWeight: 700 }}>
+          Winners will be announced after the tournament final on July 19, 2026.
+        </Typography>
       </Alert>
 
-      {/* Individual Prizes */}
-      <Typography variant="h5" gutterBottom sx={{ mt: 4, mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-        <TrophyIcon color="primary" /> Individual Prizes
+      <Typography variant="subtitle2" sx={{ mb: 3, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#666' }}>
+        Individual Performance Rewards
       </Typography>
 
-      <Grid container spacing={3} sx={{ mb: 4 }}>
+      <Grid container spacing={3} sx={{ mb: 6 }}>
         {prizes.slice(0, 3).map((prize, index) => (
           <Grid key={index} size={{ xs: 12, md: 4 }}>
-            <Card
-              sx={{
-                height: '100%',
-                border: `1px solid #E0E0E0`,
-                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: 3,
-                },
-              }}
-            >
-              <CardContent>
-                <Box sx={{ textAlign: 'center', mb: 2 }}>
-                  <Box
-                    sx={{
-                      width: 64,
-                      height: 64,
-                      borderRadius: '50%',
-                      bgcolor: prize.color,
-                      color: '#212121',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontWeight: 700,
-                      fontSize: '1.5rem',
-                      mb: 2,
-                    }}
-                  >
-                    {prize.place}
-                  </Box>
-                  <Chip
-                    label={`${prize.place}${prize.place === '1' ? 'st' : prize.place === '2' ? 'nd' : 'rd'} Place`}
-                    sx={{
-                      backgroundColor: '#FFFFFF',
-                      color: '#212121',
-                      fontWeight: 'bold',
-                      fontSize: '0.8rem',
-                      px: 1,
-                      border: '1px solid #E0E0E0',
-                    }}
-                  />
-                </Box>
-
-                <Typography variant="h6" gutterBottom sx={{ textAlign: 'center', fontWeight: 'bold' }}>
+            <Card variant="outlined" sx={{ height: '100%', borderRadius: 0 }}>
+              <Box sx={{ height: 160, backgroundColor: '#F5F5F5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <TrophyIcon sx={{ fontSize: 60, color: prize.color }} />
+              </Box>
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="overline" sx={{ fontWeight: 700, color: '#9B1915' }}>
+                  {prize.place}
+                </Typography>
+                <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, mt: 0.5 }}>
                   {prize.prize}
                 </Typography>
-
-                <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
+                <Typography variant="body2" color="text.secondary">
                   {prize.description}
                 </Typography>
               </CardContent>
@@ -129,193 +91,93 @@ export default function PrizesPage() {
         ))}
       </Grid>
 
-      {/* Department Prize */}
-      <Typography variant="h5" gutterBottom sx={{ mt: 4, mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-        <GroupsIcon color="primary" /> Department Prize
+      <Typography variant="subtitle2" sx={{ mb: 3, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#666' }}>
+        Department Excellence
       </Typography>
 
-      <Card
-        sx={{
-          mb: 4,
-          border: '1px solid #E0E0E0',
-        }}
-      >
-        <CardContent>
-          <Grid container spacing={3} alignItems="center">
-            <Grid size={{ xs: 12, md: 3 }}>
-              <Box sx={{ textAlign: 'center' }}>
-                <Box
-                  sx={{
-                    width: 72,
-                    height: 72,
-                    borderRadius: '50%',
-                    bgcolor: '#9B1915',
-                    color: '#FFFFFF',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontWeight: 700,
-                    fontSize: '1.5rem',
-                  }}
-                >
-                  Dept
-                </Box>
-              </Box>
-            </Grid>
-            <Grid size={{ xs: 12, md: 9 }}>
-              <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+      <Card variant="outlined" sx={{ mb: 6, borderRadius: 0 }}>
+        <Grid container spacing={0}>
+          <Grid size={{ xs: 12, md: 4 }} sx={{ backgroundColor: '#F5F5F5', display: 'flex', alignItems: 'center', justifyContent: 'center', p: 4 }}>
+            <GroupsIcon sx={{ fontSize: 80, color: '#9B1915' }} />
+          </Grid>
+          <Grid size={{ xs: 12, md: 8 }}>
+            <CardContent sx={{ p: 4 }}>
+              <Typography variant="overline" sx={{ fontWeight: 700, color: '#9B1915' }}>
+                Team Category
+              </Typography>
+              <Typography variant="h5" sx={{ fontWeight: 700, mb: 2, mt: 0.5 }}>
                 {prizes[3].prize}
               </Typography>
-              <Typography variant="body1" color="text.secondary" paragraph>
+              <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
                 {prizes[3].description}
               </Typography>
+              <Divider sx={{ mb: 3 }} />
               <Typography variant="body2" color="text.secondary">
-                Awarded to the department with the highest average points per participant. Every prediction counts
-                towards your team's success!
+                This award recognizes the department with the highest average points per participant. At least 5 participants from a department must be registered to qualify.
               </Typography>
-            </Grid>
+            </CardContent>
           </Grid>
-        </CardContent>
+        </Grid>
       </Card>
 
-      <Divider sx={{ my: 4 }} />
-
-      {/* Eligibility Rules */}
-      <Typography variant="h5" gutterBottom sx={{ mt: 4, mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-        <CheckIcon color="primary" /> Eligibility & Rules
+      <Typography variant="subtitle2" sx={{ mb: 3, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#666' }}>
+        Eligibility & Guidelines
       </Typography>
 
-      <Card sx={{ mb: 4 }}>
-        <CardContent>
-          <List>
-            <ListItem>
-              <ListItemIcon>
-                <Box
-                  sx={{
-                    width: 10,
-                    height: 10,
-                    borderRadius: '50%',
-                    bgcolor: '#9B1915',
-                  }}
-                />
-              </ListItemIcon>
-              <ListItemText
-                primary="All Employees Eligible"
-                secondary="Any company employee who registers and submits predictions before the deadline (June 11, 2026 at 23:00) is eligible to win."
-              />
-            </ListItem>
-
-            <ListItem>
-              <ListItemIcon>
-                <Box
-                  sx={{
-                    width: 10,
-                    height: 10,
-                    borderRadius: '50%',
-                    bgcolor: '#9B1915',
-                  }}
-                />
-              </ListItemIcon>
-              <ListItemText
-                primary="Final Standings Determine Winners"
-                secondary="Winners are determined by the final standings after all 104 matches are completed on July 19, 2026."
-              />
-            </ListItem>
-
-            <ListItem>
-              <ListItemIcon>
-                <Box
-                  sx={{
-                    width: 10,
-                    height: 10,
-                    borderRadius: '50%',
-                    bgcolor: '#9B1915',
-                  }}
-                />
-              </ListItemIcon>
-              <ListItemText
-                primary="Tie-Breaking Rules Apply"
-                secondary="In case of a tie, winners will be determined by: 1) Most exact score predictions, 2) Most correct winner predictions, 3) Earlier registration date."
-              />
-            </ListItem>
-
-            <ListItem>
-              <ListItemIcon>
-                <Box
-                  sx={{
-                    width: 10,
-                    height: 10,
-                    borderRadius: '50%',
-                    bgcolor: '#9B1915',
-                  }}
-                />
-              </ListItemIcon>
-              <ListItemText
-                primary="Department Minimum Requirement"
-                secondary="For the Department Prize, a department must have at least 5 participants to be eligible."
-              />
-            </ListItem>
-
-            <ListItem>
-              <ListItemIcon>
-                <Box
-                  sx={{
-                    width: 10,
-                    height: 10,
-                    borderRadius: '50%',
-                    bgcolor: '#9B1915',
-                  }}
-                />
-              </ListItemIcon>
-              <ListItemText
-                primary="Prize Claim Period"
-                secondary="Winners must claim their prizes within 30 days of the announcement. Unclaimed prizes will be donated to charity."
-              />
-            </ListItem>
-
-            <ListItem>
-              <ListItemIcon>
-                <Box
-                  sx={{
-                    width: 10,
-                    height: 10,
-                    borderRadius: '50%',
-                    bgcolor: '#9B1915',
-                  }}
-                />
-              </ListItemIcon>
-              <ListItemText
-                primary="Non-Transferable"
-                secondary="Prizes are non-transferable and must be claimed by the winner personally. No cash alternatives available."
-              />
-            </ListItem>
+      <Card variant="outlined" sx={{ borderRadius: 0 }}>
+        <CardContent sx={{ p: 0 }}>
+          <List sx={{ p: 0 }}>
+            {[
+              {
+                title: 'Participant Eligibility',
+                desc: 'Open to all Kramp Group employees who register before the June 11 deadline.'
+              },
+              {
+                title: 'Winner Determination',
+                desc: 'Rankings are finalized after the completion of all 104 tournament matches.'
+              },
+              {
+                title: 'Tie-Breaking Protocol',
+                desc: 'Ties are resolved by: 1) Correct scores, 2) Correct winners, 3) Registration date.'
+              },
+              {
+                title: 'Prize Collection',
+                desc: 'Prizes will be presented during local office events in late July 2026.'
+              }
+            ].map((rule, idx) => (
+              <Box key={idx}>
+                <ListItem sx={{ py: 2.5, px: 4 }}>
+                  <ListItemIcon sx={{ minWidth: 40 }}>
+                    <CheckIcon sx={{ color: '#9B1915' }} fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={<Typography variant="body2" sx={{ fontWeight: 700 }}>{rule.title}</Typography>}
+                    secondary={<Typography variant="body2" color="text.secondary">{rule.desc}</Typography>}
+                  />
+                </ListItem>
+                {idx < 3 && <Divider />}
+              </Box>
+            ))}
           </List>
         </CardContent>
       </Card>
 
-      {/* Winner Announcement */}
-      <Card sx={{ background: 'linear-gradient(135deg, #9B1915 0%, #C42420 100%)', color: 'white' }}>
-        <CardContent>
-          <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'white' }}>
-            <CalendarIcon sx={{ color: 'white' }} /> Winner Announcement
+      <Card variant="outlined" sx={{ mt: 4, borderRadius: 0, backgroundColor: '#212121', color: '#FFFFFF' }}>
+        <CardContent sx={{ p: 4 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+            <CalendarIcon sx={{ color: '#9B1915' }} />
+            <Typography variant="h6" sx={{ fontWeight: 700 }}>Announcement Schedule</Typography>
+          </Box>
+          <Typography variant="body2" sx={{ opacity: 0.8, mb: 2 }}>
+            Official winners will be published on the internal portal and via email on July 20, 2026. Standings on this platform are updated in real-time but remain unofficial until final verification.
           </Typography>
-
-          <Typography variant="body1" sx={{ color: 'white', mb: 2 }}>
-            Winners will be officially announced during the company celebration event in late July 2026, after all
-            final scores are verified and standings are confirmed.
-          </Typography>
-
-          <Typography variant="body2" sx={{ color: 'white' }}>
-            All participants will receive an email notification when winners are announced. Stay tuned!
+          <Typography variant="caption" sx={{ fontWeight: 700, color: '#9B1915' }}>
+            It&apos;s that easy.
           </Typography>
         </CardContent>
       </Card>
-
-      {/* Fun Fact */}
-      <Alert severity="success" icon={<TrophyIcon />} sx={{ mt: 3 }}>
-        <strong>Fun Fact:</strong> The maximum possible score in this game is approximately 1,200 points! Do you have
-        what it takes to be the prediction champion?
-      </Alert>
     </Box>
+  );
+}
   );
 }

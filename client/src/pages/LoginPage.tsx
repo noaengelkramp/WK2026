@@ -51,7 +51,7 @@ export default function LoginPage() {
                 height: '100%',
                 border: '1px solid #E0E0E0',
                 borderRight: { md: 'none' },
-                borderRadius: { xs: 2, md: '8px 0 0 8px' },
+                borderRadius: 0,
                 bgcolor: '#F5F5F5',
                 p: { xs: 3, md: 5 },
                 display: 'flex',
@@ -60,29 +60,29 @@ export default function LoginPage() {
               }}
             >
               <Box>
-                <Typography variant="overline" sx={{ color: '#666666', letterSpacing: '0.18em' }}>
+                <Typography variant="overline" sx={{ color: '#9B1915', fontWeight: 700, letterSpacing: '0.1em' }}>
                   KRAMP PREDICTION CHALLENGE
                 </Typography>
-                <Typography variant="h3" sx={{ mt: 1, fontWeight: 700 }}>
+                <Typography variant="h3" sx={{ mt: 1, fontWeight: 700, color: '#212121' }}>
                   World Cup 2026
                 </Typography>
-                <Typography variant="h5" sx={{ mt: 1, color: '#666666' }}>
-                  Compete with colleagues, track standings, and win prizes.
+                <Typography variant="body1" sx={{ mt: 2, color: '#666666', fontSize: '1.1rem' }}>
+                  Join the official Kramp prediction game. Compete with colleagues across Europe, track your ranking, and win exclusive prizes.
                 </Typography>
 
                 <Grid container spacing={2} sx={{ mt: 4 }}>
                   {[
                     { label: '104', value: 'Matches' },
                     { label: '48', value: 'Teams' },
-                    { label: '€5K+', value: 'Prizes' },
+                    { label: '€5K+', value: 'Prize Pool' },
                   ].map((item) => (
                     <Grid key={item.value} size={{ xs: 4 }}>
-                      <Card sx={{ borderRadius: 2 }}>
+                      <Card variant="outlined" sx={{ borderRadius: 0, backgroundColor: '#FFFFFF' }}>
                         <CardContent sx={{ p: 2, textAlign: 'center' }}>
-                          <Typography variant="h4" sx={{ color: '#9B1915', fontWeight: 700 }}>
+                          <Typography variant="h5" sx={{ color: '#9B1915', fontWeight: 700 }}>
                             {item.label}
                           </Typography>
-                          <Typography variant="caption" sx={{ color: '#666666' }}>
+                          <Typography variant="caption" sx={{ color: '#666666', fontWeight: 700, textTransform: 'uppercase' }}>
                             {item.value}
                           </Typography>
                         </CardContent>
@@ -91,38 +91,30 @@ export default function LoginPage() {
                   ))}
                 </Grid>
 
-                <Box sx={{ mt: 4 }}>
-                  <Typography variant="h6" sx={{ mb: 2 }}>
+                <Box sx={{ mt: 6 }}>
+                  <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 700, textTransform: 'uppercase', color: '#212121' }}>
                     Why participate?
                   </Typography>
-                  <Grid container spacing={1.5}>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                     {[
-                      'Win prizes for top predictions',
-                      'Follow matches with your team',
-                      'Join the company challenge',
+                      'Win a professional foosball table for your office',
+                      'Real-time leaderboards and statistics',
+                      'Easy prediction management for all 104 matches',
                     ].map((item) => (
-                      <Grid key={item} size={12}>
-                        <Chip
-                          label={item}
-                          variant="outlined"
-                          sx={{
-                            width: '100%',
-                            justifyContent: 'flex-start',
-                            borderColor: '#E0E0E0',
-                            color: '#212121',
-                            bgcolor: '#FFFFFF',
-                          }}
-                        />
-                      </Grid>
+                      <Box key={item} sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                        <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#9B1915' }} />
+                        <Typography variant="body2" sx={{ color: '#444', fontWeight: 500 }}>
+                          {item}
+                        </Typography>
+                      </Box>
                     ))}
-                  </Grid>
+                  </Box>
                 </Box>
               </Box>
 
               <Box sx={{ mt: 4 }}>
-                <Divider sx={{ mb: 2 }} />
-                <Typography variant="body2" color="text.secondary">
-                  Trusted by teams across Kramp • It&apos;s that easy.
+                <Typography variant="caption" sx={{ color: '#999', fontWeight: 500 }}>
+                  © 2026 Kramp Groep B.V. • It&apos;s that easy.
                 </Typography>
               </Box>
             </Box>
@@ -130,34 +122,32 @@ export default function LoginPage() {
 
           <Grid size={{ xs: 12, md: 6 }}>
             <Card
+              variant="outlined"
               sx={{
                 height: '100%',
-                borderRadius: { xs: 2, md: '0 8px 8px 0' },
+                borderRadius: 0,
                 borderLeft: { md: 'none' },
               }}
             >
-              <CardContent sx={{ p: { xs: 3, md: 5 } }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+              <CardContent sx={{ p: { xs: 3, md: 6 } }}>
+                <Box sx={{ mb: 6 }}>
                   <Box
                     component="img"
                     src="/assets/kramp-logo-red.svg"
                     alt="Kramp"
-                    sx={{ height: 36, width: 'auto' }}
+                    sx={{ height: 32, width: 'auto' }}
                   />
-                  <Typography variant="body2" color="text.secondary">
-                    It&apos;s that easy.
-                  </Typography>
                 </Box>
 
-                <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-                  Sign in to your account
+                <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, color: '#212121' }}>
+                  Sign in
                 </Typography>
-                <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-                  Use your company email to access the prediction challenge.
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
+                  Welcome back! Please enter your credentials to access the challenge.
                 </Typography>
 
                 {error && (
-                  <Alert severity="error" sx={{ mb: 2 }}>
+                  <Alert severity="error" variant="outlined" sx={{ mb: 3, borderRadius: 0 }}>
                     {error}
                   </Alert>
                 )}
@@ -167,19 +157,23 @@ export default function LoginPage() {
                     fullWidth
                     label="Email Address"
                     type="email"
+                    variant="outlined"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     margin="normal"
                     required
+                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
                   />
                   <TextField
                     fullWidth
                     label="Password"
                     type="password"
+                    variant="outlined"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     margin="normal"
                     required
+                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
                   />
                   <Button
                     fullWidth
@@ -187,30 +181,36 @@ export default function LoginPage() {
                     size="large"
                     type="submit"
                     disabled={loading}
-                    sx={{ mt: 3 }}
+                    sx={{ mt: 4, height: 48 }}
                   >
-                    {loading ? <CircularProgress size={24} /> : 'Sign In'}
+                    {loading ? <CircularProgress size={24} color="inherit" /> : 'Sign In'}
                   </Button>
                 </form>
+
+                <Divider sx={{ my: 4 }}>
+                  <Typography variant="caption" sx={{ color: '#999', textTransform: 'uppercase', fontWeight: 700 }}>
+                    New here?
+                  </Typography>
+                </Divider>
 
                 <Button
                   fullWidth
                   variant="outlined"
                   size="large"
                   onClick={() => navigate('/register')}
-                  sx={{ mt: 2 }}
+                  sx={{ height: 48 }}
                 >
-                  Create account
+                  Create Account
                 </Button>
 
-                <Box sx={{ textAlign: 'center', mt: 3 }}>
+                <Box sx={{ textAlign: 'center', mt: 4 }}>
                   <Link
                     component="button"
                     variant="body2"
-                    onClick={() => alert('Password reset functionality coming soon!')}
-                    sx={{ cursor: 'pointer' }}
+                    onClick={() => alert('Please contact IT support for password recovery.')}
+                    sx={{ cursor: 'pointer', color: '#666', textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
                   >
-                    Forgot password?
+                    Forgot your password?
                   </Link>
                 </Box>
               </CardContent>

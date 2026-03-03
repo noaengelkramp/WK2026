@@ -45,17 +45,20 @@ export const theme = createTheme({
     },
     divider: '#E0E0E0',
   },
+  shape: {
+    borderRadius: 2, // Kramp uses very slight border radius (sharp look)
+  },
   typography: {
     fontFamily: '"Source Sans 3", "Open Sans", "Helvetica", "Arial", sans-serif',
     h1: {
       fontSize: '2.5rem',
       fontWeight: 700,
-      color: '#9B1915', // Kramp Red
+      color: '#212121', // Use dark text for headers, red only for specific highlights
     },
     h2: {
       fontSize: '2rem',
       fontWeight: 700,
-      color: '#9B1915',
+      color: '#212121',
     },
     h3: {
       fontSize: '1.75rem',
@@ -87,11 +90,9 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           textTransform: 'none',
-          borderRadius: 4,
+          borderRadius: 2, // Sharper corners
           fontWeight: 600,
           padding: '10px 24px',
-        },
-        contained: {
           boxShadow: 'none',
           '&:hover': {
             boxShadow: 'none',
@@ -100,20 +101,24 @@ export const theme = createTheme({
         containedPrimary: {
           backgroundColor: '#9B1915',
           '&:hover': {
-            backgroundColor: '#C42420',
+            backgroundColor: '#7A1411', // Darker on hover
           },
         },
         containedSecondary: {
-          backgroundColor: '#666666', // Grey for secondary buttons, not blue
+          backgroundColor: '#666666', 
+          color: '#FFFFFF',
           '&:hover': {
-            backgroundColor: '#808080',
+            backgroundColor: '#4D4D4D',
           },
         },
         outlined: {
-          borderWidth: 2,
-          borderStyle: 'solid',
+          borderWidth: 1, // Kramp uses 1px borders
+          borderColor: '#E0E0E0',
+          color: '#212121',
           '&:hover': {
-            borderWidth: 2,
+            borderWidth: 1,
+            backgroundColor: '#F5F5F5',
+            borderColor: '#CCCCCC',
           },
         },
       },
@@ -121,25 +126,22 @@ export const theme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 8,
+          borderRadius: 2,
           border: '1px solid #E0E0E0',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-          transition: 'box-shadow 0.3s ease, transform 0.3s ease',
+          boxShadow: 'none', // Removed shadow for catalog look
+          '&:hover': {
+            borderColor: '#9B1915', // Subtle red highlight on hover (optional)
+          },
         },
       },
     },
-    MuiChip: {
+    MuiPaper: {
+      defaultProps: {
+        elevation: 0,
+      },
       styleOverrides: {
         root: {
-          fontWeight: 600,
-        },
-        colorPrimary: {
-          backgroundColor: '#9B1915',
-          color: '#FFFFFF',
-        },
-        colorSecondary: {
-          backgroundColor: '#E0E0E0', // Light grey for secondary chips, not blue
-          color: '#212121',
+          border: '1px solid #E0E0E0',
         },
       },
     },
@@ -147,15 +149,16 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundColor: '#FFFFFF',
-          color: '#9B1915',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.08)',
+          color: '#212121',
+          boxShadow: 'none',
+          borderBottom: '1px solid #E0E0E0',
         },
       },
     },
     MuiDrawer: {
       styleOverrides: {
         paper: {
-          backgroundColor: '#FFFFFF', // White drawer with grey border, not blue
+          backgroundColor: '#FFFFFF',
           color: '#212121',
           borderRight: '1px solid #E0E0E0',
         },
@@ -167,7 +170,10 @@ export const theme = createTheme({
           backgroundColor: '#F5F5F5',
           '& .MuiTableCell-head': {
             fontWeight: 700,
-            color: '#9B1915',
+            color: '#212121',
+            fontSize: '0.85rem',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
           },
         },
       },
@@ -176,20 +182,21 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           borderBottom: '1px solid #E0E0E0',
+          padding: '12px 16px',
         },
       },
     },
     MuiLinearProgress: {
       styleOverrides: {
         root: {
-          borderRadius: 4,
-          height: 8,
+          borderRadius: 0, // Squared progress bars
+          height: 4,
         },
         colorPrimary: {
-          backgroundColor: '#F5E5E4', // Light red tint
+          backgroundColor: '#F5F5F5',
         },
         barColorPrimary: {
-          backgroundColor: '#9B1915', // Kramp Red
+          backgroundColor: '#9B1915',
         },
       },
     },

@@ -20,17 +20,17 @@ import {
 } from '@mui/material';
 import {
   Menu as MenuIcon,
-  Home as HomeIcon,
-  SportsSoccer as SoccerIcon,
-  EmojiEvents as TrophyIcon,
-  Person as PersonIcon,
-  People as PeopleIcon,
-  BarChart as ChartIcon,
-  CardGiftcard as PrizeIcon,
-  Gavel as RulesIcon,
-  AdminPanelSettings as AdminIcon,
-  Language as LanguageIcon,
-  Logout as LogoutIcon,
+  HomeOutlined as HomeIcon,
+  SportsSoccerOutlined as SoccerIcon,
+  EmojiEventsOutlined as TrophyIcon,
+  PersonOutline as PersonIcon,
+  PeopleOutlined as PeopleIcon,
+  BarChartOutlined as ChartIcon,
+  CardGiftcardOutlined as PrizeIcon,
+  GavelOutlined as RulesIcon,
+  AdminPanelSettingsOutlined as AdminIcon,
+  LanguageOutlined as LanguageIcon,
+  LogoutOutlined as LogoutIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -43,18 +43,9 @@ interface LayoutProps {
 
 // Available languages (European languages for World Cup 2026)
 const languages = [
-  { code: 'en', name: 'English', flag: '🇬🇧' },
-  { code: 'nl', name: 'Nederlands', flag: '🇳🇱' },
-  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
-  { code: 'fr', name: 'Français', flag: '🇫🇷' },
-  { code: 'es', name: 'Español', flag: '🇪🇸' },
-  { code: 'it', name: 'Italiano', flag: '🇮🇹' },
-  { code: 'pt', name: 'Português', flag: '🇵🇹' },
-  { code: 'pl', name: 'Polski', flag: '🇵🇱' },
-  { code: 'ro', name: 'Română', flag: '🇷🇴' },
-  { code: 'sv', name: 'Svenska', flag: '🇸🇪' },
-  { code: 'da', name: 'Dansk', flag: '🇩🇰' },
-  { code: 'fi', name: 'Suomi', flag: '🇫🇮' },
+  { code: 'en', name: 'English' },
+  { code: 'nl', name: 'Nederlands' },
+  { code: 'de', name: 'Deutsch' },
 ];
 
 export default function Layout({ children }: LayoutProps) {
@@ -211,7 +202,6 @@ export default function Layout({ children }: LayoutProps) {
             <MenuItem onClick={handleLanguageMenuOpen}>
               <LanguageIcon sx={{ mr: 1 }} />
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <span>{currentLanguage.flag}</span>
                 <span>{currentLanguage.name}</span>
               </Box>
             </MenuItem>
@@ -252,7 +242,6 @@ export default function Layout({ children }: LayoutProps) {
                 }}
               >
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, width: '100%' }}>
-                  <Typography sx={{ fontSize: '1.3rem' }}>{lang.flag}</Typography>
                   <Typography>{lang.name}</Typography>
                 </Box>
               </MenuItem>

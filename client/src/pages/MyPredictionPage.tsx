@@ -24,11 +24,12 @@ import {
   DialogActions,
 } from '@mui/material';
 import {
-  ExpandMore as ExpandIcon,
-  Save as SaveIcon,
-  Check as CheckIcon,
-  Send as SendIcon,
-  EmojiEvents as TrophyIcon,
+  ExpandMoreOutlined as ExpandIcon,
+  SaveOutlined as SaveIcon,
+  CheckCircleOutlined as CheckIcon,
+  SendOutlined as SendIcon,
+  EmojiEventsOutlined as TrophyIcon,
+  InfoOutlined as InfoIcon,
 } from '@mui/icons-material';
 import { dataService } from '../services/dataService';
 import { predictionService } from '../services/predictionService';
@@ -243,62 +244,75 @@ export default function MyPredictionPage() {
   }
 
   return (
-    <Box>
-        <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+    <Box sx={{ pb: 4 }}>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, color: '#212121' }}>
           My Predictions
         </Typography>
-
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-        Predict the scores for all 104 matches and answer bonus questions to earn points!
-      </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Predict match scores and answer bonus questions to earn points and climb the leaderboard.
+        </Typography>
+      </Box>
 
       {/* Deadline Warning */}
-      <Alert severity="warning" sx={{ mb: 3 }}>
-        <Typography variant="h6">Prediction Deadline: June 11, 2026 at 23:00</Typography>
-        <Typography variant="body2">Make sure to submit all your predictions before the deadline.</Typography>
+      <Alert 
+        severity="warning" 
+        variant="outlined" 
+        icon={<InfoIcon />}
+        sx={{ mb: 4, borderRadius: 0, backgroundColor: '#FFF9C4', borderColor: '#FBC02D' }}
+      >
+        <Typography variant="body2" sx={{ fontWeight: 700 }}>
+          Prediction Deadline: June 11, 2026 at 23:00
+        </Typography>
+        <Typography variant="caption">
+          Predictions will be locked after the deadline. You can update your entries until then.
+        </Typography>
       </Alert>
 
       {/* Save message */}
       {saveMessage && (
-        <Alert severity="success" sx={{ mb: 3 }} icon={<CheckIcon />}>
+        <Alert severity="success" variant="outlined" sx={{ mb: 3, borderRadius: 0 }} icon={<CheckIcon />}>
           {saveMessage}
         </Alert>
       )}
 
       {/* Error message */}
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
+        <Alert severity="error" variant="outlined" sx={{ mb: 3, borderRadius: 0 }} onClose={() => setError(null)}>
           {error}
         </Alert>
       )}
 
       {/* Progress Card */}
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Typography variant="h6" gutterBottom sx={{ color: 'primary.main' }}>
-            Completion Progress
-          </Typography>
-          <Typography variant="body1" color="text.secondary" gutterBottom>
-            {predictedMatches} / {totalMatches} matches predicted ({progress.toFixed(1)}%)
-          </Typography>
+      <Card variant="outlined" sx={{ mb: 4, borderRadius: 0 }}>
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 700, textTransform: 'uppercase', color: '#666' }}>
+              Completion Progress
+            </Typography>
+            <Typography variant="body2" sx={{ fontWeight: 700 }}>
+              {predictedMatches} / {totalMatches} Matches Predicted
+            </Typography>
+          </Box>
           <LinearProgress 
             variant="determinate" 
             value={progress} 
-            sx={{ height: 12, borderRadius: 6, mt: 2 }} 
+            sx={{ mb: 3 }} 
           />
-          <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
+          <Box sx={{ display: 'flex', gap: 2 }}>
             <Button
               variant="contained"
               color="primary"
+              size="small"
               startIcon={<SaveIcon />}
               onClick={handleSaveAll}
               disabled={saving || predictedMatches === 0}
             >
-              {saving ? 'Saving...' : 'Save All Predictions'}
+              {saving ? 'Saving...' : 'Save All'}
             </Button>
             <Button
-              variant="contained"
-              color="secondary"
+              variant="outlined"
+              size="small"
               startIcon={<SendIcon />}
               onClick={handleFinalSubmit}
               disabled={saving || predictedMatches === 0}
@@ -310,89 +324,83 @@ export default function MyPredictionPage() {
       </Card>
 
       {/* Group Stage Predictions */}
-      <Accordion defaultExpanded sx={{ border: '1px solid #E0E0E0', boxShadow: 'none' }}>
+      <Accordion defaultExpanded variant="outlined" sx={{ borderRadius: 0, mb: 2 }}>
         <AccordionSummary expandIcon={<ExpandIcon />}>
-          <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-            Group Stage Predictions ({groupMatches.length} matches)
+          <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+            Group Stage ({groupMatches.length} Matches)
           </Typography>
         </AccordionSummary>
-        <AccordionDetails>
+        <AccordionDetails sx={{ p: 3, backgroundColor: '#F9F9F9' }}>
           <Grid container spacing={2}>
             {groupMatches.map((match) => (
-              <Grid size={{ xs: 12, md: 6 }} key={match.id}>
-                <Card variant="outlined" sx={{ borderColor: '#E0E0E0', '&:hover': { boxShadow: 2 } }}>
-                  <CardContent>
+              <Grid size={{ xs: 12, lg: 6 }} key={match.id}>
+                <Card variant="outlined" sx={{ borderRadius: 0, '&:hover': { borderColor: '#9B1915' } }}>
+                  <CardContent sx={{ p: 2 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                      <Chip 
-                        label={`Match #${match.matchNumber}`} 
-                        size="small" 
-                        color="primary"
-                        variant="outlined"
-                      />
-                      <Chip 
-                        label={`Group ${match.groupLetter}`} 
-                        size="small" 
-                      />
+                      <Typography variant="caption" sx={{ fontWeight: 700, color: '#999' }}>
+                        MATCH #{match.matchNumber} • GROUP {match.groupLetter}
+                      </Typography>
+                      <Typography variant="caption" sx={{ fontWeight: 700, color: '#666' }}>
+                        {new Date(match.matchDate).toLocaleDateString('en-GB', { 
+                          day: 'numeric',
+                          month: 'short',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </Typography>
                     </Box>
 
-                    <Grid container spacing={2} alignItems="center">
-                      {/* Home Team */}
-                      <Grid size={4} sx={{ textAlign: 'center' }}>
-                        <Box
-                          component="img"
-                          src={match.homeTeam.flagUrl}
-                          alt={match.homeTeam.name}
-                          sx={{ width: 60, height: 45, objectFit: 'cover', borderRadius: 1, mb: 1 }}
-                        />
-                        <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                          {match.homeTeam.name}
-                        </Typography>
+                    <Grid container spacing={1} alignItems="center">
+                      <Grid size={4}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                          <Box
+                            component="img"
+                            src={match.homeTeam.flagUrl}
+                            alt={match.homeTeam.name}
+                            sx={{ width: 40, height: 30, objectFit: 'cover', border: '1px solid #EEE', mb: 1 }}
+                          />
+                          <Typography variant="body2" sx={{ fontWeight: 700, textAlign: 'center' }}>
+                            {match.homeTeam.name}
+                          </Typography>
+                        </Box>
                       </Grid>
 
-                      {/* Score inputs */}
-                      <Grid size={4} sx={{ textAlign: 'center' }}>
+                      <Grid size={4}>
                         <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', justifyContent: 'center' }}>
                           <TextField
                             type="number"
                             value={predictions[match.id]?.home ?? ''}
                             onChange={(e) => handlePredictionChange(match.id, 'home', e.target.value)}
                             onBlur={() => handleSavePrediction(match.id)}
-                            inputProps={{ min: 0, max: 20, style: { textAlign: 'center' } }}
-                            sx={{ width: 60 }}
+                            inputProps={{ min: 0, max: 20, style: { textAlign: 'center', fontWeight: 700 } }}
+                            sx={{ width: 50, '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
                             size="small"
                           />
-                          <Typography variant="h6">-</Typography>
+                          <Typography variant="body2" sx={{ fontWeight: 700 }}>:</Typography>
                           <TextField
                             type="number"
                             value={predictions[match.id]?.away ?? ''}
                             onChange={(e) => handlePredictionChange(match.id, 'away', e.target.value)}
                             onBlur={() => handleSavePrediction(match.id)}
-                            inputProps={{ min: 0, max: 20, style: { textAlign: 'center' } }}
-                            sx={{ width: 60 }}
+                            inputProps={{ min: 0, max: 20, style: { textAlign: 'center', fontWeight: 700 } }}
+                            sx={{ width: 50, '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
                             size="small"
                           />
                         </Box>
-                        <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
-                          {new Date(match.matchDate).toLocaleDateString('en-US', { 
-                            month: 'short', 
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
-                        </Typography>
                       </Grid>
 
-                      {/* Away Team */}
-                      <Grid size={4} sx={{ textAlign: 'center' }}>
-                        <Box
-                          component="img"
-                          src={match.awayTeam.flagUrl}
-                          alt={match.awayTeam.name}
-                          sx={{ width: 60, height: 45, objectFit: 'cover', borderRadius: 1, mb: 1 }}
-                        />
-                        <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                          {match.awayTeam.name}
-                        </Typography>
+                      <Grid size={4}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                          <Box
+                            component="img"
+                            src={match.awayTeam.flagUrl}
+                            alt={match.awayTeam.name}
+                            sx={{ width: 40, height: 30, objectFit: 'cover', border: '1px solid #EEE', mb: 1 }}
+                          />
+                          <Typography variant="body2" sx={{ fontWeight: 700, textAlign: 'center' }}>
+                            {match.awayTeam.name}
+                          </Typography>
+                        </Box>
                       </Grid>
                     </Grid>
                   </CardContent>
@@ -404,46 +412,44 @@ export default function MyPredictionPage() {
       </Accordion>
 
       {/* Knockout Stage Predictions */}
-      <Accordion sx={{ mt: 2, border: '1px solid #E0E0E0', boxShadow: 'none' }}>
+      <Accordion variant="outlined" sx={{ borderRadius: 0, mb: 2 }}>
         <AccordionSummary expandIcon={<ExpandIcon />}>
-          <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-            Knockout Stage Predictions ({knockoutMatches.length} matches)
+          <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+            Knockout Rounds
           </Typography>
         </AccordionSummary>
-        <AccordionDetails>
-          <Alert severity="info" sx={{ mb: 2 }}>
-            Knockout matches will be available once the group stage teams are determined.
+        <AccordionDetails sx={{ p: 3 }}>
+          <Alert severity="info" variant="outlined" sx={{ borderRadius: 0 }}>
+            Knockout matches will be available for prediction once group stage results are confirmed.
           </Alert>
-          <Typography variant="body2" color="text.secondary">
-            You'll be able to predict these matches once the qualified teams are known after the group stage.
-          </Typography>
         </AccordionDetails>
       </Accordion>
 
       {/* Champion Prediction */}
-      <Accordion sx={{ mt: 2, border: '1px solid #E0E0E0', boxShadow: 'none' }}>
+      <Accordion variant="outlined" sx={{ borderRadius: 0, mb: 2 }}>
         <AccordionSummary expandIcon={<ExpandIcon />}>
-          <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-            Champion Prediction (30 points)
+          <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+            Tournament Champion
           </Typography>
         </AccordionSummary>
-        <AccordionDetails>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                <TrophyIcon sx={{ verticalAlign: 'middle', mr: 1 }} />
+        <AccordionDetails sx={{ p: 3 }}>
+          <Card variant="outlined" sx={{ borderRadius: 0, maxWidth: 500 }}>
+            <CardContent sx={{ p: 3 }}>
+              <Typography variant="body2" sx={{ fontWeight: 700, mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <TrophyIcon fontSize="small" sx={{ color: '#9B1915' }} />
                 Who will win the World Cup 2026?
               </Typography>
-              <FormControl fullWidth sx={{ mt: 2 }}>
+              <FormControl fullWidth size="small">
                 <InputLabel>Select Champion</InputLabel>
                 <Select
                   value={champion}
                   label="Select Champion"
                   onChange={(e) => setChampion(e.target.value)}
+                  sx={{ borderRadius: 0 }}
                 >
                   {teams.map((team) => (
                     <MenuItem key={team.id} value={team.id}>
-                      {team.name} {team.flagUrl && `(Group ${team.groupLetter})`}
+                      {team.name}
                     </MenuItem>
                   ))}
                 </Select>
@@ -451,10 +457,11 @@ export default function MyPredictionPage() {
               <Button
                 variant="contained"
                 color="primary"
+                size="small"
                 sx={{ mt: 2 }}
                 disabled={!champion}
               >
-                Save Champion Prediction
+                Save Choice
               </Button>
             </CardContent>
           </Card>
@@ -462,46 +469,48 @@ export default function MyPredictionPage() {
       </Accordion>
 
       {/* Bonus Questions */}
-      <Accordion sx={{ mt: 2, border: '1px solid #E0E0E0', boxShadow: 'none' }}>
+      <Accordion variant="outlined" sx={{ borderRadius: 0 }}>
         <AccordionSummary expandIcon={<ExpandIcon />}>
-          <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-            Bonus Questions ({bonusQuestions.length} questions)
+          <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+            Bonus Questions
           </Typography>
         </AccordionSummary>
-        <AccordionDetails>
-          <Grid container spacing={2}>
+        <AccordionDetails sx={{ p: 3 }}>
+          <Grid container spacing={3}>
             {bonusQuestions.length === 0 ? (
               <Grid size={12}>
-                <Alert severity="info">
-                  No bonus questions available yet. Check back soon!
-                </Alert>
+                <Typography variant="body2" color="text.secondary">
+                  No bonus questions are currently available.
+                </Typography>
               </Grid>
             ) : (
               bonusQuestions.map((question) => (
-                <Grid size={12} key={question.id}>
-                  <Card>
-                    <CardContent>
-                      <Typography variant="h6" gutterBottom>
+                <Grid size={{ xs: 12, md: 6 }} key={question.id}>
+                  <Card variant="outlined" sx={{ borderRadius: 0, height: '100%' }}>
+                    <CardContent sx={{ p: 3 }}>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.5 }}>
                         {question.questionTextEn}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary" gutterBottom>
-                        Worth {question.points} points
+                      <Typography variant="caption" sx={{ color: '#9B1915', fontWeight: 700, mb: 2, display: 'block' }}>
+                        WORTH {question.points} POINTS
                       </Typography>
                       <TextField
                         fullWidth
+                        size="small"
                         label="Your Answer"
+                        variant="outlined"
                         value={bonusAnswers[question.id] || ''}
                         onChange={(e) => handleBonusAnswerChange(question.id, e.target.value)}
-                        sx={{ mt: 2 }}
+                        sx={{ mt: 1, '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
                       />
                       <Button
                         variant="outlined"
-                        color="primary"
+                        size="small"
                         sx={{ mt: 2 }}
                         onClick={() => handleSaveBonusAnswer(question.id)}
                         disabled={!bonusAnswers[question.id]}
                       >
-                        Save Answer
+                        Save
                       </Button>
                     </CardContent>
                   </Card>
@@ -513,19 +522,23 @@ export default function MyPredictionPage() {
       </Accordion>
 
       {/* Submit Confirmation Dialog */}
-      <Dialog open={submitDialogOpen} onClose={() => setSubmitDialogOpen(false)}>
-        <DialogTitle>Confirm Final Submission</DialogTitle>
+      <Dialog 
+        open={submitDialogOpen} 
+        onClose={() => setSubmitDialogOpen(false)}
+        PaperProps={{ sx: { borderRadius: 0 } }}
+      >
+        <DialogTitle sx={{ fontWeight: 700 }}>Confirm Final Submission</DialogTitle>
         <DialogContent>
-          <Typography variant="body1">
-            Are you sure you want to submit your predictions? You have predicted {predictedMatches} out of {totalMatches} matches.
+          <Typography variant="body2">
+            You have predicted <strong>{predictedMatches}</strong> out of <strong>{totalMatches}</strong> matches.
           </Typography>
-          <Typography variant="body2" color="warning.main" sx={{ mt: 2 }}>
-            Note: You can still update your predictions until the deadline (June 11, 2026 23:00).
+          <Typography variant="body2" sx={{ mt: 2 }}>
+            You can still update your predictions until the deadline on June 11, 2026.
           </Typography>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setSubmitDialogOpen(false)}>Cancel</Button>
-          <Button onClick={confirmFinalSubmit} variant="contained" color="primary">
+        <DialogActions sx={{ p: 3 }}>
+          <Button onClick={() => setSubmitDialogOpen(false)} size="small">Cancel</Button>
+          <Button onClick={confirmFinalSubmit} variant="contained" color="primary" size="small">
             Confirm Submit
           </Button>
         </DialogActions>
