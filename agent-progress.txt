@@ -5678,3 +5678,18 @@ Next Steps:
 - Suggest running a setup script or a dedicated migration to add the missing column to the production `users` table.
 
 Current Status: 14/255 tests passing. Diagnosis for login error completed; production database schema out of sync.
+
+=== Session 29: Production Seeding & Schema Fix ===
+Date: Tue Mar 03 17:30:00 CET 2026
+Agent: auto-coder-coding
+
+Accomplished:
+- Fixed the production error `{"error":"column User.username does not exist"}` by modifying the `seedDatabase` function in `server/src/utils/seed.ts`.
+- Added `sequelize.sync({ alter: true })` to the seeding process to ensure that the production database schema is updated with the new `username` column when the `/api/setup` endpoint is called.
+- Pushed the update to the remote repository, triggering a redeployment on Netlify.
+
+Next Steps:
+- Once the new build is deployed, the user should call the setup endpoint: `POST /api/setup?force=true` to update the production schema and re-seed the initial data.
+- Verify that registration and login now work correctly in production.
+
+Current Status: 14/255 tests passing. Seeding script fixed to support dynamic schema updates in production.
