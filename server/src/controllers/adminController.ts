@@ -259,23 +259,33 @@ export async function getUserById(req: Request, res: Response) {
  */
 export async function createUser(req: Request, res: Response) {
   try {
-    const { email, password, firstName, lastName, customerNumber, isAdmin = false, languagePreference = 'en' } = req.body;
+    const { email, username, password, firstName, lastName, customerNumber, isAdmin = false, languagePreference = 'en' } = req.body;
 
     // Validation
-    if (!email || !password || !firstName || !lastName || !customerNumber) {
+    if (!email || !username || !password || !firstName || !lastName || !customerNumber) {
       res.status(400).json({
         success: false,
-        error: 'Missing required fields: email, password, firstName, lastName, customerNumber',
+        error: 'Missing required fields: email, username, password, firstName, lastName, customerNumber',
       });
       return;
     }
 
     // Check if email already exists
-    const existingUser = await User.findOne({ where: { email } });
-    if (existingUser) {
+    const existingEmail = await User.findOne({ where: { email } });
+    if (existingEmail) {
       res.status(409).json({
         success: false,
         error: 'Email already registered',
+      });
+      return;
+    }
+
+    // Check if username already exists
+    const existingUsername = await User.findOne({ where: { username } });
+    if (existingUsername) {
+      res.status(409).json({
+        success: false,
+        error: 'Username already taken',
       });
       return;
     }
@@ -314,6 +324,7 @@ export async function createUser(req: Request, res: Response) {
     // Create user
     const user = await User.create({
       email,
+      username,
       passwordHash,
       firstName,
       lastName,

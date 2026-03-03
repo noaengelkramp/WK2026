@@ -177,6 +177,7 @@ export async function seedDatabase() {
     const users = await User.bulkCreate([
       {
         email: 'admin@wk2026.com',
+        username: 'admin',
         passwordHash: hashedPassword,
         firstName: 'Admin',
         lastName: 'User',
@@ -186,6 +187,7 @@ export async function seedDatabase() {
       },
       {
         email: 'john.doe@wk2026.com',
+        username: 'johndoe',
         passwordHash: hashedPassword,
         firstName: 'John',
         lastName: 'Doe',
@@ -195,6 +197,7 @@ export async function seedDatabase() {
       },
       {
         email: 'jane.smith@wk2026.com',
+        username: 'janesmith',
         passwordHash: hashedPassword,
         firstName: 'Jane',
         lastName: 'Smith',
