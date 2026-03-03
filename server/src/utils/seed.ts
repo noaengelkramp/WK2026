@@ -232,7 +232,7 @@ export async function seedDatabase() {
     console.log('  User 1: john.doe@wk2026.com / password123');
     console.log('  User 2: jane.smith@wk2026.com / password123');
     console.log('\n📊 Summary:');
-    console.log(`  - ${existingCustomers.length} customers (preserved)`);
+    console.log(`  - ${customers.length} customers`);
     console.log(`  - ${teams.length} teams`);
     console.log(`  - ${scoringRules.length} scoring rules`);
     console.log(`  - ${bonusQuestions.length} bonus questions`);
