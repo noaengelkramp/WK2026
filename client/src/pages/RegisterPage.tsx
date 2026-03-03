@@ -22,6 +22,7 @@ export default function RegisterPage() {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
+    username: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -43,7 +44,7 @@ export default function RegisterPage() {
     setError('');
 
     // Validation
-    if (!formData.firstName || !formData.lastName || !formData.email || !formData.password || !formData.customerNumber) {
+    if (!formData.firstName || !formData.lastName || !formData.username || !formData.email || !formData.password || !formData.customerNumber) {
       setError('Please fill in all fields');
       return;
     }
@@ -73,6 +74,7 @@ export default function RegisterPage() {
         password: formData.password,
         firstName: formData.firstName,
         lastName: formData.lastName,
+        username: formData.username,
         customerNumber: formData.customerNumber,
       });
       setSuccess(true);
@@ -225,6 +227,19 @@ export default function RegisterPage() {
                         value={formData.lastName}
                         onChange={handleChange}
                         required
+                        sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
+                      />
+                    </Grid>
+                    <Grid size={12}>
+                      <TextField
+                        fullWidth
+                        label="Username"
+                        name="username"
+                        variant="outlined"
+                        value={formData.username}
+                        onChange={handleChange}
+                        required
+                        helperText="This will be your public name on the leaderboards"
                         sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
                       />
                     </Grid>

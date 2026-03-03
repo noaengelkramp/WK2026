@@ -3,12 +3,29 @@
 export interface User {
   id: string;
   email: string;
+  username: string;
   firstName: string;
   lastName: string;
   customerNumber: string;
   isAdmin: boolean;
   languagePreference: 'en' | 'nl';
   createdAt: string;
+}
+
+export interface LeaderboardEntry {
+  rank: number;
+  userId?: string; // Only present for current user
+  username: string | null;
+  customerNumber: string; // May be '████████' for anonymized entries
+  companyName: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  totalPoints: number;
+  exactScores: number;
+  correctWinners: number;
+  predictionsMade: number;
+  bonusPoints: number;
+  isCurrentUser: boolean;
 }
 
 export interface Department {

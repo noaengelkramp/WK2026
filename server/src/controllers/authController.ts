@@ -10,10 +10,10 @@ import emailService from '../services/emailService';
  */
 export const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { email, password, firstName, lastName, customerNumber, languagePreference } = req.body;
+    const { email, username, password, firstName, lastName, customerNumber, languagePreference } = req.body;
 
     // Validate required fields
-    if (!email || !password || !firstName || !lastName || !customerNumber) {
+    if (!email || !username || !password || !firstName || !lastName || !customerNumber) {
       throw new AppError('All fields are required', 400);
     }
 
@@ -27,6 +27,12 @@ export const register = async (req: Request, res: Response, next: NextFunction):
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       throw new AppError('Email already registered', 409);
+    }
+
+    // Check if username already exists
+    const existingUsername = await User.findOne({ where: { username } });
+    if (existingUsername) {
+      throw new AppError('Username already taken', 409);
     }
 
     // Check if customer number already used
@@ -55,6 +61,7 @@ export const register = async (req: Request, res: Response, next: NextFunction):
     // Create user
     const user = await User.create({
       email,
+      username,
       passwordHash,
       firstName,
       lastName,

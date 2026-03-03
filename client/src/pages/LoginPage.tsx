@@ -66,14 +66,14 @@ export default function LoginPage() {
                   World Cup 2026
                 </Typography>
                 <Typography variant="body1" sx={{ mt: 2, color: '#666666', fontSize: '1.1rem' }}>
-                  Join the official Kramp prediction game. Compete with colleagues across Europe, track your ranking, and win exclusive prizes.
+                  Join the official Kramp prediction game for our customers. Compete with other professionals across Europe, track your ranking, and win exclusive prizes.
                 </Typography>
 
                 <Grid container spacing={2} sx={{ mt: 4 }}>
                   {[
                     { label: '104', value: 'Matches' },
                     { label: '48', value: 'Teams' },
-                    { label: '€5K+', value: 'Prize Pool' },
+                    { label: '€10K+', value: 'Prize Pool' },
                   ].map((item) => (
                     <Grid key={item.value} size={{ xs: 4 }}>
                       <Card variant="outlined" sx={{ borderRadius: 0, backgroundColor: '#FFFFFF' }}>
@@ -96,8 +96,8 @@ export default function LoginPage() {
                   </Typography>
                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                     {[
-                      'Win a professional foosball table for your office',
-                      'Real-time leaderboards and statistics',
+                      'Win high-end tech and professional football gear',
+                      'Real-time leaderboards and expert statistics',
                       'Easy prediction management for all 104 matches',
                     ].map((item) => (
                       <Box key={item} sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>

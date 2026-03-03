@@ -130,7 +130,7 @@ export default function HomePage() {
           World Cup 2026 Prediction Challenge
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Compete with colleagues and win amazing prizes.
+          Compete with other football fans and win amazing prizes.
         </Typography>
       </Box>
 
@@ -209,7 +209,7 @@ export default function HomePage() {
                         />
                         <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>{nextMatch.awayTeam.name}</Typography>
                       </Box>
-
+                      
                       <Box sx={{ ml: { md: 4 }, display: { xs: 'none', sm: 'block' }, borderLeft: '1px solid #E0E0E0', pl: 4 }}>
                         <Typography variant="body2" sx={{ fontWeight: 700, color: '#212121' }}>
                           {new Date(nextMatch.matchDate).toLocaleDateString('en-GB', {
@@ -277,15 +277,15 @@ export default function HomePage() {
               <Grid container spacing={2} sx={{ mt: 1 }}>
                 <Grid size={4}>
                   <Typography variant="caption" sx={{ color: '#666', fontWeight: 700, textTransform: 'uppercase' }}>1st Place</Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 700 }}>Professional Foosball Table</Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 700 }}>65" Smart TV</Typography>
                 </Grid>
                 <Grid size={4}>
                   <Typography variant="caption" sx={{ color: '#666', fontWeight: 700, textTransform: 'uppercase' }}>2nd Place</Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 700 }}>Smart TV 55"</Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 700 }}>Premium Tablet</Typography>
                 </Grid>
                 <Grid size={4}>
                   <Typography variant="caption" sx={{ color: '#666', fontWeight: 700, textTransform: 'uppercase' }}>3rd Place</Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 700 }}>iPad Pro</Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 700 }}>Official Football Kit</Typography>
                 </Grid>
               </Grid>
               <Button
@@ -310,7 +310,7 @@ export default function HomePage() {
                     Leaderboard
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Live snapshot of the top performing colleagues.
+                    Live snapshot of the top performing participants.
                   </Typography>
                 </Box>
                 <Button variant="outlined" size="small" onClick={() => navigate('/standings/individual')}>
@@ -348,9 +348,9 @@ export default function HomePage() {
                             </Typography>
                           </TableCell>
                           <TableCell sx={{ fontWeight: 500 }}>
-                            {entry.firstName && entry.lastName 
+                            {entry.username || (entry.firstName && entry.lastName 
                               ? `${entry.firstName} ${entry.lastName}`
-                              : entry.customerNumber
+                              : entry.customerNumber)
                             }
                           </TableCell>
                           <TableCell align="right">

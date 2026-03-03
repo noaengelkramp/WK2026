@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt';
 interface UserAttributes {
   id: string;
   email: string;
+  username: string;
   passwordHash: string;
   firstName: string;
   lastName: string;
@@ -23,6 +24,7 @@ interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'isAdmi
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
   public id!: string;
   public email!: string;
+  public username!: string;
   public passwordHash!: string;
   public firstName!: string;
   public lastName!: string;
@@ -67,6 +69,11 @@ User.init(
       validate: {
         isEmail: true,
       },
+    },
+    username: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      unique: true,
     },
     passwordHash: {
       type: DataTypes.STRING(255),
@@ -121,6 +128,10 @@ User.init(
       {
         unique: true,
         fields: ['email'],
+      },
+      {
+        unique: true,
+        fields: ['username'],
       },
       {
         unique: true,

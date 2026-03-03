@@ -36,7 +36,7 @@ export const getIndividualStandings = async (req: Request, res: Response) => {
       whereClause[Op.or] = [
         { '$user.firstName$': { [Op.iLike]: `%${search}%` } },
         { '$user.lastName$': { [Op.iLike]: `%${search}%` } },
-        { '$user.customerNumber$': { [Op.iLike]: `%${search}%` } },
+        { '$user.username$': { [Op.iLike]: `%${search}%` } },
       ];
     }
 
@@ -47,7 +47,7 @@ export const getIndividualStandings = async (req: Request, res: Response) => {
         {
           model: User,
           as: 'user',
-          attributes: ['id', 'firstName', 'lastName', 'email', 'customerNumber'],
+          attributes: ['id', 'firstName', 'lastName', 'email', 'username', 'customerNumber'],
           include: [
             {
               model: Customer,
@@ -76,7 +76,7 @@ export const getIndividualStandings = async (req: Request, res: Response) => {
       return {
         rank: offsetNum + index + 1,
         userId: statJSON.user?.id,
-        customerNumber: statJSON.user?.customerNumber,
+        username: statJSON.user?.username,
         companyName: statJSON.user?.customer?.companyName,
         firstName: statJSON.user?.firstName,
         lastName: statJSON.user?.lastName,
@@ -122,13 +122,10 @@ function anonymizeStandings(standings: any[], currentUserId?: string) {
         isCurrentUser: true,
       };
     } else {
-      // Anonymize other users
+      // Anonymize other users - Show username, hide real name
       return {
         rank: standing.rank,
-        customerNumber: '████████', // Fully blurred
-        companyName: null,
-        firstName: null,
-        lastName: null,
+        username: standing.username, // Show username clearly
         totalPoints: standing.totalPoints,
         exactScores: standing.exactScores,
         correctWinners: standing.correctWinners,
@@ -165,7 +162,7 @@ export const getTopUsers = async (req: Request, res: Response) => {
         {
           model: User,
           as: 'user',
-          attributes: ['customerNumber'],
+          attributes: ['username'],
           include: [
             {
               model: Customer,
@@ -183,14 +180,17 @@ export const getTopUsers = async (req: Request, res: Response) => {
       limit: limitNum,
     });
 
-    // Fully anonymize for homepage (don't reveal anyone)
-    const topUsersAnonymized = topUsers.map((stat, index) => ({
-      rank: index + 1,
-      customerNumber: '████████',
-      totalPoints: stat.totalPoints,
-      exactScores: stat.exactScores,
-      correctWinners: stat.correctWinners,
-    }));
+    // Show usernames for homepage - remove customerNumber
+    const topUsersAnonymized = topUsers.map((stat, index) => {
+      const statJSON: any = stat.toJSON();
+      return {
+        rank: index + 1,
+        username: statJSON.user?.username,
+        totalPoints: stat.totalPoints,
+        exactScores: stat.exactScores,
+        correctWinners: stat.correctWinners,
+      };
+    });
 
     const response = { topUsers: topUsersAnonymized };
 
@@ -254,7 +254,7 @@ export const getMyRanking = async (req: Request, res: Response) => {
         {
           model: User,
           as: 'user',
-          attributes: ['customerNumber'],
+          attributes: ['username'],
         },
       ],
       order: [
@@ -274,7 +274,7 @@ export const getMyRanking = async (req: Request, res: Response) => {
         {
           model: User,
           as: 'user',
-          attributes: ['customerNumber'],
+          attributes: ['username'],
         },
       ],
       order: [
@@ -285,14 +285,17 @@ export const getMyRanking = async (req: Request, res: Response) => {
       limit: 3,
     });
 
-    // Anonymize context users
+    // Anonymize context users - use username instead of customerNumber
     const anonymizeContext = (users: any[]) => {
-      return users.map((stat) => ({
-        customerNumber: '████████',
-        totalPoints: stat.totalPoints,
-        exactScores: stat.exactScores,
-        correctWinners: stat.correctWinners,
-      }));
+      return users.map((stat) => {
+        const statJSON: any = stat.toJSON();
+        return {
+          username: statJSON.user?.username,
+          totalPoints: stat.totalPoints,
+          exactScores: stat.exactScores,
+          correctWinners: stat.correctWinners,
+        };
+      });
     };
 
     res.json({

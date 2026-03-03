@@ -61,12 +61,10 @@ export default function StandingsIndividualPage() {
 
   // Export to CSV
   const handleExportCSV = () => {
-    const headers = ['Rank', 'Customer Number', 'Name', 'Company', 'Total Points', 'Exact Scores', 'Correct Winners', 'Predictions'];
+    const headers = ['Rank', 'Username', 'Total Points', 'Exact Scores', 'Correct Winners', 'Predictions'];
     const rows = standings.map(entry => [
       entry.rank,
-      entry.customerNumber,
-      entry.firstName && entry.lastName ? `${entry.firstName} ${entry.lastName}` : '(hidden)',
-      entry.companyName || '(hidden)',
+      entry.username || '(hidden)',
       entry.totalPoints,
       entry.exactScores,
       entry.correctWinners,
@@ -103,7 +101,7 @@ export default function StandingsIndividualPage() {
       </Typography>
 
       <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-        See how you rank against your colleagues. The leaderboard updates automatically after each match.
+        See how you rank against other participants. The leaderboard updates automatically after each match.
       </Typography>
 
       {/* Filters Card */}
@@ -113,7 +111,7 @@ export default function StandingsIndividualPage() {
             <Grid size={{ xs: 12, md: 10 }}>
               <TextField
                 fullWidth
-                label="Search by name"
+                label="Search by username"
                 variant="outlined"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -162,9 +160,7 @@ export default function StandingsIndividualPage() {
                   <TableHead>
             <TableRow sx={{ backgroundColor: '#9B1915' }}>
               <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rank</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Customer</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Name</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Company</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Username</TableCell>
               <TableCell sx={{ color: 'white', fontWeight: 'bold' }} align="right">Total Points</TableCell>
               <TableCell sx={{ color: 'white', fontWeight: 'bold' }} align="right">Exact Scores</TableCell>
               <TableCell sx={{ color: 'white', fontWeight: 'bold' }} align="right">Correct Winners</TableCell>
@@ -213,35 +209,15 @@ export default function StandingsIndividualPage() {
                           </Box>
                         </TableCell>
                         <TableCell>
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              fontFamily: 'monospace',
-                              fontWeight: entry.isCurrentUser ? 'bold' : 'normal',
-                            }}
-                          >
-                            {entry.customerNumber}
-                          </Typography>
-                        </TableCell>
-                        <TableCell>
-                          {entry.firstName && entry.lastName ? (
+                          {entry.username ? (
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                               <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
-                                {entry.firstName[0]}{entry.lastName[0]}
+                                {entry.username[0].toUpperCase()}
                               </Avatar>
                               <Typography variant="body1" sx={{ fontWeight: entry.isCurrentUser ? 'bold' : 'normal' }}>
-                                {entry.firstName} {entry.lastName}
+                                {entry.username}
                               </Typography>
                             </Box>
-                          ) : (
-                            <Typography variant="body2" color="text.disabled">
-                              (hidden)
-                            </Typography>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {entry.companyName ? (
-                            <Chip label={entry.companyName} size="small" variant="outlined" />
                           ) : (
                             <Typography variant="body2" color="text.disabled">
                               (hidden)
