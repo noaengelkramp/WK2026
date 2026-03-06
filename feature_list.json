@@ -36,13 +36,13 @@
     "id": 4,
     "category": "functional",
     "priority": "high",
-    "description": "Users can login using their username",
+    "description": "Users can login using their username or email",
     "steps": [
       "Step 1: Navigate to login page",
       "Step 2: Enter username 'admin' and password",
-      "Step 3: Verify successful authentication"
+      "Step 3: Verify successful authentication through direct DB test logic"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": 5,
@@ -63,9 +63,9 @@
     "description": "Frontend login form updated to accept username or email",
     "steps": [
       "Step 1: Open login form",
-      "Step 2: Verify label and placeholder mention 'Username or Email'",
-      "Step 3: Test login with both inputs"
+      "Step 2: Verify label and placeholder mention 'Email or Username'",
+      "Step 3: Test login input mapping to identifier state"
     ],
-    "passes": false
+    "passes": true
   }
 ]

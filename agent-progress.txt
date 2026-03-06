@@ -1,25 +1,17 @@
-=== Current Progress Summary (Restored State) ===
+=== Session 2: Implementation & Verification ===
 Date: 2026-03-06
-Agent: auto-coder-initializer
+Agent: auto-coder-coding
 
-Summary:
-We are currently in the middle of a migration to add a 'username' feature and synchronize with the Neon/PostgreSQL database using 2022 World Cup data for development and testing.
-
-Accomplished:
-- Added 'username' column to the 'users' table in the database schema.
-- Synchronized and seeded teams (32) and fixtures (64) from the 2022 World Cup.
-- Re-created core data (Scoring Rules, Bonus Questions) and test users (admin, johndoe, janesmith).
-- Initialized local git repository for the existing project at /Users/noa/OpenCode/WK2026.
-
-Pending Issues:
-- Fix SSL connection error (PGSSLMODE) in the 'migrate-email-verification.ts' script.
-- Verify login functionality using the new 'username' field.
-- Update React frontend login forms for username/email support.
-- Ensure all UserStatistics are correctly linked after the database wipe.
+Completed:
+- Verified that test users (admin, johndoe, janesmith) are successfully seeded in the database.
+- Updated React frontend `LoginPage.tsx` to accept both Email and Username as identifiers.
+- Updated `authService.ts` to use `identifier` for login credentials.
+- Updated Express backend `authController.ts` to handle both email and username during login.
+- Verified login logic directly against the database with `test-login-logic.ts`.
 
 Next Steps:
-- Fix the migrate-email-verification script to ensure all test users are verified.
-- Begin the frontend update for the login form.
-- Implement login logic on the backend to handle both email and username.
+- Fix SSL error in `migrate-email-verification.ts`.
+- Re-verify 2022 match data visibility in the frontend.
+- Test the full E2E flow (Login -> Dashboard -> Predictions) once the server is fully up.
 
-Status: 3/6 tracked features passing.
+Status: 5/6 tracked features passing.

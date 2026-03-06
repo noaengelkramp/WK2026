@@ -64,8 +64,8 @@ ORDER BY column_name;
 
 async function runMigration() {
   const client = new Client({
-    connectionString: DATABASE_URL,
-    ssl: {
+    connectionString: DATABASE_URL as string,
+    ssl: (DATABASE_URL as string).includes('localhost') || (DATABASE_URL as string).includes('127.0.0.1') ? false : {
       rejectUnauthorized: false, // Required for some cloud databases like Neon
     },
   });
