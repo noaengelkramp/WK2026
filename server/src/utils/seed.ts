@@ -24,13 +24,15 @@ export async function seedDatabase() {
     // await syncDatabase(false);
 
     // Clear existing data (in correct order to respect foreign keys)
-    await UserStatistics.destroy({ where: {} });
-    await User.destroy({ where: {} });
-    await Match.destroy({ where: {} });
-    await Team.destroy({ where: {} });
-    await ScoringRule.destroy({ where: {} });
-    await BonusQuestion.destroy({ where: {} });
-    await Customer.destroy({ where: {} });
+    await UserStatistics.destroy({ where: {}, force: true });
+    await BonusAnswer.destroy({ where: {}, force: true });
+    await Prediction.destroy({ where: {}, force: true });
+    await User.destroy({ where: {}, force: true });
+    await Match.destroy({ where: {}, force: true });
+    await Team.destroy({ where: {}, force: true });
+    await ScoringRule.destroy({ where: {}, force: true });
+    await BonusQuestion.destroy({ where: {}, force: true });
+    await Customer.destroy({ where: {}, force: true });
 
     // Sync database schema to ensure columns like 'username' exist
     console.log('🔄 Syncing database schema...');
