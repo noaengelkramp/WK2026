@@ -3,6 +3,8 @@ import { Match, Team } from '../models';
 import { AppError } from '../middleware/errorHandler';
 import { Op } from 'sequelize';
 import { getCache, setCache, CACHE_TTL, CACHE_KEYS } from '../config/redis';
+import { config } from '../config/environment';
+import { footballApiService } from '../services/footballApiService';
 
 /**
  * Get all matches
@@ -99,6 +101,57 @@ export const getUpcomingMatches = async (req: Request, res: Response, next: Next
     });
 
     res.json({ matches });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Get tournament statistics (Top Scorers, Cards)
+ */
+export const getTournamentStatistics = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const season = (req.query.season as string) || config.footballApi.season;
+    
+    // Cache keys
+    const scorersCacheKey = CACHE_KEYS.STATS_TOP_SCORERS(season);
+    const cardsCacheKey = CACHE_KEYS.STATS_TOP_CARDS(season);
+
+    // Try to get from cache
+    const [cachedScorers, cachedCards] = await Promise.all([
+      getCache<any[]>(scorersCacheKey),
+      getCache<any[]>(cardsCacheKey),
+    ]);
+
+    let topScorers = cachedScorers;
+    let topCards = cachedCards;
+
+    // Fetch from API if not in cache
+    if (!topScorers || !topCards) {
+      console.log(`⚠️  Cache MISS: Tournament stats for season ${season}`);
+      
+      const [apiScorers, apiCards] = await Promise.all([
+        !topScorers ? footballApiService.getTopScorers(season) : Promise.resolve(topScorers),
+        !topCards ? footballApiService.getTopCards(season) : Promise.resolve(topCards),
+      ]);
+
+      if (!topScorers) {
+        topScorers = apiScorers;
+        await setCache(scorersCacheKey, topScorers, CACHE_TTL.TOURNAMENT_STATS);
+      }
+
+      if (!topCards) {
+        topCards = apiCards;
+        await setCache(cardsCacheKey, topCards, CACHE_TTL.TOURNAMENT_STATS);
+      }
+    } else {
+      console.log('✅ Cache HIT: Tournament stats');
+    }
+
+    res.json({
+      topScorers: topScorers || [],
+      topCards: topCards || [],
+    });
   } catch (error) {
     next(error);
   }

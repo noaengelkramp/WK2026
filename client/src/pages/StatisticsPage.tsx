@@ -39,6 +39,8 @@ type TabValue = 'overview' | 'group' | 'knockout' | 'predictions';
 
 export default function StatisticsPage() {
   const [matches, setMatches] = useState<Match[]>([]);
+  const [topScorers, setTopScorers] = useState<any[]>([]);
+  const [topCards, setTopCards] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedTab, setSelectedTab] = useState<TabValue>('overview');
@@ -52,8 +54,14 @@ export default function StatisticsPage() {
       setLoading(true);
       setError(null);
 
-      const matchesData = await dataService.getMatches();
+      const [matchesData, statsData] = await Promise.all([
+        dataService.getMatches(),
+        dataService.getTournamentStatistics('2022'), // Use 2022 for testing
+      ]);
+      
       setMatches(matchesData);
+      setTopScorers(statsData.topScorers);
+      setTopCards(statsData.topCards);
     } catch (err) {
       console.error('Failed to load statistics:', err);
       setError('Failed to load statistics. Please try again later.');
@@ -384,6 +392,79 @@ export default function StatisticsPage() {
                 </Card>
               </Grid>
             )}
+          </Grid>
+
+          {/* Charts */}
+          <Grid container spacing={3} sx={{ mb: 4 }}>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Card variant="outlined">
+                <CardContent>
+                  <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+                    Top Scorers
+                  </Typography>
+                  <Divider sx={{ mb: 2 }} />
+                  {topScorers.length > 0 ? (
+                    <Box sx={{ maxHeight: 400, overflowY: 'auto' }}>
+                      {topScorers.slice(0, 10).map((player: any, index: number) => (
+                        <Box key={index} sx={{ mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <Typography variant="body1" sx={{ fontWeight: 'bold', minWidth: 25, color: '#9B1915' }}>
+                              {index + 1}.
+                            </Typography>
+                            <Box>
+                              <Typography variant="body1" sx={{ fontWeight: 600 }}>{player.player.name}</Typography>
+                              <Typography variant="body2" color="text.secondary">{player.statistics[0].team.name}</Typography>
+                            </Box>
+                          </Box>
+                          <Chip 
+                            label={`${player.statistics[0].goals.total} Goals`} 
+                            size="small" 
+                            sx={{ backgroundColor: '#F5F5F5', fontWeight: 'bold' }} 
+                          />
+                        </Box>
+                      ))}
+                    </Box>
+                  ) : (
+                    <Typography color="text.secondary">No top scorers data available.</Typography>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Card variant="outlined">
+                <CardContent>
+                  <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+                    Discipline (Yellow Cards)
+                  </Typography>
+                  <Divider sx={{ mb: 2 }} />
+                  {topCards.length > 0 ? (
+                    <Box sx={{ maxHeight: 400, overflowY: 'auto' }}>
+                      {topCards.slice(0, 10).map((player: any, index: number) => (
+                        <Box key={index} sx={{ mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <Typography variant="body1" sx={{ fontWeight: 'bold', minWidth: 25, color: '#9B1915' }}>
+                              {index + 1}.
+                            </Typography>
+                            <Box>
+                              <Typography variant="body1" sx={{ fontWeight: 600 }}>{player.player.name}</Typography>
+                              <Typography variant="body2" color="text.secondary">{player.statistics[0].team.name}</Typography>
+                            </Box>
+                          </Box>
+                          <Chip 
+                            label={`${player.statistics[0].cards.yellow} Yellow`} 
+                            size="small" 
+                            sx={{ backgroundColor: '#FFEB3B', fontWeight: 'bold' }} 
+                          />
+                        </Box>
+                      ))}
+                    </Box>
+                  ) : (
+                    <Typography color="text.secondary">No discipline data available.</Typography>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
           </Grid>
 
           {/* Charts */}

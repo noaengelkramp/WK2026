@@ -266,6 +266,26 @@ class FootballApiService {
   }
 
   /**
+   * Get top cards
+   * Endpoint: GET /players/topcards
+   */
+  async getTopCards(season: string = config.footballApi.season): Promise<any[]> {
+    try {
+      const response = await this.client.get('/players/topcards', {
+        params: {
+          league: config.footballApi.leagueId,
+          season: season,
+        },
+      });
+
+      return response.data.response || [];
+    } catch (error) {
+      console.error('[API-Football] Error fetching top cards:', error);
+      return [];
+    }
+  }
+
+  /**
    * Get request count for monitoring
    */
   getRequestCount(): number {

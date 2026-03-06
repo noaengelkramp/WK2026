@@ -14,6 +14,7 @@ export const CACHE_TTL = {
   DEPARTMENT_STATS: 300, // 5 minutes - updated after scoring
   BONUS_QUESTIONS: 3600, // 1 hour - rarely changes
   SCORING_RULES: 3600, // 1 hour - rarely changes
+  TOURNAMENT_STATS: 1800, // 30 minutes - changed when matches finish
 };
 
 // Cache key prefixes
@@ -31,6 +32,8 @@ export const CACHE_KEYS = {
   DEPARTMENT_STATS: (deptId: string) => `department:${deptId}:stats`,
   BONUS_QUESTIONS: 'bonus:questions',
   SCORING_RULES: 'scoring:rules',
+  STATS_TOP_SCORERS: (season: string) => `stats:topscorers:${season}`,
+  STATS_TOP_CARDS: (season: string) => `stats:topcards:${season}`,
 };
 
 /**

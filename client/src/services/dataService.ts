@@ -84,6 +84,16 @@ export const dataService = {
   },
 
   /**
+   * Get tournament statistics (Top Scorers, Cards)
+   */
+  async getTournamentStatistics(season?: string): Promise<{ topScorers: any[]; topCards: any[] }> {
+    const response = await apiClient.get<{ topScorers: any[]; topCards: any[] }>('/matches/statistics', {
+      params: { season },
+    });
+    return response.data;
+  },
+
+  /**
    * Get all bonus questions
    */
   async getBonusQuestions(): Promise<BonusQuestion[]> {
