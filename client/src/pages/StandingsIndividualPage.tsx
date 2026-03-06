@@ -158,14 +158,14 @@ export default function StandingsIndividualPage() {
               <TableContainer component={Paper} elevation={0}>
                 <Table>
                   <TableHead>
-            <TableRow sx={{ backgroundColor: '#9B1915' }}>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rank</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Username</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }} align="right">Total Points</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }} align="right">Exact Scores</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }} align="right">Correct Winners</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }} align="right">Predictions</TableCell>
-            </TableRow>
+                    <TableRow sx={{ backgroundColor: '#9B1915' }}>
+                      <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rank</TableCell>
+                      <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Username</TableCell>
+                      <TableCell sx={{ color: 'white', fontWeight: 'bold' }} align="right">Total Points</TableCell>
+                      <TableCell sx={{ color: 'white', fontWeight: 'bold' }} align="right">Exact Scores</TableCell>
+                      <TableCell sx={{ color: 'white', fontWeight: 'bold' }} align="right">Correct Winners</TableCell>
+                      <TableCell sx={{ color: 'white', fontWeight: 'bold' }} align="right">Predictions</TableCell>
+                    </TableRow>
                   </TableHead>
                   <TableBody>
                     {standings.map((entry, index) => (
