@@ -370,8 +370,26 @@ export default function MyPredictionPage() {
                             value={predictions[match.id]?.home ?? ''}
                             onChange={(e) => handlePredictionChange(match.id, 'home', e.target.value)}
                             onBlur={() => handleSavePrediction(match.id)}
-                            inputProps={{ min: 0, max: 20, style: { textAlign: 'center', fontWeight: 700 } }}
-                            sx={{ width: 50, '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
+                            inputProps={{ 
+                              min: 0, 
+                              max: 20, 
+                              style: { 
+                                textAlign: 'center', 
+                                fontWeight: 700,
+                                padding: '8px 4px'
+                              } 
+                            }}
+                            sx={{ 
+                              width: { xs: 45, sm: 50 },
+                              '& .MuiOutlinedInput-root': { borderRadius: 0 },
+                              '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
+                                '-webkit-appearance': 'none',
+                                margin: 0,
+                              },
+                              '& input[type=number]': {
+                                '-moz-appearance': 'textfield',
+                              },
+                            }}
                             size="small"
                           />
                           <Typography variant="body2" sx={{ fontWeight: 700 }}>:</Typography>
@@ -380,8 +398,26 @@ export default function MyPredictionPage() {
                             value={predictions[match.id]?.away ?? ''}
                             onChange={(e) => handlePredictionChange(match.id, 'away', e.target.value)}
                             onBlur={() => handleSavePrediction(match.id)}
-                            inputProps={{ min: 0, max: 20, style: { textAlign: 'center', fontWeight: 700 } }}
-                            sx={{ width: 50, '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
+                            inputProps={{ 
+                              min: 0, 
+                              max: 20, 
+                              style: { 
+                                textAlign: 'center', 
+                                fontWeight: 700,
+                                padding: '8px 4px'
+                              } 
+                            }}
+                            sx={{ 
+                              width: { xs: 45, sm: 50 },
+                              '& .MuiOutlinedInput-root': { borderRadius: 0 },
+                              '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
+                                '-webkit-appearance': 'none',
+                                margin: 0,
+                              },
+                              '& input[type=number]': {
+                                '-moz-appearance': 'textfield',
+                              },
+                            }}
                             size="small"
                           />
                         </Box>
