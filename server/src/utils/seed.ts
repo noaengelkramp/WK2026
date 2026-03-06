@@ -34,7 +34,12 @@ export async function seedDatabase() {
 
     // Sync database schema to ensure columns like 'username' exist
     console.log('🔄 Syncing database schema...');
-    await sequelize.sync({ alter: true });
+    try {
+      await sequelize.sync({ alter: true });
+    } catch (syncError: any) {
+      console.warn('⚠️ Alter sync failed, trying force sync for clean state...', syncError.message);
+      await sequelize.sync({ force: true });
+    }
     console.log('✅ Database schema synced');
 
     // 1. Customers

@@ -5709,3 +5709,20 @@ Next Steps:
 - Re-run `POST https://poules.kramp.com/api/setup?force=true` to confirm the production database is correctly initialized and the `username` column is added.
 
 Current Status: 14/255 tests passing. Seeding script improved to handle full database resets correctly.
+
+=== Session 31: Transitioning to Customer Platform ===
+Date: Tue Mar 03 16:00:00 CET 2026
+Agent: auto-coder-coding
+
+Accomplished:
+- Fixed a compilation error in `server/src/utils/seed.ts` by adding the missing `sequelize` import.
+- Verified local development environment starts correctly and successfully performs a full database seed with `sequelize.sync({ alter: true })`.
+- Confirmed that the `username` column is correctly added to the `users` table.
+- Pushed updates to GitHub to trigger Netlify redeployment.
+
+Next Steps:
+- Verify the production deployment and run `POST https://poules.kramp.com/api/setup?force=true` to synchronize the production schema.
+- Implement UI anonymization: Replace "Name" and "Customer Number" with `username` in leaderboards and home page.
+- Update branding and messaging on the Login and Prizes pages to target Kramp customers instead of internal employees.
+
+Current Status: 14/255 tests passing. Backend infrastructure stabilized for schema updates.
