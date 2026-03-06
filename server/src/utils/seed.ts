@@ -6,6 +6,8 @@ import {
   BonusQuestion,
   User,
   UserStatistics,
+  Prediction,
+  BonusAnswer,
   sequelize,
 } from '../models';
 import bcrypt from 'bcrypt';
