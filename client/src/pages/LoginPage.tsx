@@ -20,7 +20,7 @@ import { getErrorMessage } from '../services/api';
 export default function LoginPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -31,7 +31,7 @@ export default function LoginPage() {
     setLoading(true);
     
     try {
-      await login({ email, password });
+      await login({ identifier, password });
       navigate('/');
     } catch (err: any) {
       setError(getErrorMessage(err));
@@ -151,18 +151,18 @@ export default function LoginPage() {
                   </Alert>
                 )}
 
-                <form onSubmit={handleSubmit}>
-                  <TextField
-                    fullWidth
-                    label="Email Address"
-                    type="email"
-                    variant="outlined"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    margin="normal"
-                    required
-                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
-                  />
+                  <form onSubmit={handleSubmit}>
+                    <TextField
+                      fullWidth
+                      label="Email or Username"
+                      type="text"
+                      variant="outlined"
+                      value={identifier}
+                      onChange={(e) => setIdentifier(e.target.value)}
+                      margin="normal"
+                      required
+                      sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
+                    />
                   <TextField
                     fullWidth
                     label="Password"

@@ -4,6 +4,7 @@ import { User, UserStatistics, Customer } from '../models';
 import { generateTokens } from '../utils/jwt';
 import { AppError } from '../middleware/errorHandler';
 import emailService from '../services/emailService';
+import { Op } from 'sequelize';
 
 /**
  * Register a new user
@@ -117,27 +118,32 @@ export const register = async (req: Request, res: Response, next: NextFunction):
  */
 export const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { email, password } = req.body;
+    const { identifier, password } = req.body;
 
     // Validate required fields
-    if (!email || !password) {
-      throw new AppError('Email and password are required', 400);
+    if (!identifier || !password) {
+      throw new AppError('Email/Username and password are required', 400);
     }
 
-    // Find user with customer
+    // Find user by email or username
     const user = await User.findOne({
-      where: { email },
+      where: {
+        [Op.or]: [
+          { email: identifier },
+          { username: identifier }
+        ]
+      },
       include: [{ model: Customer, as: 'customer' }],
     });
 
     if (!user) {
-      throw new AppError('Invalid email or password', 401);
+      throw new AppError('Invalid credentials', 401);
     }
 
     // Verify password
     const isPasswordValid = await user.comparePassword(password);
     if (!isPasswordValid) {
-      throw new AppError('Invalid email or password', 401);
+      throw new AppError('Invalid credentials', 401);
     }
 
     // Generate tokens

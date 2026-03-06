@@ -2,7 +2,7 @@ import apiClient from './api';
 import type { User } from '../types';
 
 export interface LoginCredentials {
-  email: string;
+  identifier: string;
   password: string;
 }
 
