@@ -279,34 +279,18 @@ export default function GroupsPage() {
 
               <TableContainer component={Paper} variant="outlined" sx={{ mt: 2, borderRadius: 1 }}>
                 <Table size="small">
-                  <TableHead>
+                  <TableHead sx={{ '& .MuiTableCell-head': { color: 'white', fontWeight: 'bold' } }}>
                     <TableRow sx={{ backgroundColor: '#9B1915' }}>
-                      <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Pos</TableCell>
-                      <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Team</TableCell>
-                      <TableCell align="center" sx={{ color: 'white', fontWeight: 'bold' }}>
-                        P
-                      </TableCell>
-                      <TableCell align="center" sx={{ color: 'white', fontWeight: 'bold' }}>
-                        W
-                      </TableCell>
-                      <TableCell align="center" sx={{ color: 'white', fontWeight: 'bold' }}>
-                        D
-                      </TableCell>
-                      <TableCell align="center" sx={{ color: 'white', fontWeight: 'bold' }}>
-                        L
-                      </TableCell>
-                      <TableCell align="center" sx={{ color: 'white', fontWeight: 'bold' }}>
-                        GF
-                      </TableCell>
-                      <TableCell align="center" sx={{ color: 'white', fontWeight: 'bold' }}>
-                        GA
-                      </TableCell>
-                      <TableCell align="center" sx={{ color: 'white', fontWeight: 'bold' }}>
-                        GD
-                      </TableCell>
-                      <TableCell align="center" sx={{ color: 'white', fontWeight: 'bold' }}>
-                        Pts
-                      </TableCell>
+                      <TableCell>Pos</TableCell>
+                      <TableCell>Team</TableCell>
+                      <TableCell align="center">P</TableCell>
+                      <TableCell align="center">W</TableCell>
+                      <TableCell align="center">D</TableCell>
+                      <TableCell align="center">L</TableCell>
+                      <TableCell align="center">GF</TableCell>
+                      <TableCell align="center">GA</TableCell>
+                      <TableCell align="center">GD</TableCell>
+                      <TableCell align="center">Pts</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>

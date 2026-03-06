@@ -157,14 +157,14 @@ export default function StandingsIndividualPage() {
             <>
               <TableContainer component={Paper} elevation={0}>
                 <Table>
-                  <TableHead>
+                  <TableHead sx={{ '& .MuiTableCell-head': { color: 'white', fontWeight: 'bold' } }}>
                     <TableRow sx={{ backgroundColor: '#9B1915' }}>
-                      <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rank</TableCell>
-                      <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Username</TableCell>
-                      <TableCell sx={{ color: 'white', fontWeight: 'bold' }} align="right">Total Points</TableCell>
-                      <TableCell sx={{ color: 'white', fontWeight: 'bold' }} align="right">Exact Scores</TableCell>
-                      <TableCell sx={{ color: 'white', fontWeight: 'bold' }} align="right">Correct Winners</TableCell>
-                      <TableCell sx={{ color: 'white', fontWeight: 'bold' }} align="right">Predictions</TableCell>
+                      <TableCell>Rank</TableCell>
+                      <TableCell>Username</TableCell>
+                      <TableCell align="right">Total Points</TableCell>
+                      <TableCell align="right">Exact Scores</TableCell>
+                      <TableCell align="right">Correct Winners</TableCell>
+                      <TableCell align="right">Predictions</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
