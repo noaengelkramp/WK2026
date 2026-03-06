@@ -3,50 +3,44 @@
     "id": 1,
     "category": "functional",
     "priority": "high",
-    "description": "User can register with email, password, and username",
+    "description": "User table includes unique 'username' column",
     "steps": [
-      "Step 1: Navigate to registration page",
-      "Step 2: Fill in email, username, and password fields",
-      "Step 3: Click 'Register' button",
-      "Step 4: Verify account created and redirected to home page"
+      "Step 1: Inspect database schema for 'users' table",
+      "Step 2: Verify 'username' column exists and is unique"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": 2,
     "category": "functional",
     "priority": "high",
-    "description": "User can login with either email or username",
+    "description": "Tournament data for 2022 World Cup is available for testing",
     "steps": [
-      "Step 1: Navigate to login page",
-      "Step 2: Enter registered email or username",
-      "Step 3: Enter correct password",
-      "Step 4: Click 'Login' button",
-      "Step 5: Verify successful login and redirection"
+      "Step 1: Check 'teams' table for 32 teams",
+      "Step 2: Check 'matches' table for 64 fixtures"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": 3,
     "category": "functional",
     "priority": "high",
-    "description": "Admin can access the admin dashboard",
+    "description": "Test users (admin, johndoe, janesmith) are seeded in the database",
     "steps": [
-      "Step 1: Login with admin credentials",
-      "Step 2: Navigate to /admin",
-      "Step 3: Verify admin dashboard content is visible"
+      "Step 1: Query 'users' table for test usernames",
+      "Step 2: Verify users exist with correct roles"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": 4,
     "category": "functional",
     "priority": "high",
-    "description": "User can see the 104 matches of World Cup 2026",
+    "description": "Users can login using their username",
     "steps": [
-      "Step 1: Navigate to /matches page",
-      "Step 2: Verify match list is displayed",
-      "Step 3: Verify count of matches matches expectation (104)"
+      "Step 1: Navigate to login page",
+      "Step 2: Enter username 'admin' and password",
+      "Step 3: Verify successful authentication"
     ],
     "passes": false
   },
@@ -54,39 +48,23 @@
     "id": 5,
     "category": "functional",
     "priority": "high",
-    "description": "User can submit predictions for group stage matches",
+    "description": "Fix SSL error in migrate-email-verification.ts",
     "steps": [
-      "Step 1: Navigate to /my-prediction page",
-      "Step 2: Select a group stage match",
-      "Step 3: Enter home and away scores",
-      "Step 4: Click 'Save Draft' or wait for auto-save",
-      "Step 5: Refresh page and verify scores are persisted"
+      "Step 1: Run migrate-email-verification.ts script",
+      "Step 2: Debug PGSSLMODE and connection settings",
+      "Step 3: Verify script completes successfully on Neon/PostgreSQL"
     ],
     "passes": false
   },
   {
     "id": 6,
-    "category": "functional",
-    "priority": "high",
-    "description": "Knockout matches auto-populate based on group predictions",
+    "category": "style",
+    "priority": "medium",
+    "description": "Frontend login form updated to accept username or email",
     "steps": [
-      "Step 1: Complete predictions for all matches in a group",
-      "Step 2: Navigate to knockout bracket view",
-      "Step 3: Verify qualifiers from that group appear in the bracket"
-    ],
-    "passes": false
-  },
-  {
-    "id": 7,
-    "category": "functional",
-    "priority": "high",
-    "description": "Admin can enter match results manually",
-    "steps": [
-      "Step 1: Log in as admin",
-      "Step 2: Navigate to Admin Match Management",
-      "Step 3: Enter scores for a finished match",
-      "Step 4: Click 'Save result'",
-      "Step 5: Verify scores update on the public matches page"
+      "Step 1: Open login form",
+      "Step 2: Verify label and placeholder mention 'Username or Email'",
+      "Step 3: Test login with both inputs"
     ],
     "passes": false
   }
