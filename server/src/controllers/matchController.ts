@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { Match, Team } from '../models';
+import { Match, Team, Prediction, BonusAnswer, BonusQuestion } from '../models';
 import { AppError } from '../middleware/errorHandler';
-import { Op } from 'sequelize';
+import { Op, fn, col } from 'sequelize';
 import { getCache, setCache, CACHE_TTL, CACHE_KEYS } from '../config/redis';
 import { config } from '../config/environment';
 import { footballApiService } from '../services/footballApiService';
@@ -152,6 +152,96 @@ export const getTournamentStatistics = async (req: Request, res: Response, next:
       topScorers: topScorers || [],
       topCards: topCards || [],
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Get aggregate prediction statistics
+ */
+export const getPredictionStatistics = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const cacheKey = CACHE_KEYS.STATS_GLOBAL_PREDICTIONS;
+    const cached = await getCache<any>(cacheKey);
+
+    if (cached) {
+      console.log('✅ Cache HIT: Global prediction statistics');
+      res.json(cached);
+      return;
+    }
+
+    console.log('⚠️  Cache MISS: Global prediction statistics - querying database');
+
+    // 1. Accuracy Stats (Exact vs Winner vs Incorrect)
+    // Only for finished matches
+    const totalPredictions = await Prediction.count({
+      include: [{ model: Match, as: 'match', where: { status: 'finished' } }]
+    });
+
+    const exactScores = await Prediction.count({
+      where: { isCorrectScore: true },
+      include: [{ model: Match, as: 'match', where: { status: 'finished' } }]
+    });
+
+    const correctWinners = await Prediction.count({
+      where: { isCorrectWinner: true, isCorrectScore: false },
+      include: [{ model: Match, as: 'match', where: { status: 'finished' } }]
+    });
+
+    // 2. Champion Predictions
+    const championQuestion = await BonusQuestion.findOne({
+      where: { questionType: 'champion' }
+    });
+
+    let championPredictions: any[] = [];
+    if (championQuestion) {
+      const results = await BonusAnswer.findAll({
+        where: { bonusQuestionId: championQuestion.id },
+        attributes: [
+          'answer',
+          [fn('COUNT', col('id')), 'count']
+        ],
+        group: ['answer'],
+        order: [[fn('COUNT', col('id')), 'DESC']],
+        limit: 10
+      });
+      championPredictions = results;
+    }
+
+    // 3. Top Scorer Predictions
+    const scorerQuestion = await BonusQuestion.findOne({
+      where: { questionType: 'top_scorer' }
+    });
+
+    let scorerPredictions: any[] = [];
+    if (scorerQuestion) {
+      const results = await BonusAnswer.findAll({
+        where: { bonusQuestionId: scorerQuestion.id },
+        attributes: [
+          'answer',
+          [fn('COUNT', col('id')), 'count']
+        ],
+        group: ['answer'],
+        order: [[fn('COUNT', col('id')), 'DESC']],
+        limit: 10
+      });
+      scorerPredictions = results;
+    }
+
+    const response = {
+      accuracy: {
+        total: totalPredictions,
+        exact: exactScores,
+        winner: correctWinners,
+        incorrect: totalPredictions - exactScores - correctWinners
+      },
+      championPredictions,
+      scorerPredictions
+    };
+
+    await setCache(cacheKey, response, CACHE_TTL.TOURNAMENT_STATS);
+    res.json(response);
   } catch (error) {
     next(error);
   }

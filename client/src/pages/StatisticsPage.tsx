@@ -41,6 +41,7 @@ export default function StatisticsPage() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [topScorers, setTopScorers] = useState<any[]>([]);
   const [topCards, setTopCards] = useState<any[]>([]);
+  const [predictionStats, setPredictionStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedTab, setSelectedTab] = useState<TabValue>('overview');
@@ -54,14 +55,16 @@ export default function StatisticsPage() {
       setLoading(true);
       setError(null);
 
-      const [matchesData, statsData] = await Promise.all([
+      const [matchesData, statsData, predStats] = await Promise.all([
         dataService.getMatches(),
         dataService.getTournamentStatistics('2022'), // Use 2022 for testing
+        dataService.getPredictionStatistics(),
       ]);
       
       setMatches(matchesData);
       setTopScorers(statsData.topScorers);
       setTopCards(statsData.topCards);
+      setPredictionStats(predStats);
     } catch (err) {
       console.error('Failed to load statistics:', err);
       setError('Failed to load statistics. Please try again later.');
@@ -123,6 +126,157 @@ export default function StatisticsPage() {
       topScoringTeam: topScoringTeam.team,
       topScoringTeamGoals: topScoringTeam.goals,
     };
+    };
+  };
+
+  const renderStageStats = (stageType: 'group' | 'knockout') => {
+    const isGroup = stageType === 'group';
+    const stageMatches = matches.filter(m => 
+      isGroup ? m.stage === 'group' : m.stage !== 'group'
+    );
+    const finishedCount = stageMatches.filter(m => m.status === 'finished').length;
+    const goals = stageMatches.reduce((sum, m) => sum + (m.homeScore || 0) + (m.awayScore || 0), 0);
+    const avgGoals = finishedCount > 0 ? goals / finishedCount : 0;
+
+    return (
+      <Grid container spacing={3}>
+        <Grid size={{ xs: 12, md: 4 }}>
+          <Card variant="outlined">
+            <CardContent>
+              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+                {isGroup ? 'Group Stage' : 'Knockout Stage'} Overview
+              </Typography>
+              <Divider sx={{ my: 1 }} />
+              <Box sx={{ py: 1 }}>
+                <Typography variant="body2" color="text.secondary">Total Matches</Typography>
+                <Typography variant="h5" sx={{ fontWeight: 'bold' }}>{stageMatches.length}</Typography>
+              </Box>
+              <Box sx={{ py: 1 }}>
+                <Typography variant="body2" color="text.secondary">Matches Played</Typography>
+                <Typography variant="h5" sx={{ fontWeight: 'bold' }}>{finishedCount}</Typography>
+              </Box>
+              <Box sx={{ py: 1 }}>
+                <Typography variant="body2" color="text.secondary">Total Goals</Typography>
+                <Typography variant="h5" sx={{ fontWeight: 'bold' }}>{goals}</Typography>
+              </Box>
+              <Box sx={{ py: 1 }}>
+                <Typography variant="body2" color="text.secondary">Average Goals</Typography>
+                <Typography variant="h5" sx={{ fontWeight: 'bold' }}>{avgGoals.toFixed(2)}</Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid size={{ xs: 12, md: 8 }}>
+          <Card variant="outlined">
+            <CardContent>
+              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+                Goals per Match ({isGroup ? 'Groups' : 'Knockout'})
+              </Typography>
+              <Box sx={{ height: 300 }}>
+                <Bar
+                  data={{
+                    labels: stageMatches.filter(m => m.status === 'finished').slice(-15).map(m => `M${m.matchNumber}`),
+                    datasets: [{
+                      label: 'Goals',
+                      data: stageMatches.filter(m => m.status === 'finished').slice(-15).map(m => (m.homeScore || 0) + (m.awayScore || 0)),
+                      backgroundColor: '#9B1915'
+                    }]
+                  }}
+                  options={{ responsive: true, maintainAspectRatio: false }}
+                />
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+    );
+  };
+
+  const renderPredictionStats = () => {
+    if (!predictionStats) return null;
+
+    const { accuracy, championPredictions, scorerPredictions } = predictionStats;
+
+    return (
+      <Grid container spacing={3}>
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Card variant="outlined">
+            <CardContent>
+              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+                Prediction Accuracy
+              </Typography>
+              <Divider sx={{ my: 1 }} />
+              <Box sx={{ height: 300, display: 'flex', justifyContent: 'center', mt: 2 }}>
+                {accuracy.total > 0 ? (
+                  <Pie
+                    data={{
+                      labels: ['Exact Score', 'Correct Winner', 'Incorrect'],
+                      datasets: [{
+                        data: [accuracy.exact, accuracy.winner, accuracy.incorrect],
+                        backgroundColor: ['#4CAF50', '#2196F3', '#F44336']
+                      }]
+                    }}
+                    options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }}
+                  />
+                ) : (
+                  <Typography color="text.secondary">No predictions have been scored yet.</Typography>
+                )}
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Card variant="outlined">
+            <CardContent>
+              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+                Top Champion Predictions
+              </Typography>
+              <Divider sx={{ my: 1 }} />
+              {championPredictions.length > 0 ? (
+                <Box sx={{ mt: 2 }}>
+                  {championPredictions.map((pred: any, idx: number) => (
+                    <Box key={idx} sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5, alignItems: 'center' }}>
+                      <Typography variant="body1" sx={{ fontWeight: 500 }}>{pred.answer}</Typography>
+                      <Chip label={`${pred.count} Users`} size="small" variant="outlined" sx={{ borderRadius: 1 }} />
+                    </Box>
+                  ))}
+                </Box>
+              ) : (
+                <Typography color="text.secondary">No champion predictions made yet.</Typography>
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid size={{ xs: 12 }}>
+          <Card variant="outlined">
+            <CardContent>
+              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+                Top Scorer Predictions
+              </Typography>
+              <Divider sx={{ my: 1 }} />
+              <Grid container spacing={2} sx={{ mt: 1 }}>
+                {scorerPredictions.length > 0 ? (
+                  scorerPredictions.map((pred: any, idx: number) => (
+                    <Grid key={idx} size={{ xs: 12, sm: 6, md: 4 }}>
+                      <Box sx={{ p: 2, border: '1px solid #E0E0E0', borderRadius: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Typography variant="body2" sx={{ fontWeight: 'bold' }}>{pred.answer}</Typography>
+                        <Typography variant="body2" color="text.secondary">{pred.count} votes</Typography>
+                      </Box>
+                    </Grid>
+                  ))
+                ) : (
+                  <Grid size={{ xs: 12 }}>
+                    <Typography color="text.secondary">No top scorer predictions made yet.</Typography>
+                  </Grid>
+                )}
+              </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+    );
   };
 
   // Prepare chart data for matches by stage
@@ -547,23 +701,9 @@ export default function StatisticsPage() {
       )}
 
       {/* Other tabs placeholder */}
-      {selectedTab !== 'overview' && (
-        <Card variant="outlined">
-          <CardContent>
-            <Alert severity="info" sx={{ borderRadius: 2 }}>
-              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-                {selectedTab === 'group' && 'Group Stage Statistics'}
-                {selectedTab === 'knockout' && 'Knockout Stage Statistics'}
-                {selectedTab === 'predictions' && 'Prediction Statistics'}
-              </Typography>
-              <Typography variant="body2">
-                Detailed statistics for this section will be available as the tournament progresses.
-                {selectedTab === 'predictions' && ' Prediction accuracy data requires user predictions and match results.'}
-              </Typography>
-            </Alert>
-          </CardContent>
-        </Card>
-      )}
+      {selectedTab === 'group' && renderStageStats('group')}
+      {selectedTab === 'knockout' && renderStageStats('knockout')}
+      {selectedTab === 'predictions' && renderPredictionStats()}
     </Box>
   );
 }

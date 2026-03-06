@@ -94,6 +94,14 @@ export const dataService = {
   },
 
   /**
+   * Get aggregate prediction statistics
+   */
+  async getPredictionStatistics(): Promise<any> {
+    const response = await apiClient.get<any>('/matches/prediction-stats');
+    return response.data;
+  },
+
+  /**
    * Get all bonus questions
    */
   async getBonusQuestions(): Promise<BonusQuestion[]> {

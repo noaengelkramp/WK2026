@@ -302,7 +302,7 @@ export async function populateMatchesFromApi(asOfDate?: string): Promise<void> {
         const teamDisplay = shouldSetTeamsTBD 
           ? 'TBD vs TBD' 
           : `${homeTeam.name} vs ${awayTeam.name}`;
-        const statusDisplay = '(scheduled)';
+        const statusDisplay = status === 'finished' ? `(${homeScore}-${awayScore})` : '(scheduled)';
         
         console.log(`✅ Created: ${teamDisplay} - ${venue.city} ${statusDisplay}`);
         created++;

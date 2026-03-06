@@ -34,6 +34,7 @@ export const CACHE_KEYS = {
   SCORING_RULES: 'scoring:rules',
   STATS_TOP_SCORERS: (season: string) => `stats:topscorers:${season}`,
   STATS_TOP_CARDS: (season: string) => `stats:topcards:${season}`,
+  STATS_GLOBAL_PREDICTIONS: 'stats:global:predictions',
 };
 
 /**
