@@ -37,7 +37,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tool
 
 type TabValue = 'overview' | 'group' | 'knockout' | 'predictions';
 
-export default function StatisticsPage() {
+function StatisticsPage() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [topScorers, setTopScorers] = useState<any[]>([]);
   const [topCards, setTopCards] = useState<any[]>([]);
@@ -125,7 +125,6 @@ export default function StatisticsPage() {
       maxGoals: maxGoalsMatch.goals,
       topScoringTeam: topScoringTeam.team,
       topScoringTeamGoals: topScoringTeam.goals,
-    };
     };
   };
 
@@ -707,3 +706,5 @@ export default function StatisticsPage() {
     </Box>
   );
 }
+
+export default StatisticsPage;
