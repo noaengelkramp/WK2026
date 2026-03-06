@@ -329,13 +329,13 @@ export default function HomePage() {
               ) : topPlayers.length > 0 ? (
                 <TableContainer>
                   <Table size="small">
-                    <TableHead>
-                      <TableRow sx={{ backgroundColor: '#9B1915' }}>
-                        <TableCell width={80} sx={{ color: 'white', fontWeight: 'bold' }}>Rank</TableCell>
-                        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Participant</TableCell>
-                        <TableCell align="right" sx={{ color: 'white', fontWeight: 'bold' }}>Total Points</TableCell>
-                      </TableRow>
-                    </TableHead>
+                      <TableHead>
+                        <TableRow sx={{ backgroundColor: '#9B1915' }}>
+                          <TableCell width={80} sx={{ color: 'white', fontWeight: 'bold' }}>Rank</TableCell>
+                          <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Participant</TableCell>
+                          <TableCell align="right" sx={{ color: 'white', fontWeight: 'bold' }}>Total Points</TableCell>
+                        </TableRow>
+                      </TableHead>
                     <TableBody>
                       {topPlayers.map((entry, index) => (
                         <TableRow key={entry.userId || `player-${index}`} hover>
