@@ -277,10 +277,10 @@ export async function populateMatchesFromApi(asOfDate?: string): Promise<void> {
           scheduledCount++;
         } else {
           // Match has already happened (or no cutoff date = use all data)
-          status = 'scheduled';
-          homeScore = undefined;
-          awayScore = undefined;
-          scheduledCount++;
+          status = 'finished';
+          homeScore = fixture.goals.home ?? 0;
+          awayScore = fixture.goals.away ?? 0;
+          finishedCount++;
         }
         
         // Create match
