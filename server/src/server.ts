@@ -143,7 +143,7 @@ const initializeConnections = async () => {
       console.log(`   Environment: ${config.nodeEnv}, Netlify: ${isNetlify}`);
     } else {
       // Only sync in local development
-      await syncDatabase(true); // Force sync in development
+      await syncDatabase(false); // Change to false to prevent wiping the database
       console.log('✅ Database synced (development mode)');
     }
 

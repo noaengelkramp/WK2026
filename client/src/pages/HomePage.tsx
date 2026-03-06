@@ -257,9 +257,9 @@ export default function HomePage() {
                 Prediction Deadline
               </Typography>
               <Typography variant="h3" sx={{ my: 1, color: '#9B1915', fontWeight: 700 }}>
-                15
+                {Math.max(0, Math.floor((new Date('2026-06-11T23:00:00Z').getTime() - Date.now()) / (1000 * 60 * 60 * 24)))}
               </Typography>
-              <Typography variant="body1" sx={{ fontWeight: 700 }}>Days 4 Hours</Typography>
+              <Typography variant="body1" sx={{ fontWeight: 700 }}>Days {Math.max(0, Math.floor(((new Date('2026-06-11T23:00:00Z').getTime() - Date.now()) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)))} Hours</Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
                 June 11, 2026 at 23:00
               </Typography>
