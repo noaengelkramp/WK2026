@@ -54,7 +54,7 @@
       "Step 2: Debug PGSSLMODE and connection settings",
       "Step 3: Verify script completes successfully on Neon/PostgreSQL"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": 6,
