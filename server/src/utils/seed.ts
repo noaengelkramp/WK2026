@@ -22,19 +22,6 @@ export async function seedDatabase() {
 
     // Initialize database connection
     await testConnection();
-    // Note: Don't sync here - tables should already exist from migration
-    // await syncDatabase(false);
-
-    // Clear existing data (in correct order to respect foreign keys)
-    await UserStatistics.destroy({ where: {}, force: true });
-    await BonusAnswer.destroy({ where: {}, force: true });
-    await Prediction.destroy({ where: {}, force: true });
-    await User.destroy({ where: {}, force: true });
-    await Match.destroy({ where: {}, force: true });
-    await Team.destroy({ where: {}, force: true });
-    await ScoringRule.destroy({ where: {}, force: true });
-    await BonusQuestion.destroy({ where: {}, force: true });
-    await Customer.destroy({ where: {}, force: true });
 
     // Sync database schema to ensure columns like 'username' exist
     console.log('🔄 Syncing database schema...');
@@ -44,6 +31,18 @@ export async function seedDatabase() {
       console.warn('⚠️ Alter sync failed, trying force sync for clean state...', syncError.message);
       await sequelize.sync({ force: true });
     }
+
+    // Clear existing data (in correct order to respect foreign keys)
+    console.log('🗑️  Clearing existing data...');
+    await UserStatistics.destroy({ where: {}, force: true });
+    await BonusAnswer.destroy({ where: {}, force: true });
+    await Prediction.destroy({ where: {}, force: true });
+    await User.destroy({ where: {}, force: true });
+    await Match.destroy({ where: {}, force: true });
+    await Team.destroy({ where: {}, force: true });
+    await ScoringRule.destroy({ where: {}, force: true });
+    await BonusQuestion.destroy({ where: {}, force: true });
+    await Customer.destroy({ where: {}, force: true });
     console.log('✅ Database schema synced');
 
     // 1. Customers
