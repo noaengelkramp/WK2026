@@ -6,6 +6,7 @@ import {
   Typography,
   Grid,
   TextField,
+  Autocomplete,
   Button,
   Alert,
   LinearProgress,
@@ -47,7 +48,9 @@ export default function MyPredictionPage() {
   const [predictions, setPredictions] = useState<Record<string, { home: number | undefined; away: number | undefined }>>({});
   const [bonusQuestions, setBonusQuestions] = useState<BonusQuestion[]>([]);
   const [bonusAnswers, setBonusAnswers] = useState<Record<string, string>>({});
+  const [bonusInputValues, setBonusInputValues] = useState<Record<string, string>>({});
   const [champion, setChampion] = useState('');
+  const [topScorerOptions, setTopScorerOptions] = useState<Array<{ label: string; value: string }>>([]);
   
   // UI states
   const [submitDialogOpen, setSubmitDialogOpen] = useState(false);
@@ -65,16 +68,28 @@ export default function MyPredictionPage() {
         setError(null);
 
         // Fetch all data in parallel
-        const [matchesData, teamsData, myPredictions, bonusQuestionsData] = await Promise.all([
+        const [matchesData, teamsData, myPredictions, bonusQuestionsData, statsData] = await Promise.all([
           dataService.getMatches(),
           dataService.getTeams(),
           predictionService.getMyPredictions(),
           predictionService.getBonusQuestions(),
+          dataService.getTournamentStatistics('2022'),
         ]);
 
         setMatches(matchesData);
         setTeams(teamsData);
         setBonusQuestions(bonusQuestionsData);
+
+        const scorerOptions = (statsData?.topScorers || [])
+          .map((entry: any) => {
+            const playerName = entry?.player?.name || entry?.name || entry?.playerName;
+            if (!playerName) return null;
+            const teamName = entry?.statistics?.[0]?.team?.name || entry?.team?.name;
+            const label = teamName ? `${playerName} (${teamName})` : playerName;
+            return { label, value: playerName };
+          })
+          .filter(Boolean) as Array<{ label: string; value: string }>;
+        setTopScorerOptions(scorerOptions);
 
         // Load existing predictions into state
         const predMap: Record<string, { home: number; away: number }> = {};
@@ -88,10 +103,14 @@ export default function MyPredictionPage() {
 
         // Load existing bonus answers
         const bonusMap: Record<string, string> = {};
+        const bonusInputMap: Record<string, string> = {};
         myPredictions.bonusAnswers.forEach((answer: any) => {
-          bonusMap[answer.bonusQuestionId] = answer.answer;
+          const value = answer.answer;
+          bonusMap[answer.bonusQuestionId] = value;
+          bonusInputMap[answer.bonusQuestionId] = value;
         });
         setBonusAnswers(bonusMap);
+        setBonusInputValues(bonusInputMap);
 
       } catch (err: any) {
         console.error('Error fetching data:', err);
@@ -154,6 +173,29 @@ export default function MyPredictionPage() {
       ...bonusAnswers,
       [questionId]: answer,
     });
+  };
+
+  const countryQuestionTypes: BonusQuestion['questionType'][] = [
+    'champion',
+    'most_yellow_cards',
+    'highest_scoring_team',
+  ];
+
+  const teamOptions = teams.map((team) => ({ label: team.name, value: team.name }));
+
+  const isValidBonusAnswer = (question: BonusQuestion) => {
+    const answer = bonusAnswers[question.id];
+    if (!answer) return false;
+
+    if (countryQuestionTypes.includes(question.questionType)) {
+      return teamOptions.some((option) => option.value === answer);
+    }
+
+    if (question.questionType === 'top_scorer') {
+      return topScorerOptions.some((option) => option.value === answer);
+    }
+
+    return true;
   };
 
   // Save bonus answer
@@ -528,21 +570,77 @@ export default function MyPredictionPage() {
                       <Typography variant="caption" sx={{ color: '#9B1915', fontWeight: 700, mb: 2, display: 'block' }}>
                         WORTH {question.points} POINTS
                       </Typography>
-                      <TextField
-                        fullWidth
-                        size="small"
-                        label="Your Answer"
-                        variant="outlined"
-                        value={bonusAnswers[question.id] || ''}
-                        onChange={(e) => handleBonusAnswerChange(question.id, e.target.value)}
-                        sx={{ mt: 1, '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
-                      />
+                      {countryQuestionTypes.includes(question.questionType) ? (
+                        <Autocomplete
+                          fullWidth
+                          size="small"
+                          options={teamOptions}
+                          value={
+                            teamOptions.find((option) => option.value === bonusAnswers[question.id]) || null
+                          }
+                          onChange={(_, newValue) =>
+                            handleBonusAnswerChange(question.id, newValue?.value || '')
+                          }
+                          inputValue={bonusInputValues[question.id] || ''}
+                          onInputChange={(_, newInputValue) =>
+                            setBonusInputValues({
+                              ...bonusInputValues,
+                              [question.id]: newInputValue,
+                            })
+                          }
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Select team"
+                              variant="outlined"
+                              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
+                            />
+                          )}
+                        />
+                      ) : question.questionType === 'top_scorer' ? (
+                        <Autocomplete
+                          fullWidth
+                          size="small"
+                          options={topScorerOptions}
+                          value={
+                            topScorerOptions.find((option) => option.value === bonusAnswers[question.id]) || null
+                          }
+                          onChange={(_, newValue) =>
+                            handleBonusAnswerChange(question.id, newValue?.value || '')
+                          }
+                          inputValue={bonusInputValues[question.id] || ''}
+                          onInputChange={(_, newInputValue) =>
+                            setBonusInputValues({
+                              ...bonusInputValues,
+                              [question.id]: newInputValue,
+                            })
+                          }
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Select player"
+                              variant="outlined"
+                              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
+                            />
+                          )}
+                        />
+                      ) : (
+                        <TextField
+                          fullWidth
+                          size="small"
+                          label="Your Answer"
+                          variant="outlined"
+                          value={bonusAnswers[question.id] || ''}
+                          onChange={(e) => handleBonusAnswerChange(question.id, e.target.value)}
+                          sx={{ mt: 1, '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
+                        />
+                      )}
                       <Button
                         variant="outlined"
                         size="small"
                         sx={{ mt: 2 }}
                         onClick={() => handleSaveBonusAnswer(question.id)}
-                        disabled={!bonusAnswers[question.id]}
+                        disabled={!isValidBonusAnswer(question)}
                       >
                         Save
                       </Button>
