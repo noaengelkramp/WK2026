@@ -63,8 +63,8 @@ export interface Prediction {
   id: string;
   userId: string;
   matchId: string;
-  predictedHomeScore: number;
-  predictedAwayScore: number;
+  homeScore: number;
+  awayScore: number;
   pointsEarned?: number;
   isLocked: boolean;
 }

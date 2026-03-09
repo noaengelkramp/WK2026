@@ -80,8 +80,8 @@ export default function MyPredictionPage() {
         const predMap: Record<string, { home: number; away: number }> = {};
         myPredictions.predictions.forEach((pred) => {
           predMap[pred.matchId] = {
-            home: pred.predictedHomeScore,
-            away: pred.predictedAwayScore,
+            home: pred.homeScore,
+            away: pred.awayScore,
           };
         });
         setPredictions(predMap);
