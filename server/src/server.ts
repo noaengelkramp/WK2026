@@ -55,6 +55,10 @@ const authLimiter = rateLimit({
 app.use('/api/auth', authLimiter);
 
 // CORS
+app.use(cors({
+  origin: config.cors.origin,
+  credentials: true,
+}));
 
 // Logging
 if (config.nodeEnv === 'development') {
