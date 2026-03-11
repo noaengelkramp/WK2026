@@ -187,7 +187,7 @@ export default function RegisterPage() {
                     component="img"
                     src="/assets/kramp-logo-red.svg"
                     alt="Kramp"
-                    sx={{ height: 32, width: 'auto' }}
+                    sx={{ height: 64, width: 'auto' }}
                   />
                 </Box>
 
