@@ -185,7 +185,7 @@ export default function RegisterPage() {
                 <Box sx={{ mb: 6 }}>
                   <Box
                     component="img"
-                    src="/assets/kramp-logo-red.svg"
+                    src="/kramp-logo-red.svg"
                     alt="Kramp"
                     sx={{ height: 64, width: 'auto' }}
                   />
