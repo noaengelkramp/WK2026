@@ -11,16 +11,17 @@ export const validateRequest = (schema: AnyZodObject) => {
   return async (req: Request, _res: Response, next: NextFunction) => {
     try {
       // Validate body and strip any extra fields not defined in schema
-      const validatedData = await schema.parseAsync({
+      const validatedData = (await schema.parseAsync({
         body: req.body,
         query: req.query,
         params: req.params,
-      });
+      })) as any;
 
       // Replace original data with validated/stripped data
+      // Using type casting to avoid TS2322 while keeping the original properties updated
       req.body = validatedData.body;
-      req.query = validatedData.query;
-      req.params = validatedData.params;
+      req.query = validatedData.query as any;
+      req.params = validatedData.params as any;
 
       next();
     } catch (error) {
