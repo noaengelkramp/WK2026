@@ -2,6 +2,7 @@ import express, { Application } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import rateLimit from 'express-rate-limit';
 import { config } from './config/environment';
 import { testConnection, syncDatabase } from './config/database';
 import { initRedis, closeRedis, isRedisAvailable } from './config/redis';
@@ -25,6 +26,29 @@ const app: Application = express();
 
 // Security middleware
 app.use(helmet());
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: config.rateLimit.windowMs,
+  max: config.rateLimit.maxRequests,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: 'Too many requests from this IP, please try again after 15 minutes',
+});
+
+// Apply rate limiter to all requests
+app.use(limiter);
+
+// Specific limiter for auth routes (stricter)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // Limit each IP to 20 requests per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: 'Too many login/register attempts, please try again after 15 minutes',
+});
+
+app.use('/api/auth', authLimiter);
 
 // CORS
 app.use(cors({
