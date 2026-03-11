@@ -7,6 +7,8 @@ import {
   deletePrediction,
 } from '../controllers/predictionController';
 import { authenticate } from '../middleware/auth';
+import { validateRequest } from '../middleware/validateRequest';
+import { submitPredictionSchema, submitBonusAnswerSchema, deletePredictionSchema } from '../schemas/predictionSchema';
 
 const router = Router();
 
@@ -20,12 +22,12 @@ router.get('/my', getMyPredictions);
 router.get('/my/statistics', getMyStatistics);
 
 // Submit or update a prediction
-router.post('/', submitPrediction);
+router.post('/', validateRequest(submitPredictionSchema), submitPrediction);
 
 // Submit or update bonus answer
-router.post('/bonus', submitBonusAnswer);
+router.post('/bonus', validateRequest(submitBonusAnswerSchema), submitBonusAnswer);
 
 // Delete a prediction
-router.delete('/:matchId', deletePrediction);
+router.delete('/:matchId', validateRequest(deletePredictionSchema), deletePrediction);
 
 export default router;
