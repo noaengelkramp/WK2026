@@ -39,6 +39,10 @@ const limiter = rateLimit({
 // Apply rate limiter to all requests
 app.use(limiter);
 
+// Body parser
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 // Specific limiter for auth routes (stricter)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -51,14 +55,6 @@ const authLimiter = rateLimit({
 app.use('/api/auth', authLimiter);
 
 // CORS
-app.use(cors({
-  origin: config.cors.origin,
-  credentials: true,
-}));
-
-// Body parser
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 // Logging
 if (config.nodeEnv === 'development') {
