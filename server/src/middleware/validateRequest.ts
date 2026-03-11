@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { AnyZodObject, ZodError } from 'zod';
+import { ZodError, ZodObject, ZodRawShape } from 'zod';
 import { AppError } from './errorHandler';
+
+type AnyZodObject = ZodObject<ZodRawShape>;
 
 /**
  * Middleware to validate request body against a Zod schema
@@ -23,9 +25,9 @@ export const validateRequest = (schema: AnyZodObject) => {
       next();
     } catch (error) {
       if (error instanceof ZodError) {
-        const errorMessages = error.errors.map((err) => {
-          const path = err.path.join('.');
-          return `${path}: ${err.message}`;
+        const errorMessages = error.issues.map((issue) => {
+          const path = issue.path.join('.');
+          return `${path}: ${issue.message}`;
         });
         
         next(new AppError(`Validation failed: ${errorMessages.join(', ')}`, 400));
