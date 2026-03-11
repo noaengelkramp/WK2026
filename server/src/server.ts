@@ -24,6 +24,10 @@ import setupRoutes from './routes/setup';
 
 const app: Application = express();
 
+// Body parser - MUST be before any routes or rate limiters that use req.body
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 // Security middleware
 app.use(helmet());
 
@@ -38,10 +42,6 @@ const limiter = rateLimit({
 
 // Apply rate limiter to all requests
 app.use(limiter);
-
-// Body parser
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 // Specific limiter for auth routes (stricter)
 const authLimiter = rateLimit({
