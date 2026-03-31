@@ -99,7 +99,6 @@ User.init(
     customerNumber: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      unique: true,
       references: {
         model: 'customers',
         key: 'customer_number',
@@ -144,7 +143,6 @@ User.init(
         fields: ['event_id', 'username'],
       },
       {
-        unique: true,
         fields: ['event_id', 'customer_number'],
       },
       {
