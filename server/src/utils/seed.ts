@@ -1,4 +1,5 @@
 import {
+  Event,
   Customer,
   Team,
   Match,
@@ -38,6 +39,7 @@ export async function seedDatabase() {
     await BonusAnswer.destroy({ where: {}, force: true });
     await Prediction.destroy({ where: {}, force: true });
     await User.destroy({ where: {}, force: true });
+    await Event.destroy({ where: {}, force: true });
     await Match.destroy({ where: {}, force: true });
     await Team.destroy({ where: {}, force: true });
     await ScoringRule.destroy({ where: {}, force: true });
@@ -45,7 +47,53 @@ export async function seedDatabase() {
     await Customer.destroy({ where: {}, force: true });
     console.log('✅ Database schema synced');
 
-    // 1. Customers
+    // 1. Events
+    console.log('🌍 Seeding events...');
+    const events = await Event.bulkCreate([
+      {
+        code: 'internal',
+        name: 'Internal Colleagues',
+        subdomain: 'internal',
+        defaultLocale: 'en',
+        allowedLocales: ['en', 'nl'],
+        timezone: 'Europe/Amsterdam',
+        isActive: true,
+      },
+      {
+        code: 'be',
+        name: 'Belgium',
+        subdomain: 'be',
+        defaultLocale: 'nl-BE',
+        allowedLocales: ['nl-BE', 'fr-BE', 'en'],
+        timezone: 'Europe/Brussels',
+        isActive: true,
+      },
+      {
+        code: 'de',
+        name: 'Germany',
+        subdomain: 'de',
+        defaultLocale: 'de-DE',
+        allowedLocales: ['de-DE', 'en'],
+        timezone: 'Europe/Berlin',
+        isActive: true,
+      },
+      {
+        code: 'es',
+        name: 'Spain',
+        subdomain: 'es',
+        defaultLocale: 'es-ES',
+        allowedLocales: ['es-ES', 'en'],
+        timezone: 'Europe/Madrid',
+        isActive: true,
+      },
+    ]);
+    const internalEvent = events.find((event) => event.code === 'internal');
+    if (!internalEvent) {
+      throw new Error('Internal event was not created');
+    }
+    console.log(`✅ Created ${events.length} events`);
+
+    // 2. Customers
     console.log('🏢 Seeding customers...');
     const customers = await Customer.bulkCreate([
       { customerNumber: 'C1234_0000001', companyName: 'Kramp Admin', isActive: true },
@@ -54,7 +102,7 @@ export async function seedDatabase() {
     ]);
     console.log(`✅ Created ${customers.length} customers`);
 
-    // 2. Seed Teams (48 World Cup 2026 teams)
+    // 3. Seed Teams (48 World Cup 2026 teams)
     console.log('⚽ Seeding teams...');
     const teams = await Team.bulkCreate([
       // Group A
@@ -131,27 +179,28 @@ export async function seedDatabase() {
     ]);
     console.log(`✅ Created ${teams.length} teams`);
 
-    // 3. Matches (not seeded - will be populated from Football API via setup endpoint)
+    // 4. Matches (not seeded - will be populated from Football API via setup endpoint)
     console.log('📅 Matches will be populated from Football API...');
     console.log('   Use POST /api/setup?matchesOnly=true to populate matches');
 
-    // 4. Seed Scoring Rules
+    // 5. Seed Scoring Rules
     console.log('📊 Seeding scoring rules...');
     const scoringRules = await ScoringRule.bulkCreate([
-      { stage: 'group', pointsExactScore: 5, pointsCorrectWinner: 3, description: 'Group stage matches' },
-      { stage: 'round32', pointsExactScore: 7, pointsCorrectWinner: 5, description: 'Round of 32 knockout matches' },
-      { stage: 'round16', pointsExactScore: 10, pointsCorrectWinner: 7, description: 'Round of 16 knockout matches' },
-      { stage: 'quarter', pointsExactScore: 12, pointsCorrectWinner: 9, description: 'Quarter-final matches' },
-      { stage: 'semi', pointsExactScore: 15, pointsCorrectWinner: 12, description: 'Semi-final matches' },
-      { stage: 'third_place', pointsExactScore: 10, pointsCorrectWinner: 7, description: 'Third place playoff' },
-      { stage: 'final', pointsExactScore: 20, pointsCorrectWinner: 15, description: 'Final match' },
+      { eventId: internalEvent.id, stage: 'group', pointsExactScore: 5, pointsCorrectWinner: 3, description: 'Group stage matches' },
+      { eventId: internalEvent.id, stage: 'round32', pointsExactScore: 7, pointsCorrectWinner: 5, description: 'Round of 32 knockout matches' },
+      { eventId: internalEvent.id, stage: 'round16', pointsExactScore: 10, pointsCorrectWinner: 7, description: 'Round of 16 knockout matches' },
+      { eventId: internalEvent.id, stage: 'quarter', pointsExactScore: 12, pointsCorrectWinner: 9, description: 'Quarter-final matches' },
+      { eventId: internalEvent.id, stage: 'semi', pointsExactScore: 15, pointsCorrectWinner: 12, description: 'Semi-final matches' },
+      { eventId: internalEvent.id, stage: 'third_place', pointsExactScore: 10, pointsCorrectWinner: 7, description: 'Third place playoff' },
+      { eventId: internalEvent.id, stage: 'final', pointsExactScore: 20, pointsCorrectWinner: 15, description: 'Final match' },
     ]);
     console.log(`✅ Created ${scoringRules.length} scoring rules`);
 
-    // 5. Seed Bonus Questions
+    // 6. Seed Bonus Questions
     console.log('❓ Seeding bonus questions...');
     const bonusQuestions = await BonusQuestion.bulkCreate([
       {
+        eventId: internalEvent.id,
         questionType: 'champion',
         questionTextEn: 'Who will win the World Cup 2026?',
         questionTextNl: 'Wie wint het Wereldkampioenschap 2026?',
@@ -159,6 +208,7 @@ export async function seedDatabase() {
         isActive: true,
       },
       {
+        eventId: internalEvent.id,
         questionType: 'top_scorer',
         questionTextEn: 'Who will be the top scorer?',
         questionTextNl: 'Wie wordt de topscorer?',
@@ -166,6 +216,7 @@ export async function seedDatabase() {
         isActive: true,
       },
       {
+        eventId: internalEvent.id,
         questionType: 'total_goals',
         questionTextEn: 'How many total goals will be scored in the tournament?',
         questionTextNl: 'Hoeveel doelpunten worden er in totaal gescoord in het toernooi?',
@@ -173,6 +224,7 @@ export async function seedDatabase() {
         isActive: true,
       },
       {
+        eventId: internalEvent.id,
         questionType: 'highest_scoring_team',
         questionTextEn: 'Which team will score the most goals?',
         questionTextNl: 'Welk team scoort de meeste doelpunten?',
@@ -180,6 +232,7 @@ export async function seedDatabase() {
         isActive: true,
       },
       {
+        eventId: internalEvent.id,
         questionType: 'most_yellow_cards',
         questionTextEn: 'Which team will receive the most yellow cards?',
         questionTextNl: 'Welk team krijgt de meeste gele kaarten?',
@@ -189,47 +242,62 @@ export async function seedDatabase() {
     ]);
     console.log(`✅ Created ${bonusQuestions.length} bonus questions`);
 
-    // 6. Seed Test Users
+    // 7. Seed Test Users
     console.log('👥 Seeding test users...');
     const hashedPassword = await bcrypt.hash('password123', 10);
     const users = await User.bulkCreate([
       {
+        eventId: internalEvent.id,
         email: 'admin@wk2026.com',
         username: 'admin',
         passwordHash: hashedPassword,
         firstName: 'Admin',
         lastName: 'User',
         customerNumber: 'C1234_0000001',
-        isAdmin: true,
+        role: 'event_admin',
         languagePreference: 'en',
       },
       {
+        eventId: internalEvent.id,
         email: 'john.doe@wk2026.com',
         username: 'johndoe',
         passwordHash: hashedPassword,
         firstName: 'John',
         lastName: 'Doe',
         customerNumber: 'C1234_0000002',
-        isAdmin: false,
+        role: 'user',
         languagePreference: 'en',
       },
       {
+        eventId: internalEvent.id,
         email: 'jane.smith@wk2026.com',
         username: 'janesmith',
         passwordHash: hashedPassword,
         firstName: 'Jane',
         lastName: 'Smith',
         customerNumber: 'C1234_0000003',
-        isAdmin: false,
+        role: 'user',
         languagePreference: 'nl',
+      },
+      {
+        eventId: internalEvent.id,
+        email: 'platform.admin@wk2026.com',
+        username: 'platformadmin',
+        passwordHash: hashedPassword,
+        firstName: 'Platform',
+        lastName: 'Admin',
+        customerNumber: 'C1234_0000001',
+        role: 'platform_admin',
+        languagePreference: 'en',
       },
     ]);
     console.log(`✅ Created ${users.length} test users`);
 
-    // 7. Create UserStatistics for each user
+    // 8. Create UserStatistics for each user
     console.log('📈 Creating user statistics...');
     for (const user of users) {
       await UserStatistics.create({
+        eventId: user.eventId,
         userId: user.id,
         totalPoints: 0,
         exactScores: 0,
@@ -246,6 +314,7 @@ export async function seedDatabase() {
     console.log('  User 1: john.doe@wk2026.com / password123');
     console.log('  User 2: jane.smith@wk2026.com / password123');
     console.log('\n📊 Summary:');
+    console.log(`  - ${events.length} events`);
     console.log(`  - ${customers.length} customers`);
     console.log(`  - ${teams.length} teams`);
     console.log(`  - ${scoringRules.length} scoring rules`);

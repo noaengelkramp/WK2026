@@ -3,6 +3,7 @@ import sequelize from '../config/database';
 
 interface AppSettingsAttributes {
   id: string;
+  eventId: string;
   key: string;
   value: string;
   description?: string;
@@ -14,6 +15,7 @@ interface AppSettingsCreationAttributes extends Optional<AppSettingsAttributes, 
 
 class AppSettings extends Model<AppSettingsAttributes, AppSettingsCreationAttributes> implements AppSettingsAttributes {
   public id!: string;
+  public eventId!: string;
   public key!: string;
   public value!: string;
   public description?: string;
@@ -28,10 +30,17 @@ AppSettings.init(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
+    eventId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: 'events',
+        key: 'id',
+      },
+    },
     key: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      unique: true,
     },
     value: {
       type: DataTypes.TEXT,
@@ -49,7 +58,10 @@ AppSettings.init(
     indexes: [
       {
         unique: true,
-        fields: ['key'],
+        fields: ['event_id', 'key'],
+      },
+      {
+        fields: ['event_id'],
       },
     ],
   }

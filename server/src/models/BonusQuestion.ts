@@ -5,6 +5,7 @@ type QuestionType = 'champion' | 'top_scorer' | 'total_goals' | 'most_yellow_car
 
 interface BonusQuestionAttributes {
   id: string;
+  eventId: string;
   questionType: QuestionType;
   questionTextEn: string;
   questionTextNl: string;
@@ -19,6 +20,7 @@ interface BonusQuestionCreationAttributes extends Optional<BonusQuestionAttribut
 
 class BonusQuestion extends Model<BonusQuestionAttributes, BonusQuestionCreationAttributes> implements BonusQuestionAttributes {
   public id!: string;
+  public eventId!: string;
   public questionType!: QuestionType;
   public questionTextEn!: string;
   public questionTextNl!: string;
@@ -35,6 +37,14 @@ BonusQuestion.init(
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
+    },
+    eventId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: 'events',
+        key: 'id',
+      },
     },
     questionType: {
       type: DataTypes.ENUM('champion', 'top_scorer', 'total_goals', 'most_yellow_cards', 'highest_scoring_team', 'custom'),
@@ -69,6 +79,9 @@ BonusQuestion.init(
     indexes: [
       {
         fields: ['question_type'],
+      },
+      {
+        fields: ['event_id'],
       },
       {
         fields: ['is_active'],

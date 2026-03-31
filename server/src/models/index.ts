@@ -2,6 +2,7 @@ import sequelize from '../config/database';
 
 // Import all models
 import Customer from './Customer';
+import Event from './Event';
 import User from './User';
 import Team from './Team';
 import Match from './Match';
@@ -20,9 +21,35 @@ import ApiLog from './ApiLog';
 User.belongsTo(Customer, { foreignKey: 'customerNumber', targetKey: 'customerNumber', as: 'customer' });
 Customer.hasOne(User, { foreignKey: 'customerNumber', sourceKey: 'customerNumber', as: 'user' });
 
+// Event <-> User
+User.belongsTo(Event, { foreignKey: 'eventId', as: 'event' });
+Event.hasMany(User, { foreignKey: 'eventId', as: 'users' });
+
 // User <-> Predictions
 User.hasMany(Prediction, { foreignKey: 'userId', as: 'predictions' });
 Prediction.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
+// Event scoped models
+Prediction.belongsTo(Event, { foreignKey: 'eventId', as: 'event' });
+Event.hasMany(Prediction, { foreignKey: 'eventId', as: 'predictions' });
+
+BonusQuestion.belongsTo(Event, { foreignKey: 'eventId', as: 'event' });
+Event.hasMany(BonusQuestion, { foreignKey: 'eventId', as: 'bonusQuestions' });
+
+BonusAnswer.belongsTo(Event, { foreignKey: 'eventId', as: 'event' });
+Event.hasMany(BonusAnswer, { foreignKey: 'eventId', as: 'bonusAnswers' });
+
+Prize.belongsTo(Event, { foreignKey: 'eventId', as: 'event' });
+Event.hasMany(Prize, { foreignKey: 'eventId', as: 'prizes' });
+
+ScoringRule.belongsTo(Event, { foreignKey: 'eventId', as: 'event' });
+Event.hasMany(ScoringRule, { foreignKey: 'eventId', as: 'scoringRules' });
+
+UserStatistics.belongsTo(Event, { foreignKey: 'eventId', as: 'event' });
+Event.hasMany(UserStatistics, { foreignKey: 'eventId', as: 'userStatistics' });
+
+AppSettings.belongsTo(Event, { foreignKey: 'eventId', as: 'event' });
+Event.hasMany(AppSettings, { foreignKey: 'eventId', as: 'appSettings' });
 
 // User <-> BonusAnswers
 User.hasMany(BonusAnswer, { foreignKey: 'userId', as: 'bonusAnswers' });
@@ -53,6 +80,7 @@ BonusAnswer.belongsTo(BonusQuestion, { foreignKey: 'bonusQuestionId', as: 'quest
 // Export all models and sequelize instance
 export {
   sequelize,
+  Event,
   Customer,
   User,
   Team,
@@ -70,6 +98,7 @@ export {
 // Export default for convenience
 export default {
   sequelize,
+  Event,
   Customer,
   User,
   Team,

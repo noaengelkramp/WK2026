@@ -169,6 +169,9 @@ export async function getAllUsers(req: Request, res: Response) {
 
     // Build search filter
     const whereClause: any = {};
+    if (req.user?.role !== 'platform_admin') {
+      whereClause.eventId = req.user?.eventId;
+    }
     if (search) {
       whereClause[Op.or] = [
         { email: { [Op.iLike]: `%${search}%` } },
@@ -255,11 +258,15 @@ export async function getUserById(req: Request, res: Response) {
 /**
  * Create new user
  * POST /api/admin/users
- * Body: { email, password, firstName, lastName, customerNumber, isAdmin, languagePreference }
+ * Body: { email, password, firstName, lastName, customerNumber, role, languagePreference }
  */
 export async function createUser(req: Request, res: Response) {
   try {
-    const { email, username, password, firstName, lastName, customerNumber, isAdmin = false, languagePreference = 'en' } = req.body;
+    const { email, username, password, firstName, lastName, customerNumber, role = 'user', languagePreference = 'en' } = req.body;
+
+    const targetEventId = req.user?.role === 'platform_admin' && req.body.eventId
+      ? req.body.eventId
+      : req.user?.eventId;
 
     // Validation
     if (!email || !username || !password || !firstName || !lastName || !customerNumber) {
@@ -271,7 +278,7 @@ export async function createUser(req: Request, res: Response) {
     }
 
     // Check if email already exists
-    const existingEmail = await User.findOne({ where: { email } });
+    const existingEmail = await User.findOne({ where: { email, eventId: targetEventId } });
     if (existingEmail) {
       res.status(409).json({
         success: false,
@@ -281,7 +288,7 @@ export async function createUser(req: Request, res: Response) {
     }
 
     // Check if username already exists
-    const existingUsername = await User.findOne({ where: { username } });
+    const existingUsername = await User.findOne({ where: { username, eventId: targetEventId } });
     if (existingUsername) {
       res.status(409).json({
         success: false,
@@ -309,7 +316,7 @@ export async function createUser(req: Request, res: Response) {
     }
 
     // Check if customer number already has a user
-    const existingCustomerUser = await User.findOne({ where: { customerNumber } });
+    const existingCustomerUser = await User.findOne({ where: { customerNumber, eventId: targetEventId } });
     if (existingCustomerUser) {
       res.status(409).json({
         success: false,
@@ -323,13 +330,14 @@ export async function createUser(req: Request, res: Response) {
 
     // Create user
     const user = await User.create({
+      eventId: targetEventId,
       email,
       username,
       passwordHash,
       firstName,
       lastName,
       customerNumber,
-      isAdmin,
+      role,
       languagePreference,
     });
 
@@ -352,14 +360,18 @@ export async function createUser(req: Request, res: Response) {
 /**
  * Update user
  * PUT /api/admin/users/:id
- * Body: { email?, firstName?, lastName?, customerNumber?, isAdmin?, languagePreference? }
+ * Body: { email?, firstName?, lastName?, customerNumber?, role?, languagePreference? }
  */
 export async function updateUser(req: Request, res: Response) {
   try {
     const { id } = req.params;
     const updates = req.body;
 
-    const user = await User.findOne({ where: { id } });
+    const user = await User.findOne({
+      where: req.user?.role === 'platform_admin'
+        ? { id }
+        : { id, eventId: req.user?.eventId },
+    });
 
     if (!user) {
       res.status(404).json({
@@ -389,7 +401,7 @@ export async function updateUser(req: Request, res: Response) {
       }
 
       // Check if new customer number already has a user
-      const existingCustomerUser = await User.findOne({ where: { customerNumber: updates.customerNumber } });
+      const existingCustomerUser = await User.findOne({ where: { customerNumber: updates.customerNumber, eventId: user.eventId } });
       if (existingCustomerUser && existingCustomerUser.id !== id) {
         res.status(409).json({
           success: false,
@@ -401,7 +413,7 @@ export async function updateUser(req: Request, res: Response) {
 
     // If updating email, check uniqueness
     if (updates.email && updates.email !== user.email) {
-      const existingUser = await User.findOne({ where: { email: updates.email } });
+      const existingUser = await User.findOne({ where: { email: updates.email, eventId: user.eventId } });
       if (existingUser && existingUser.id !== id) {
         res.status(409).json({
           success: false,
@@ -439,7 +451,11 @@ export async function deleteUser(req: Request, res: Response) {
   try {
     const { id } = req.params;
 
-    const user = await User.findOne({ where: { id } });
+    const user = await User.findOne({
+      where: req.user?.role === 'platform_admin'
+        ? { id }
+        : { id, eventId: req.user?.eventId },
+    });
 
     if (!user) {
       res.status(404).json({
@@ -494,7 +510,11 @@ export async function resetUserPassword(req: Request, res: Response) {
       return;
     }
 
-    const user = await User.findOne({ where: { id } });
+    const user = await User.findOne({
+      where: req.user?.role === 'platform_admin'
+        ? { id }
+        : { id, eventId: req.user?.eventId },
+    });
 
     if (!user) {
       res.status(404).json({
@@ -559,7 +579,7 @@ export async function getAllCustomers(req: Request, res: Response) {
         {
           model: User,
           as: 'user',
-          attributes: ['id', 'email', 'firstName', 'lastName', 'isAdmin'],
+          attributes: ['id', 'email', 'firstName', 'lastName', 'role'],
           required: false,
         },
       ],
@@ -598,7 +618,7 @@ export async function getCustomerById(req: Request, res: Response) {
         {
           model: User,
           as: 'user',
-          attributes: ['id', 'email', 'firstName', 'lastName', 'isAdmin', 'createdAt'],
+          attributes: ['id', 'email', 'firstName', 'lastName', 'role', 'createdAt'],
           required: false,
         },
       ],
@@ -875,6 +895,9 @@ export async function bulkImportCustomers(req: Request, res: Response) {
  */
 export async function getDashboardStats(_req: Request, res: Response) {
   try {
+    const reqAny = _req as any;
+    const eventFilter = reqAny.user?.role === 'platform_admin' ? {} : { eventId: reqAny.user?.eventId };
+
     // Get counts
     const [
       totalUsers,
@@ -885,11 +908,11 @@ export async function getDashboardStats(_req: Request, res: Response) {
       finishedMatches,
       activeCustomers,
     ] = await Promise.all([
-      User.count(),
+      User.count({ where: eventFilter }),
       Customer.count(),
       Match.count(),
       Team.count(),
-      Prediction.count(),
+      Prediction.count({ where: eventFilter }),
       Match.count({ where: { status: 'finished' } }),
       Customer.count({ where: { isActive: true } }),
     ]);
@@ -898,11 +921,12 @@ export async function getDashboardStats(_req: Request, res: Response) {
     const weekAgo = new Date();
     weekAgo.setDate(weekAgo.getDate() - 7);
     const recentUsers = await User.count({
-      where: { createdAt: { [Op.gte]: weekAgo } },
+      where: { ...eventFilter, createdAt: { [Op.gte]: weekAgo } },
     });
 
     // Get predictions percentage
     const usersWithPredictions = await Prediction.count({
+      where: eventFilter,
       distinct: true,
       col: 'userId',
     });

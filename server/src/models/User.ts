@@ -4,36 +4,38 @@ import bcrypt from 'bcrypt';
 
 interface UserAttributes {
   id: string;
+  eventId: string;
   email: string;
   username: string;
   passwordHash: string;
   firstName: string;
   lastName: string;
   customerNumber: string;
-  isAdmin: boolean;
+  role: 'user' | 'event_admin' | 'platform_admin';
   isEmailVerified: boolean;
   emailVerificationToken?: string;
   emailVerificationExpires?: Date;
-  languagePreference: 'en' | 'nl';
+  languagePreference: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'isAdmin' | 'isEmailVerified' | 'emailVerificationToken' | 'emailVerificationExpires' | 'languagePreference' | 'createdAt' | 'updatedAt'> {}
+interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'role' | 'isEmailVerified' | 'emailVerificationToken' | 'emailVerificationExpires' | 'languagePreference' | 'createdAt' | 'updatedAt'> {}
 
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
   public id!: string;
+  public eventId!: string;
   public email!: string;
   public username!: string;
   public passwordHash!: string;
   public firstName!: string;
   public lastName!: string;
   public customerNumber!: string;
-  public isAdmin!: boolean;
+  public role!: 'user' | 'event_admin' | 'platform_admin';
   public isEmailVerified!: boolean;
   public emailVerificationToken?: string;
   public emailVerificationExpires?: Date;
-  public languagePreference!: 'en' | 'nl';
+  public languagePreference!: string;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
@@ -51,6 +53,7 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public toJSON(): Partial<UserAttributes> {
     const values = { ...this.get() } as UserAttributes;
     delete (values as any).passwordHash;
+    (values as any).isAdmin = values.role === 'event_admin' || values.role === 'platform_admin';
     return values;
   }
 }
@@ -62,10 +65,17 @@ User.init(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
+    eventId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: 'events',
+        key: 'id',
+      },
+    },
     email: {
       type: DataTypes.STRING(255),
       allowNull: false,
-      unique: true,
       validate: {
         isEmail: true,
       },
@@ -73,7 +83,6 @@ User.init(
     username: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      unique: true,
     },
     passwordHash: {
       type: DataTypes.STRING(255),
@@ -99,9 +108,10 @@ User.init(
         is: /^C\d{4}_\d{7}$/, // Format: C1234_1234567
       },
     },
-    isAdmin: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
+    role: {
+      type: DataTypes.ENUM('user', 'event_admin', 'platform_admin'),
+      allowNull: false,
+      defaultValue: 'user',
     },
     isEmailVerified: {
       type: DataTypes.BOOLEAN,
@@ -116,7 +126,7 @@ User.init(
       allowNull: true,
     },
     languagePreference: {
-      type: DataTypes.ENUM('en', 'nl'),
+      type: DataTypes.STRING(20),
       defaultValue: 'en',
     },
   },
@@ -127,15 +137,18 @@ User.init(
     indexes: [
       {
         unique: true,
-        fields: ['email'],
+        fields: ['event_id', 'email'],
       },
       {
         unique: true,
-        fields: ['username'],
+        fields: ['event_id', 'username'],
       },
       {
         unique: true,
-        fields: ['customer_number'],
+        fields: ['event_id', 'customer_number'],
+      },
+      {
+        fields: ['event_id'],
       },
     ],
   }

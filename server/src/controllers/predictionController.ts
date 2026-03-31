@@ -9,10 +9,11 @@ import { config } from '../config/environment';
 export const getMyPredictions = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.userId;
+    const eventId = (req as any).user.eventId;
 
     // Get all match predictions
     const predictions = await Prediction.findAll({
-      where: { userId },
+      where: { userId, eventId },
       include: [
         {
           model: Match,
@@ -28,7 +29,7 @@ export const getMyPredictions = async (req: Request, res: Response) => {
 
     // Get bonus answers
     const bonusAnswers = await BonusAnswer.findAll({
-      where: { userId },
+      where: { userId, eventId },
       include: [{ model: BonusQuestion, as: 'question' }],
     });
 
@@ -49,6 +50,7 @@ export const getMyPredictions = async (req: Request, res: Response) => {
 export const submitPrediction = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.userId;
+    const eventId = (req as any).user.eventId;
     const { matchId, homeScore, awayScore } = req.body;
 
     // Validate input
@@ -84,8 +86,9 @@ export const submitPrediction = async (req: Request, res: Response) => {
 
     // Find existing prediction or create new
     const [prediction, created] = await Prediction.findOrCreate({
-      where: { userId, matchId },
+      where: { userId, matchId, eventId },
       defaults: {
+        eventId,
         userId,
         matchId,
         homeScore,
@@ -134,6 +137,7 @@ export const submitPrediction = async (req: Request, res: Response) => {
 export const submitBonusAnswer = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.userId;
+    const eventId = (req as any).user.eventId;
     const { bonusQuestionId, answer } = req.body;
 
     // Validate input
@@ -145,6 +149,10 @@ export const submitBonusAnswer = async (req: Request, res: Response) => {
     const bonusQuestion = await BonusQuestion.findByPk(bonusQuestionId);
     if (!bonusQuestion) {
       throw new AppError('Bonus question not found', 404);
+    }
+
+    if ((bonusQuestion as any).eventId !== eventId) {
+      throw new AppError('Bonus question not available in this event', 403);
     }
 
     if (!bonusQuestion.isActive) {
@@ -160,8 +168,8 @@ export const submitBonusAnswer = async (req: Request, res: Response) => {
 
     // Find existing answer or create new
     const [bonusAnswer, created] = await BonusAnswer.findOrCreate({
-      where: { userId, bonusQuestionId },
-      defaults: { userId, bonusQuestionId, answer },
+      where: { userId, bonusQuestionId, eventId },
+      defaults: { userId, bonusQuestionId, answer, eventId },
     });
 
     // Update if already exists
@@ -193,15 +201,16 @@ export const submitBonusAnswer = async (req: Request, res: Response) => {
 export const getMyStatistics = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.userId;
+    const eventId = (req as any).user.eventId;
 
     // Get total predictions made
     const totalPredictions = await Prediction.count({
-      where: { userId },
+      where: { userId, eventId },
     });
 
     // Get predictions by match status
     const finishedMatches = await Prediction.count({
-      where: { userId },
+      where: { userId, eventId },
       include: [
         {
           model: Match,
@@ -213,11 +222,11 @@ export const getMyStatistics = async (req: Request, res: Response) => {
 
     // Get correct predictions
     const exactScores = await Prediction.count({
-      where: { userId, isCorrectScore: true },
+      where: { userId, eventId, isCorrectScore: true },
     });
 
     const correctWinners = await Prediction.count({
-      where: { userId, isCorrectWinner: true },
+      where: { userId, eventId, isCorrectWinner: true },
     });
 
     // Calculate completion percentage based on actual match count
@@ -246,6 +255,7 @@ export const getMyStatistics = async (req: Request, res: Response) => {
 export const deletePrediction = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.userId;
+    const eventId = (req as any).user.eventId;
     const { matchId } = req.params;
 
     // Check if prediction deadline has passed
@@ -257,7 +267,7 @@ export const deletePrediction = async (req: Request, res: Response) => {
 
     // Find prediction
     const prediction = await Prediction.findOne({
-      where: { userId, matchId },
+      where: { userId, matchId, eventId },
     });
 
     if (!prediction) {

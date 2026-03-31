@@ -32,7 +32,7 @@ export const registerSchema = z.object({
       .max(100),
     customerNumber: z.string()
       .regex(CUSTOMER_NUMBER_REGEX, 'Invalid customer number format. Expected format: C1234_1234567'),
-    languagePreference: z.enum(['en', 'nl']).optional(),
+    languagePreference: z.string().trim().min(2).max(20).optional(),
   })
 });
 
@@ -53,7 +53,7 @@ export const updateProfileSchema = z.object({
   body: z.object({
     firstName: z.string().trim().min(1, 'First name cannot be empty').max(100).optional(),
     lastName: z.string().trim().min(1, 'Last name cannot be empty').max(100).optional(),
-    languagePreference: z.enum(['en', 'nl']).optional(),
+    languagePreference: z.string().trim().min(2).max(20).optional(),
   })
 });
 

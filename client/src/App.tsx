@@ -16,6 +16,7 @@ import MatchesPage from './pages/MatchesPage';
 import GroupsPage from './pages/GroupsPage';
 import StatisticsPage from './pages/StatisticsPage';
 import AdminPanel from './pages/AdminPanel';
+import CountrySelectorPage from './pages/CountrySelectorPage';
 import { CircularProgress, Box } from '@mui/material';
 
 // Protected routes component
@@ -52,6 +53,19 @@ const ProtectedRoutes = () => {
   );
 };
 
+const isRootSelectorDomain = () => {
+  const host = window.location.hostname.toLowerCase();
+  return host === 'poules.kramp.com' || host === 'www.poules.kramp.com';
+};
+
+const RootRoute = () => {
+  if (isRootSelectorDomain()) {
+    return <CountrySelectorPage />;
+  }
+
+  return <ProtectedRoutes />;
+};
+
 function App() {
   return (
     <ThemeProvider theme={theme}>
@@ -59,6 +73,8 @@ function App() {
       <AuthProvider>
         <Router>
           <Routes>
+            <Route path="/" element={<RootRoute />} />
+
             {/* Public routes */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />

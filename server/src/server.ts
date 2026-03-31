@@ -7,6 +7,7 @@ import { config } from './config/environment';
 import { testConnection, syncDatabase } from './config/database';
 import { initRedis, closeRedis, isRedisAvailable } from './config/redis';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
+import { resolveEvent } from './middleware/eventContext';
 
 // Import models to ensure they're registered with Sequelize before sync
 import './models';
@@ -21,6 +22,7 @@ import scoringRulesRoutes from './routes/scoringRules';
 import bonusQuestionsRoutes from './routes/bonusQuestions';
 import adminRoutes from './routes/admin';
 import setupRoutes from './routes/setup';
+import eventRoutes from './routes/event';
 
 const app: Application = express();
 
@@ -59,6 +61,9 @@ app.use(cors({
   origin: config.cors.origin,
   credentials: true,
 }));
+
+// Resolve event context from subdomain
+app.use(resolveEvent);
 
 // Logging
 if (config.nodeEnv === 'development') {
@@ -140,6 +145,7 @@ app.use('/api/scoring-rules', scoringRulesRoutes);
 app.use('/api/bonus-questions', bonusQuestionsRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/setup', setupRoutes);
+app.use('/api/event', eventRoutes);
 
 // 404 handler
 app.use(notFoundHandler);

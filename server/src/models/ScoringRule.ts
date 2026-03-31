@@ -5,6 +5,7 @@ type MatchStage = 'group' | 'round32' | 'round16' | 'quarter' | 'semi' | 'final'
 
 interface ScoringRuleAttributes {
   id: string;
+  eventId: string;
   stage: MatchStage;
   pointsExactScore: number;
   pointsCorrectWinner: number;
@@ -17,6 +18,7 @@ interface ScoringRuleCreationAttributes extends Optional<ScoringRuleAttributes, 
 
 class ScoringRule extends Model<ScoringRuleAttributes, ScoringRuleCreationAttributes> implements ScoringRuleAttributes {
   public id!: string;
+  public eventId!: string;
   public stage!: MatchStage;
   public pointsExactScore!: number;
   public pointsCorrectWinner!: number;
@@ -32,10 +34,17 @@ ScoringRule.init(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
+    eventId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: 'events',
+        key: 'id',
+      },
+    },
     stage: {
       type: DataTypes.ENUM('group', 'round32', 'round16', 'quarter', 'semi', 'final', 'third_place'),
       allowNull: false,
-      unique: true,
     },
     pointsExactScore: {
       type: DataTypes.INTEGER,
@@ -63,7 +72,10 @@ ScoringRule.init(
     indexes: [
       {
         unique: true,
-        fields: ['stage'],
+        fields: ['event_id', 'stage'],
+      },
+      {
+        fields: ['event_id'],
       },
     ],
   }

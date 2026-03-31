@@ -68,6 +68,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUser(null);
   };
 
+  useEffect(() => {
+    const host = window.location.hostname.toLowerCase();
+    const isRootSelector = host === 'poules.kramp.com' || host === 'www.poules.kramp.com';
+    if (isRootSelector && user) {
+      logout();
+    }
+  }, [user]);
+
   const updateUser = (updatedUser: User) => {
     setUser(updatedUser);
     localStorage.setItem('user', JSON.stringify(updatedUser));

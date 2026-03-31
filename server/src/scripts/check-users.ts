@@ -7,7 +7,7 @@ async function checkUsers() {
     console.log('✅ Connection established.');
     
     const users = await User.findAll({
-      attributes: ['id', 'username', 'email', 'isAdmin']
+      attributes: ['id', 'eventId', 'username', 'email', 'role']
     });
 
     if (users.length === 0) {
@@ -15,7 +15,7 @@ async function checkUsers() {
     } else {
       console.log(`✅ Found ${users.length} users:`);
       users.forEach(u => {
-        console.log(`- ${u.username} (${u.email}) [Admin: ${u.isAdmin}]`);
+        console.log(`- ${u.username} (${u.email}) [Event: ${u.eventId}] [Role: ${u.role}]`);
       });
     }
   } catch (error) {

@@ -27,6 +27,12 @@ export const authenticate = (req: Request, res: Response, next: NextFunction): v
 
     // Verify token
     const decoded = verifyAccessToken(token);
+
+    // Enforce event scope for non-platform admins
+    if (req.event && decoded.role !== 'platform_admin' && decoded.eventId !== req.event.id) {
+      res.status(403).json({ error: 'Token does not belong to this event' });
+      return;
+    }
     
     // Attach user to request
     req.user = decoded;
@@ -46,7 +52,7 @@ export const requireAdmin = (req: Request, res: Response, next: NextFunction): v
     return;
   }
 
-  if (!req.user.isAdmin) {
+  if (!req.user || (req.user.role !== 'event_admin' && req.user.role !== 'platform_admin')) {
     res.status(403).json({ error: 'Admin access required' });
     return;
   }
@@ -64,6 +70,12 @@ export const optionalAuth = (req: Request, _res: Response, next: NextFunction): 
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.substring(7);
       const decoded = verifyAccessToken(token);
+
+      if (req.event && decoded.role !== 'platform_admin' && decoded.eventId !== req.event.id) {
+        next();
+        return;
+      }
+
       req.user = decoded;
     }
   } catch (error) {

@@ -11,12 +11,17 @@ export const getIndividualStandings = async (req: Request, res: Response) => {
   try {
     const { limit = '100', offset = '0', search = '' } = req.query;
     const currentUserId = (req as any).user?.userId; // Get current user if authenticated
+    const currentEventId = (req as any).event?.id || (req as any).user?.eventId;
+
+    if (!currentEventId) {
+      throw new AppError('Event context is required for standings', 400);
+    }
 
     const limitNum = parseInt(limit as string);
     const offsetNum = parseInt(offset as string);
 
     // Create cache key with query params (but not including user ID for shared cache)
-    const cacheKey = `${CACHE_KEYS.LEADERBOARD_INDIVIDUAL}:${limitNum}:${offsetNum}:${search}`;
+    const cacheKey = `${CACHE_KEYS.LEADERBOARD_INDIVIDUAL}:${currentEventId}:${limitNum}:${offsetNum}:${search}`;
 
     // Try to get from cache (but we'll need to apply anonymization after)
     const cached = await getCache<any>(cacheKey);
@@ -32,6 +37,7 @@ export const getIndividualStandings = async (req: Request, res: Response) => {
 
     // Build where clause for search
     const whereClause: any = {};
+    whereClause.eventId = currentEventId;
     if (search) {
       whereClause[Op.or] = [
         { '$user.firstName$': { [Op.iLike]: `%${search}%` } },
@@ -144,8 +150,13 @@ export const getTopUsers = async (req: Request, res: Response) => {
   try {
     const { limit = '5' } = req.query;
     const limitNum = parseInt(limit as string);
+    const currentEventId = (req as any).event?.id || (req as any).user?.eventId;
 
-    const cacheKey = `${CACHE_KEYS.LEADERBOARD_INDIVIDUAL}:top:${limitNum}`;
+    if (!currentEventId) {
+      throw new AppError('Event context is required for standings', 400);
+    }
+
+    const cacheKey = `${CACHE_KEYS.LEADERBOARD_INDIVIDUAL}:top:${currentEventId}:${limitNum}`;
 
     // Try to get from cache
     const cached = await getCache<any>(cacheKey);
@@ -158,6 +169,7 @@ export const getTopUsers = async (req: Request, res: Response) => {
     console.log('⚠️  Cache MISS: Top users - querying database');
 
     const topUsers = await UserStatistics.findAll({
+      where: { eventId: currentEventId },
       include: [
         {
           model: User,
@@ -210,10 +222,11 @@ export const getTopUsers = async (req: Request, res: Response) => {
 export const getMyRanking = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.userId;
+    const eventId = (req as any).user.eventId;
 
     // Get user's statistics
     const userStats = await UserStatistics.findOne({
-      where: { userId },
+      where: { userId, eventId },
       include: [
         {
           model: User,
@@ -237,16 +250,18 @@ export const getMyRanking = async (req: Request, res: Response) => {
     // Get user's rank by counting users with higher points
     const rank = (await UserStatistics.count({
       where: {
+        eventId,
         totalPoints: { [Op.gt]: userStats.totalPoints },
       },
     })) + 1;
 
     // Get total participants
-    const totalParticipants = await UserStatistics.count();
+    const totalParticipants = await UserStatistics.count({ where: { eventId } });
 
     // Get users above (anonymized)
     const contextAbove = await UserStatistics.findAll({
       where: {
+        eventId,
         totalPoints: { [Op.gte]: userStats.totalPoints },
         userId: { [Op.ne]: userId },
       },
@@ -268,6 +283,7 @@ export const getMyRanking = async (req: Request, res: Response) => {
     // Get users below (anonymized)
     const contextBelow = await UserStatistics.findAll({
       where: {
+        eventId,
         totalPoints: { [Op.lt]: userStats.totalPoints },
       },
       include: [

@@ -9,7 +9,7 @@ export async function calculatePredictionPoints(
 ): Promise<{ pointsEarned: number; isCorrectScore: boolean; isCorrectWinner: boolean }> {
   // Get scoring rule for this match stage
   const scoringRule = await ScoringRule.findOne({
-    where: { stage: match.stage },
+    where: { stage: match.stage, eventId: (prediction as any).eventId },
   });
 
   if (!scoringRule) {
@@ -99,7 +99,13 @@ export async function processMatchScoring(matchId: string): Promise<void> {
     });
 
     // Update user statistics
-    await updateUserStatistics(prediction.userId, pointsEarned, isCorrectScore, isCorrectWinner);
+    await updateUserStatistics(
+      prediction.userId,
+      (prediction as any).eventId,
+      pointsEarned,
+      isCorrectScore,
+      isCorrectWinner
+    );
 
     console.log(`  User ${prediction.userId}: ${pointsEarned} points (exact: ${isCorrectScore}, winner: ${isCorrectWinner})`);
   }
@@ -112,17 +118,19 @@ export async function processMatchScoring(matchId: string): Promise<void> {
  */
 async function updateUserStatistics(
   userId: string,
+  eventId: string,
   pointsEarned: number,
   isCorrectScore: boolean,
   isCorrectWinner: boolean
 ): Promise<void> {
   const stats = await UserStatistics.findOne({
-    where: { userId },
+    where: { userId, eventId },
   });
 
   if (!stats) {
     // Create statistics if they don't exist
     await UserStatistics.create({
+      eventId,
       userId,
       totalPoints: pointsEarned,
       exactScores: isCorrectScore ? 1 : 0,

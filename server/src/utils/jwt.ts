@@ -3,8 +3,9 @@ import { config } from '../config/environment';
 
 export interface JwtPayload {
   userId: string;
+  eventId: string;
   email: string;
-  isAdmin: boolean;
+  role: 'user' | 'event_admin' | 'platform_admin';
 }
 
 export interface TokenResponse {

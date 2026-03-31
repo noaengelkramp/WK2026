@@ -3,6 +3,7 @@ import sequelize from '../config/database';
 
 interface UserStatisticsAttributes {
   id: string;
+  eventId: string;
   userId: string;
   totalPoints: number;
   exactScores: number;
@@ -18,6 +19,7 @@ interface UserStatisticsCreationAttributes extends Optional<UserStatisticsAttrib
 
 class UserStatistics extends Model<UserStatisticsAttributes, UserStatisticsCreationAttributes> implements UserStatisticsAttributes {
   public id!: string;
+  public eventId!: string;
   public userId!: string;
   public totalPoints!: number;
   public exactScores!: number;
@@ -35,6 +37,14 @@ UserStatistics.init(
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
+    },
+    eventId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: 'events',
+        key: 'id',
+      },
     },
     userId: {
       type: DataTypes.UUID,
@@ -82,7 +92,10 @@ UserStatistics.init(
     indexes: [
       {
         unique: true,
-        fields: ['user_id'],
+        fields: ['event_id', 'user_id'],
+      },
+      {
+        fields: ['event_id'],
       },
       {
         fields: ['total_points'],

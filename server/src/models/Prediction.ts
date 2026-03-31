@@ -3,6 +3,7 @@ import sequelize from '../config/database';
 
 interface PredictionAttributes {
   id: string;
+  eventId: string;
   userId: string;
   matchId: string;
   homeScore: number;
@@ -18,6 +19,7 @@ interface PredictionCreationAttributes extends Optional<PredictionAttributes, 'i
 
 class Prediction extends Model<PredictionAttributes, PredictionCreationAttributes> implements PredictionAttributes {
   public id!: string;
+  public eventId!: string;
   public userId!: string;
   public matchId!: string;
   public homeScore!: number;
@@ -35,6 +37,14 @@ Prediction.init(
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
+    },
+    eventId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: 'events',
+        key: 'id',
+      },
     },
     userId: {
       type: DataTypes.UUID,
@@ -87,7 +97,10 @@ Prediction.init(
     indexes: [
       {
         unique: true,
-        fields: ['user_id', 'match_id'],
+        fields: ['event_id', 'user_id', 'match_id'],
+      },
+      {
+        fields: ['event_id'],
       },
       {
         fields: ['user_id'],

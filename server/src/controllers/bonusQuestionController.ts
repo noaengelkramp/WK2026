@@ -7,8 +7,14 @@ import { BonusQuestion } from '../models';
  */
 export async function getAllBonusQuestions(_req: Request, res: Response) {
   try {
+    const reqAny = _req as any;
+    if (!reqAny.event) {
+      res.status(400).json({ success: false, error: 'Event context is required' });
+      return;
+    }
+
     const bonusQuestions = await BonusQuestion.findAll({
-      where: { isActive: true },
+      where: { isActive: true, eventId: reqAny.event.id },
       order: [
         ['questionType', 'ASC'],
       ],
@@ -36,8 +42,13 @@ export async function getBonusQuestionById(req: Request, res: Response) {
   try {
     const { id } = req.params;
 
+    if (!(req as any).event) {
+      res.status(400).json({ success: false, error: 'Event context is required' });
+      return;
+    }
+
     const bonusQuestion = await BonusQuestion.findOne({
-      where: { id },
+      where: { id, eventId: (req as any).event.id },
     });
 
     if (!bonusQuestion) {

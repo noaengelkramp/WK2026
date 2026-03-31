@@ -11,6 +11,10 @@ import { Op } from 'sequelize';
  */
 export const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
+    if (!req.event) {
+      throw new AppError('Event context is required for registration', 400);
+    }
+
     const { email, username, password, firstName, lastName, customerNumber, languagePreference } = req.body;
 
     // Validate required fields
@@ -24,20 +28,20 @@ export const register = async (req: Request, res: Response, next: NextFunction):
       throw new AppError('Invalid customer number format. Expected format: C1234_1234567', 400);
     }
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ where: { email } });
+    // Check if user already exists in this event
+    const existingUser = await User.findOne({ where: { email, eventId: req.event.id } });
     if (existingUser) {
       throw new AppError('Email already registered', 409);
     }
 
-    // Check if username already exists
-    const existingUsername = await User.findOne({ where: { username } });
+    // Check if username already exists in this event
+    const existingUsername = await User.findOne({ where: { username, eventId: req.event.id } });
     if (existingUsername) {
       throw new AppError('Username already taken', 409);
     }
 
-    // Check if customer number already used
-    const existingCustomerUser = await User.findOne({ where: { customerNumber } });
+    // Check if customer number already used in this event
+    const existingCustomerUser = await User.findOne({ where: { customerNumber, eventId: req.event.id } });
     if (existingCustomerUser) {
       throw new AppError('This customer number is already registered. One account per customer is allowed.', 409);
     }
@@ -59,16 +63,22 @@ export const register = async (req: Request, res: Response, next: NextFunction):
     const emailVerificationToken = crypto.randomBytes(32).toString('hex');
     const emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
+    const selectedLanguage = languagePreference || req.event.defaultLocale;
+    if (!req.event.allowedLocales.includes(selectedLanguage)) {
+      throw new AppError(`Language must be one of: ${req.event.allowedLocales.join(', ')}`, 400);
+    }
+
     // Create user
     const user = await User.create({
+      eventId: req.event.id,
       email,
       username,
       passwordHash,
       firstName,
       lastName,
       customerNumber,
-      languagePreference: languagePreference || 'en',
-      isAdmin: false,
+      languagePreference: selectedLanguage,
+      role: 'user',
       isEmailVerified: false,
       emailVerificationToken,
       emailVerificationExpires,
@@ -76,6 +86,7 @@ export const register = async (req: Request, res: Response, next: NextFunction):
 
     // Create user statistics
     await UserStatistics.create({
+      eventId: req.event.id,
       userId: user.id,
       totalPoints: 0,
       exactScores: 0,
@@ -98,8 +109,9 @@ export const register = async (req: Request, res: Response, next: NextFunction):
     // Generate tokens (allow login even without verification)
     const tokens = generateTokens({
       userId: user.id,
+      eventId: user.eventId,
       email: user.email,
-      isAdmin: user.isAdmin,
+      role: user.role,
     });
 
     res.status(201).json({
@@ -118,6 +130,10 @@ export const register = async (req: Request, res: Response, next: NextFunction):
  */
 export const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
+    if (!req.event) {
+      throw new AppError('Event context is required for login', 400);
+    }
+
     const { identifier, password } = req.body;
 
     // Validate required fields
@@ -125,7 +141,7 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
       throw new AppError('Email/Username and password are required', 400);
     }
 
-    // Find user by email or username
+    // Find user by email or username within current event
     const user = await User.findOne({
       where: {
         [Op.or]: [
@@ -140,6 +156,10 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
       throw new AppError('Invalid credentials', 401);
     }
 
+    if (user.role !== 'platform_admin' && user.eventId !== req.event.id) {
+      throw new AppError('This account belongs to a different event', 403);
+    }
+
     // Verify password
     const isPasswordValid = await user.comparePassword(password);
     if (!isPasswordValid) {
@@ -149,8 +169,9 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
     // Generate tokens
     const tokens = generateTokens({
       userId: user.id,
+      eventId: user.eventId,
       email: user.email,
-      isAdmin: user.isAdmin,
+      role: user.role,
     });
 
     res.json({
@@ -204,6 +225,14 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
     const user = await User.findByPk(req.user.userId);
     if (!user) {
       throw new AppError('User not found', 404);
+    }
+
+    if (req.event && req.user.role !== 'platform_admin' && user.eventId !== req.event.id) {
+      throw new AppError('Cannot update user outside current event', 403);
+    }
+
+    if (languagePreference && req.event && !req.event.allowedLocales.includes(languagePreference)) {
+      throw new AppError(`Language must be one of: ${req.event.allowedLocales.join(', ')}`, 400);
     }
 
     // Update user
@@ -296,6 +325,10 @@ export const resendVerificationEmail = async (req: Request, res: Response, next:
 
     if (!user) {
       throw new AppError('User not found', 404);
+    }
+
+    if (req.event && req.user.role !== 'platform_admin' && user.eventId !== req.event.id) {
+      throw new AppError('Cannot access user outside current event', 403);
     }
 
     if (user.isEmailVerified) {

@@ -3,6 +3,7 @@ import sequelize from '../config/database';
 
 interface BonusAnswerAttributes {
   id: string;
+  eventId: string;
   userId: string;
   bonusQuestionId: string;
   answer: string;
@@ -16,6 +17,7 @@ interface BonusAnswerCreationAttributes extends Optional<BonusAnswerAttributes, 
 
 class BonusAnswer extends Model<BonusAnswerAttributes, BonusAnswerCreationAttributes> implements BonusAnswerAttributes {
   public id!: string;
+  public eventId!: string;
   public userId!: string;
   public bonusQuestionId!: string;
   public answer!: string;
@@ -31,6 +33,14 @@ BonusAnswer.init(
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
+    },
+    eventId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: 'events',
+        key: 'id',
+      },
     },
     userId: {
       type: DataTypes.UUID,
@@ -69,7 +79,10 @@ BonusAnswer.init(
     indexes: [
       {
         unique: true,
-        fields: ['user_id', 'bonus_question_id'],
+        fields: ['event_id', 'user_id', 'bonus_question_id'],
+      },
+      {
+        fields: ['event_id'],
       },
       {
         fields: ['user_id'],

@@ -3,6 +3,7 @@ import sequelize from '../config/database';
 
 interface PrizeAttributes {
   id: string;
+  eventId: string;
   rank: number;
   titleEn: string;
   titleNl: string;
@@ -18,6 +19,7 @@ interface PrizeCreationAttributes extends Optional<PrizeAttributes, 'id' | 'imag
 
 class Prize extends Model<PrizeAttributes, PrizeCreationAttributes> implements PrizeAttributes {
   public id!: string;
+  public eventId!: string;
   public rank!: number;
   public titleEn!: string;
   public titleNl!: string;
@@ -36,10 +38,17 @@ Prize.init(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
+    eventId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: 'events',
+        key: 'id',
+      },
+    },
     rank: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      unique: true,
       validate: {
         min: 1,
       },
@@ -79,7 +88,11 @@ Prize.init(
     timestamps: true,
     indexes: [
       {
-        fields: ['rank'],
+        unique: true,
+        fields: ['event_id', 'rank'],
+      },
+      {
+        fields: ['event_id'],
       },
       {
         fields: ['winner_id'],

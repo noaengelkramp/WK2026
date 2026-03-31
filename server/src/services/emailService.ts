@@ -76,7 +76,7 @@ class EmailService {
     email: string,
     firstName: string,
     verificationToken: string,
-    language: 'en' | 'nl' = 'en'
+    language: string = 'en'
   ): Promise<void> {
     const verificationUrl = `${config.client.url}/verify-email?token=${verificationToken}`;
 
@@ -195,7 +195,7 @@ Wereldkampioenschap 2026 Voorspellingsspel - Kramp Group
       },
     };
 
-    const template = templates[language];
+    const template = language.toLowerCase().startsWith('nl') ? templates.nl : templates.en;
 
     await this.sendEmail({
       to: email,
@@ -211,7 +211,7 @@ Wereldkampioenschap 2026 Voorspellingsspel - Kramp Group
   async sendWelcomeEmail(
     email: string,
     firstName: string,
-    language: 'en' | 'nl' = 'en'
+    language: string = 'en'
   ): Promise<void> {
     const appUrl = config.client.url;
 
@@ -316,7 +316,7 @@ Wereldkampioenschap 2026 Voorspellingsspel - Kramp Group
       },
     };
 
-    const template = templates[language];
+    const template = language.toLowerCase().startsWith('nl') ? templates.nl : templates.en;
 
     await this.sendEmail({
       to: email,
