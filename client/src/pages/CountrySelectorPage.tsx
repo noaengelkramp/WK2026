@@ -34,13 +34,29 @@ const buildTargetUrl = (subdomain: string): string => {
     return `${protocol}//${subdomain}.localhost${window.location.port ? `:${window.location.port}` : ''}`;
   }
 
-  const parts = host.split('.');
-  if (parts.length >= 2) {
-    const baseDomain = parts.slice(-2).join('.');
-    return `${protocol}//${subdomain}.${baseDomain}`;
+  // Handle configured/root selector hosts, e.g. poules.kramp.com -> <event>.poules.kramp.com
+  const normalizedHost = host.replace(/^www\./, '');
+  const rootSelectorHost = (import.meta.env.VITE_ROOT_SELECTOR_HOST || 'poules.kramp.com')
+    .toLowerCase()
+    .replace(/^www\./, '');
+
+  if (normalizedHost === rootSelectorHost) {
+    return `${protocol}//${subdomain}.${rootSelectorHost}`;
   }
 
-  return `${protocol}//${subdomain}.${host}`;
+  // If already on event subdomain like de.poules.kramp.com, switch first label only
+  const hostParts = normalizedHost.split('.');
+  const rootParts = rootSelectorHost.split('.');
+  if (hostParts.length > rootParts.length && normalizedHost.endsWith(`.${rootSelectorHost}`)) {
+    return `${protocol}//${subdomain}.${rootSelectorHost}`;
+  }
+
+  // Generic fallback for unknown hosts (replace first label)
+  if (hostParts.length >= 3) {
+    return `${protocol}//${subdomain}.${hostParts.slice(1).join('.')}`;
+  }
+
+  return `${protocol}//${subdomain}.${normalizedHost}`;
 };
 
 export default function CountrySelectorPage() {
