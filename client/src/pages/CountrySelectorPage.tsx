@@ -21,6 +21,10 @@ const TERMS_URL =
 const COOKIE_POLICY_URL =
   import.meta.env.VITE_LEGAL_COOKIE_URL || 'https://www.kramp.com/cookies';
 
+const isSameLegalLink = (left: string, right: string): boolean => {
+  return left.trim().toLowerCase() === right.trim().toLowerCase();
+};
+
 const buildTargetUrl = (subdomain: string): string => {
   const protocol = window.location.protocol;
   const host = window.location.hostname;
@@ -77,6 +81,12 @@ export default function CountrySelectorPage() {
     () => [...events].sort((a, b) => a.name.localeCompare(b.name)),
     [events]
   );
+
+  const resolvedPrivacyUrl = sortedEvents[0]?.legalPrivacyUrl || PRIVACY_POLICY_URL;
+  const resolvedTermsUrl = sortedEvents[0]?.legalTermsUrl || TERMS_URL;
+  const resolvedCookieUrl = sortedEvents[0]?.legalCookieUrl || COOKIE_POLICY_URL;
+
+  const combinePrivacyAndCookie = isSameLegalLink(resolvedPrivacyUrl, resolvedCookieUrl);
 
   return (
     <Container maxWidth="lg" sx={{ py: 8, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -144,35 +154,50 @@ export default function CountrySelectorPage() {
           By entering an event, you agree to the applicable terms and privacy notice.
         </Typography>
         <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
+          {combinePrivacyAndCookie ? (
+            <Button
+              size="small"
+              variant="text"
+              component="a"
+              href={resolvedPrivacyUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Privacy & Cookie Policy
+            </Button>
+          ) : (
+            <>
+              <Button
+                size="small"
+                variant="text"
+                component="a"
+                href={resolvedPrivacyUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Privacy Policy
+              </Button>
+              <Button
+                size="small"
+                variant="text"
+                component="a"
+                href={resolvedCookieUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Cookie Policy
+              </Button>
+            </>
+          )}
           <Button
             size="small"
             variant="text"
             component="a"
-            href={PRIVACY_POLICY_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Privacy Policy
-          </Button>
-          <Button
-            size="small"
-            variant="text"
-            component="a"
-            href={TERMS_URL}
+            href={resolvedTermsUrl}
             target="_blank"
             rel="noopener noreferrer"
           >
             Terms of Service
-          </Button>
-          <Button
-            size="small"
-            variant="text"
-            component="a"
-            href={COOKIE_POLICY_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Cookie Policy
           </Button>
         </Box>
       </Box>

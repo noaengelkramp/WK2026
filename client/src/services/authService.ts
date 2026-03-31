@@ -12,7 +12,7 @@ export interface RegisterData {
   firstName: string;
   lastName: string;
   username: string;
-  customerNumber: string;
+  customerNumber?: string;
 }
 
 export interface AuthResponse {

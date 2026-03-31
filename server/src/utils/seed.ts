@@ -14,6 +14,149 @@ import {
 import bcrypt from 'bcrypt';
 import { testConnection } from '../config/database';
 
+const DEFAULT_EVENTS = [
+  {
+    code: 'internal',
+    name: 'Internal Colleagues',
+    subdomain: 'internal',
+    customerPrefix: 'C1234',
+    defaultLocale: 'en',
+    allowedLocales: ['en', 'nl'],
+    timezone: 'Europe/Amsterdam',
+    isActive: true,
+  },
+  {
+    code: 'be',
+    name: 'Belgium',
+    subdomain: 'be',
+    customerPrefix: 'C1234',
+    defaultLocale: 'nl-BE',
+    allowedLocales: ['nl-BE', 'fr-BE', 'en'],
+    timezone: 'Europe/Brussels',
+    isActive: true,
+  },
+  {
+    code: 'nl',
+    name: 'Netherlands',
+    subdomain: 'nl',
+    customerPrefix: 'C1234',
+    defaultLocale: 'nl-NL',
+    allowedLocales: ['nl-NL', 'en'],
+    timezone: 'Europe/Amsterdam',
+    isActive: true,
+  },
+  {
+    code: 'es-pt',
+    name: 'Spain + Portugal',
+    subdomain: 'es-pt',
+    customerPrefix: 'C1234',
+    defaultLocale: 'es-ES',
+    allowedLocales: ['es-ES', 'pt-PT', 'en'],
+    timezone: 'Europe/Madrid',
+    isActive: true,
+  },
+  {
+    code: 'pl',
+    name: 'Poland',
+    subdomain: 'pl',
+    customerPrefix: 'C1234',
+    defaultLocale: 'pl-PL',
+    allowedLocales: ['pl-PL', 'en'],
+    timezone: 'Europe/Warsaw',
+    isActive: true,
+  },
+  {
+    code: 'cz',
+    name: 'Czechia',
+    subdomain: 'cz',
+    customerPrefix: 'C1234',
+    defaultLocale: 'cs-CZ',
+    allowedLocales: ['cs-CZ', 'en'],
+    timezone: 'Europe/Prague',
+    isActive: true,
+  },
+  {
+    code: 'sk',
+    name: 'Slovakia',
+    subdomain: 'sk',
+    customerPrefix: 'C1234',
+    defaultLocale: 'sk-SK',
+    allowedLocales: ['sk-SK', 'en'],
+    timezone: 'Europe/Bratislava',
+    isActive: true,
+  },
+  {
+    code: 'si',
+    name: 'Slovenia',
+    subdomain: 'si',
+    customerPrefix: 'C1234',
+    defaultLocale: 'sl-SI',
+    allowedLocales: ['sl-SI', 'en'],
+    timezone: 'Europe/Ljubljana',
+    isActive: true,
+  },
+  {
+    code: 'hu',
+    name: 'Hungary',
+    subdomain: 'hu',
+    customerPrefix: 'C1234',
+    defaultLocale: 'hu-HU',
+    allowedLocales: ['hu-HU', 'en'],
+    timezone: 'Europe/Budapest',
+    isActive: true,
+  },
+  {
+    code: 'hr',
+    name: 'Croatia',
+    subdomain: 'hr',
+    customerPrefix: 'C1234',
+    defaultLocale: 'hr-HR',
+    allowedLocales: ['hr-HR', 'en'],
+    timezone: 'Europe/Zagreb',
+    isActive: true,
+  },
+  {
+    code: 'no',
+    name: 'Norway',
+    subdomain: 'no',
+    customerPrefix: 'C1234',
+    defaultLocale: 'nb-NO',
+    allowedLocales: ['nb-NO', 'en'],
+    timezone: 'Europe/Oslo',
+    isActive: true,
+  },
+  {
+    code: 'se',
+    name: 'Sweden',
+    subdomain: 'se',
+    customerPrefix: 'C1234',
+    defaultLocale: 'sv-SE',
+    allowedLocales: ['sv-SE', 'en'],
+    timezone: 'Europe/Stockholm',
+    isActive: true,
+  },
+  {
+    code: 'fi',
+    name: 'Finland',
+    subdomain: 'fi',
+    customerPrefix: 'C1234',
+    defaultLocale: 'fi-FI',
+    allowedLocales: ['fi-FI', 'sv-FI', 'en'],
+    timezone: 'Europe/Helsinki',
+    isActive: true,
+  },
+  {
+    code: 'dk',
+    name: 'Denmark',
+    subdomain: 'dk',
+    customerPrefix: 'C1234',
+    defaultLocale: 'da-DK',
+    allowedLocales: ['da-DK', 'en'],
+    timezone: 'Europe/Copenhagen',
+    isActive: true,
+  },
+] as const;
+
 /**
  * Seed database with initial data for World Cup 2026 Prediction Game
  */
@@ -49,44 +192,10 @@ export async function seedDatabase() {
 
     // 1. Events
     console.log('🌍 Seeding events...');
-    const events = await Event.bulkCreate([
-      {
-        code: 'internal',
-        name: 'Internal Colleagues',
-        subdomain: 'internal',
-        defaultLocale: 'en',
-        allowedLocales: ['en', 'nl'],
-        timezone: 'Europe/Amsterdam',
-        isActive: true,
-      },
-      {
-        code: 'be',
-        name: 'Belgium',
-        subdomain: 'be',
-        defaultLocale: 'nl-BE',
-        allowedLocales: ['nl-BE', 'fr-BE', 'en'],
-        timezone: 'Europe/Brussels',
-        isActive: true,
-      },
-      {
-        code: 'de',
-        name: 'Germany',
-        subdomain: 'de',
-        defaultLocale: 'de-DE',
-        allowedLocales: ['de-DE', 'en'],
-        timezone: 'Europe/Berlin',
-        isActive: true,
-      },
-      {
-        code: 'es',
-        name: 'Spain',
-        subdomain: 'es',
-        defaultLocale: 'es-ES',
-        allowedLocales: ['es-ES', 'en'],
-        timezone: 'Europe/Madrid',
-        isActive: true,
-      },
-    ]);
+    const events = await Event.bulkCreate([...DEFAULT_EVENTS].map((event) => ({
+      ...event,
+      allowedLocales: [...event.allowedLocales],
+    })));
     const internalEvent = events.find((event) => event.code === 'internal');
     if (!internalEvent) {
       throw new Error('Internal event was not created');
@@ -99,6 +208,7 @@ export async function seedDatabase() {
       { customerNumber: 'C1234_0000001', companyName: 'Kramp Admin', isActive: true },
       { customerNumber: 'C1234_0000002', companyName: 'Kramp Customer 1', isActive: true },
       { customerNumber: 'C1234_0000003', companyName: 'Kramp Customer 2', isActive: true },
+      { customerNumber: 'C1234_0000004', companyName: 'Kramp Platform Admin', isActive: true },
     ]);
     console.log(`✅ Created ${customers.length} customers`);
 
@@ -286,7 +396,7 @@ export async function seedDatabase() {
         passwordHash: hashedPassword,
         firstName: 'Platform',
         lastName: 'Admin',
-        customerNumber: 'C1234_0000001',
+        customerNumber: 'C1234_0000004',
         role: 'platform_admin',
         languagePreference: 'en',
       },

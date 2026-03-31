@@ -106,7 +106,7 @@ export default function Layout({ children }: LayoutProps) {
     { text: 'Rules', icon: <RulesIcon />, path: '/rules' },
   ];
 
-  if (user.isAdmin) {
+  if (user.isAdmin || user.role === 'event_admin' || user.role === 'platform_admin') {
     menuItems.push({ text: 'Admin Panel', icon: <AdminIcon />, path: '/admin' });
   }
 

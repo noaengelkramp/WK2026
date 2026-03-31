@@ -21,7 +21,18 @@ router.get('/current', async (req: Request, res: Response) => {
 
     const availableEvents = await Event.findAll({
       where: { isActive: true },
-      attributes: ['id', 'code', 'name', 'subdomain', 'defaultLocale', 'allowedLocales'],
+      attributes: [
+        'id',
+        'code',
+        'name',
+        'subdomain',
+        'defaultLocale',
+        'allowedLocales',
+        'customerPrefix',
+        'legalPrivacyUrl',
+        'legalTermsUrl',
+        'legalCookieUrl',
+      ],
       order: [['name', 'ASC']],
     });
 

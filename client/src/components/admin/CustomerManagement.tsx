@@ -288,7 +288,7 @@ export default function CustomerManagement() {
                 <TableRow key={customer.id} hover>
                   <TableCell>
                     <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
-                      {customer.customerNumber}
+                      {customer.visibleCustomerNumber || customer.customerNumber}
                     </Typography>
                   </TableCell>
                   <TableCell>{customer.companyName}</TableCell>
@@ -363,7 +363,7 @@ export default function CustomerManagement() {
               required
               value={formData.customerNumber}
               onChange={(e) => setFormData({ ...formData, customerNumber: e.target.value })}
-              helperText="Format: C1234_1234567"
+              helperText="Use 7-digit customer number (e.g. 0001234) or full internal format"
             />
             <TextField
               label="Company Name"
@@ -459,10 +459,10 @@ export default function CustomerManagement() {
               customerNumber,companyName,isActive
             </Typography>
             <Typography variant="body2" component="pre" sx={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>
-              C1234_0000001,Acme Corporation,true
+              0000001,Acme Corporation,true
             </Typography>
             <Typography variant="body2" component="pre" sx={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>
-              C1234_0000002,Global Industries,true
+              0000002,Global Industries,true
             </Typography>
           </Alert>
           <TextField
@@ -472,7 +472,7 @@ export default function CustomerManagement() {
             fullWidth
             value={bulkImportText}
             onChange={(e) => setBulkImportText(e.target.value)}
-            placeholder="C1234_0000001,Acme Corporation,true&#10;C1234_0000002,Global Industries,true"
+            placeholder="0000001,Acme Corporation,true&#10;0000002,Global Industries,true"
           />
         </DialogContent>
         <DialogActions>

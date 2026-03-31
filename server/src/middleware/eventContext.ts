@@ -9,11 +9,15 @@ declare global {
         code: string;
         name: string;
         subdomain: string;
-        defaultLocale: string;
-        allowedLocales: string[];
-      };
-    }
+      defaultLocale: string;
+      allowedLocales: string[];
+      customerPrefix: string;
+      legalPrivacyUrl?: string;
+      legalTermsUrl?: string;
+      legalCookieUrl?: string;
+    };
   }
+}
 }
 
 const getHostWithoutPort = (hostHeader?: string): string => {
@@ -68,6 +72,10 @@ export const resolveEvent = async (req: Request, res: Response, next: NextFuncti
       subdomain: event.subdomain,
       defaultLocale: event.defaultLocale,
       allowedLocales: event.allowedLocales,
+      customerPrefix: (event as any).customerPrefix,
+      legalPrivacyUrl: (event as any).legalPrivacyUrl || undefined,
+      legalTermsUrl: (event as any).legalTermsUrl || undefined,
+      legalCookieUrl: (event as any).legalCookieUrl || undefined,
     };
 
     next();

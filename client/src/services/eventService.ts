@@ -5,6 +5,10 @@ export interface EventContext {
   code: string;
   name: string;
   subdomain: string;
+  customerPrefix: string;
+  legalPrivacyUrl?: string;
+  legalTermsUrl?: string;
+  legalCookieUrl?: string;
   defaultLocale: string;
   allowedLocales: string[];
 }

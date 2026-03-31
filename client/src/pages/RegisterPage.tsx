@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Box,
   Card,
@@ -9,12 +9,14 @@ import {
   Link,
   Container,
   Alert,
+  Chip,
   CircularProgress,
   Grid,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { getErrorMessage } from '../services/api';
+import { eventService } from '../services/eventService';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -31,6 +33,21 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isInternalEvent, setIsInternalEvent] = useState(false);
+  const [eventName, setEventName] = useState<string>('');
+
+  useEffect(() => {
+    eventService.getCurrent()
+      .then((response) => {
+        if (response.mode === 'event' && response.event) {
+          setIsInternalEvent(response.event.code === 'internal');
+          setEventName(response.event.name || '');
+        }
+      })
+      .catch(() => {
+        // ignore
+      });
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -44,8 +61,13 @@ export default function RegisterPage() {
     setError('');
 
     // Validation
-    if (!formData.firstName || !formData.lastName || !formData.username || !formData.email || !formData.password || !formData.customerNumber) {
+    if (!formData.firstName || !formData.lastName || !formData.username || !formData.email || !formData.password || (!isInternalEvent && !formData.customerNumber)) {
       setError('Please fill in all fields');
+      return;
+    }
+
+    if (isInternalEvent && !formData.email.toLowerCase().endsWith('@kramp.com')) {
+      setError('Internal event registration requires a @kramp.com email address');
       return;
     }
 
@@ -59,10 +81,10 @@ export default function RegisterPage() {
       return;
     }
 
-    // Validate customer number format: C1234_1234567
-    const customerNumberRegex = /^C\d{4}_\d{7}$/;
-    if (!customerNumberRegex.test(formData.customerNumber)) {
-      setError('Customer number must be in format: C1234_1234567');
+    // Validate customer number format: 7 digits OR full internal format
+    const customerNumberRegex = /^(\d{7}|C\d{4}_\d{7})$/;
+    if (!isInternalEvent && !customerNumberRegex.test(formData.customerNumber)) {
+      setError('Customer number must be 7 digits (or internal format C1234_1234567)');
       return;
     }
 
@@ -75,7 +97,7 @@ export default function RegisterPage() {
         firstName: formData.firstName,
         lastName: formData.lastName,
         username: formData.username,
-        customerNumber: formData.customerNumber,
+        customerNumber: formData.customerNumber || undefined,
       });
       setSuccess(true);
       setTimeout(() => {
@@ -198,6 +220,15 @@ export default function RegisterPage() {
                   Enter your details below to create your participant account.
                 </Typography>
 
+                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 3 }}>
+                  {eventName && <Chip label={`Event: ${eventName}`} size="small" color="default" />}
+                  {isInternalEvent ? (
+                    <Chip label="Internal event: @kramp.com email required" size="small" color="warning" />
+                  ) : (
+                    <Chip label="External event: max 5 accounts per customer number" size="small" color="info" />
+                  )}
+                </Box>
+
                 {error && (
                   <Alert severity="error" variant="outlined" sx={{ mb: 3, borderRadius: 0 }}>
                     {error}
@@ -256,6 +287,7 @@ export default function RegisterPage() {
                         sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
                       />
                     </Grid>
+                    {!isInternalEvent && (
                     <Grid size={12}>
                       <TextField
                         fullWidth
@@ -265,11 +297,12 @@ export default function RegisterPage() {
                         value={formData.customerNumber}
                         onChange={handleChange}
                         required
-                        placeholder="C1234_1234567"
-                        helperText="Format: C1234_1234567"
+                        placeholder="0000000"
+                        helperText="Enter your 7-digit customer number"
                         sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
                       />
                     </Grid>
+                    )}
                     <Grid size={12}>
                       <TextField
                         fullWidth

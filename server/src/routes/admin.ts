@@ -22,6 +22,9 @@ import {
   updateTeam,
   createTeam,
   deleteTeam,
+  getAllEvents,
+  createEvent,
+  updateEvent,
 } from '../controllers/adminController';
 import { authenticate, requireAdmin } from '../middleware/auth';
 import { populateMatchesFromApi } from '../utils/populateMatches';
@@ -106,6 +109,16 @@ router.post('/teams', createTeam);
 
 // DELETE /api/admin/teams/:id - Delete team
 router.delete('/teams/:id', deleteTeam);
+
+// ==================== EVENT MANAGEMENT (PLATFORM ADMIN) ====================
+// GET /api/admin/events - List all events
+router.get('/events', getAllEvents);
+
+// POST /api/admin/events - Create new event
+router.post('/events', createEvent);
+
+// PUT /api/admin/events/:id - Update event
+router.put('/events/:id', updateEvent);
 
 // ==================== TESTING & HISTORIC DATA ====================
 /**

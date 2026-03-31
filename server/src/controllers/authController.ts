@@ -5,6 +5,7 @@ import { generateTokens } from '../utils/jwt';
 import { AppError } from '../middleware/errorHandler';
 import emailService from '../services/emailService';
 import { Op } from 'sequelize';
+import { resolveCustomerNumberForEvent, MAX_ACCOUNTS_PER_CUSTOMER_PER_EVENT } from '../utils/eventCustomerPolicy';
 
 /**
  * Register a new user
@@ -18,15 +19,16 @@ export const register = async (req: Request, res: Response, next: NextFunction):
     const { email, username, password, firstName, lastName, customerNumber, languagePreference } = req.body;
 
     // Validate required fields
-    if (!email || !username || !password || !firstName || !lastName || !customerNumber) {
-      throw new AppError('All fields are required', 400);
+    if (!email || !username || !password || !firstName || !lastName) {
+      throw new AppError('Missing required fields', 400);
     }
 
-    // Validate customer number format
-    const customerNumberRegex = /^C\d{4}_\d{7}$/;
-    if (!customerNumberRegex.test(customerNumber)) {
-      throw new AppError('Invalid customer number format. Expected format: C1234_1234567', 400);
-    }
+    const normalizedCustomerNumber = await resolveCustomerNumberForEvent({
+      eventCode: req.event.code,
+      customerPrefix: req.event.customerPrefix,
+      email,
+      customerNumberInput: customerNumber,
+    });
 
     // Check if user already exists in this event
     const existingUser = await User.findOne({ where: { email, eventId: req.event.id } });
@@ -40,14 +42,16 @@ export const register = async (req: Request, res: Response, next: NextFunction):
       throw new AppError('Username already taken', 409);
     }
 
-    // Check if customer number already used in this event
-    const existingCustomerUser = await User.findOne({ where: { customerNumber, eventId: req.event.id } });
-    if (existingCustomerUser) {
-      throw new AppError('This customer number is already registered. One account per customer is allowed.', 409);
+    // Check per-event customer account limit
+    const existingCustomerUsersCount = await User.count({
+      where: { customerNumber: normalizedCustomerNumber, eventId: req.event.id },
+    });
+    if (existingCustomerUsersCount >= MAX_ACCOUNTS_PER_CUSTOMER_PER_EVENT) {
+      throw new AppError(`Maximum ${MAX_ACCOUNTS_PER_CUSTOMER_PER_EVENT} accounts reached for this customer number in this event.`, 409);
     }
 
     // Validate customer exists and is active
-    const customer = await Customer.findOne({ where: { customerNumber } });
+    const customer = await Customer.findOne({ where: { customerNumber: normalizedCustomerNumber } });
     if (!customer) {
       throw new AppError('Customer number not found in our system. Please contact support.', 404);
     }
@@ -76,7 +80,7 @@ export const register = async (req: Request, res: Response, next: NextFunction):
       passwordHash,
       firstName,
       lastName,
-      customerNumber,
+      customerNumber: normalizedCustomerNumber,
       languagePreference: selectedLanguage,
       role: 'user',
       isEmailVerified: false,

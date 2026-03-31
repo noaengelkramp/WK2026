@@ -2,13 +2,15 @@
 
 export interface User {
   id: string;
+  eventId?: string;
   email: string;
   username: string;
   firstName: string;
   lastName: string;
   customerNumber: string;
+  role?: 'user' | 'event_admin' | 'platform_admin';
   isAdmin: boolean;
-  languagePreference: 'en' | 'nl';
+  languagePreference: string;
   createdAt: string;
 }
 

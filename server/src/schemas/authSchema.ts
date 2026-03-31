@@ -3,7 +3,7 @@ import { z } from 'zod';
 /**
  * Common regex and constants
  */
-const CUSTOMER_NUMBER_REGEX = /^C\d{4}_\d{7}$/;
+const CUSTOMER_NUMBER_REGEX = /^(C\d{4}_\d{7}|\d{7})$/;
 
 /**
  * User registration schema
@@ -31,7 +31,8 @@ export const registerSchema = z.object({
       .min(1, 'Last name is required')
       .max(100),
     customerNumber: z.string()
-      .regex(CUSTOMER_NUMBER_REGEX, 'Invalid customer number format. Expected format: C1234_1234567'),
+      .regex(CUSTOMER_NUMBER_REGEX, 'Invalid customer number format. Use 7 digits or C1234_1234567')
+      .optional(),
     languagePreference: z.string().trim().min(2).max(20).optional(),
   })
 });

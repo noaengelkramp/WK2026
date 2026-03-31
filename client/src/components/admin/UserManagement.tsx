@@ -22,6 +22,7 @@ import {
   InputAdornment,
   Tooltip,
   CircularProgress,
+  MenuItem,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -31,7 +32,7 @@ import {
   Search as SearchIcon,
   Refresh as RefreshIcon,
 } from '@mui/icons-material';
-import { adminUserService } from '../../services/adminService';
+import { adminService, adminUserService } from '../../services/adminService';
 import type { User, CreateUserData, UpdateUserData } from '../../services/adminService';
 
 export default function UserManagement() {
@@ -55,13 +56,16 @@ export default function UserManagement() {
   const [formData, setFormData] = useState<CreateUserData>({
     email: '',
     password: '',
+    username: '',
     firstName: '',
     lastName: '',
     customerNumber: '',
-    isAdmin: false,
+    role: 'user',
     languagePreference: 'en',
+    eventId: '',
   });
   const [newPassword, setNewPassword] = useState('');
+  const [events, setEvents] = useState<Array<{ id: string; name: string }>>([]);
 
   // Load users
   const loadUsers = async () => {
@@ -85,6 +89,14 @@ export default function UserManagement() {
   useEffect(() => {
     loadUsers();
   }, [page, rowsPerPage]);
+
+  useEffect(() => {
+    adminService.getEvents()
+      .then((items) => setEvents(items.map((event) => ({ id: event.id, name: event.name }))))
+      .catch(() => {
+        // Non-platform admins may not access events list
+      });
+  }, []);
 
   // Handle search with debounce
   useEffect(() => {
@@ -119,10 +131,11 @@ export default function UserManagement() {
       setError(null);
       const updateData: UpdateUserData = {
         email: formData.email,
+        username: formData.username,
         firstName: formData.firstName,
         lastName: formData.lastName,
         customerNumber: formData.customerNumber,
-        isAdmin: formData.isAdmin,
+        role: formData.role,
         languagePreference: formData.languagePreference,
       };
       await adminUserService.updateUser(selectedUser.id, updateData);
@@ -179,9 +192,11 @@ export default function UserManagement() {
       password: '',
       firstName: user.firstName,
       lastName: user.lastName,
+      username: user.username || '',
       customerNumber: user.customerNumber,
-      isAdmin: user.isAdmin,
+      role: user.role || (user.isAdmin ? 'event_admin' : 'user'),
       languagePreference: user.languagePreference,
+      eventId: user.eventId,
     });
     setOpenEditDialog(true);
   };
@@ -201,11 +216,13 @@ export default function UserManagement() {
     setFormData({
       email: '',
       password: '',
+      username: '',
       firstName: '',
       lastName: '',
       customerNumber: '',
-      isAdmin: false,
+      role: 'user',
       languagePreference: 'en',
+      eventId: '',
     });
   };
 
@@ -288,7 +305,7 @@ export default function UserManagement() {
                   <TableCell>{`${user.firstName} ${user.lastName}`}</TableCell>
                   <TableCell>
                     <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
-                      {user.customerNumber}
+                      {(user as any).visibleCustomerNumber || user.customerNumber}
                     </Typography>
                   </TableCell>
                   <TableCell>
@@ -298,11 +315,11 @@ export default function UserManagement() {
                     )}
                   </TableCell>
                   <TableCell>
-                    {user.isAdmin ? (
-                      <Chip label="Admin" color="error" size="small" />
-                    ) : (
-                      <Chip label="User" color="default" size="small" />
-                    )}
+                    <Chip
+                      label={user.role || (user.isAdmin ? 'event_admin' : 'user')}
+                      color={(user.role === 'platform_admin' || user.role === 'event_admin' || user.isAdmin) ? 'error' : 'default'}
+                      size="small"
+                    />
                   </TableCell>
                   <TableCell>
                     <Chip label={user.languagePreference.toUpperCase()} size="small" />
@@ -358,6 +375,12 @@ export default function UserManagement() {
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             />
             <TextField
+              label="Username"
+              required
+              value={formData.username || ''}
+              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+            />
+            <TextField
               label="Password"
               type="password"
               required
@@ -382,27 +405,39 @@ export default function UserManagement() {
               required
               value={formData.customerNumber}
               onChange={(e) => setFormData({ ...formData, customerNumber: e.target.value })}
-              helperText="Format: C1234_1234567"
+              helperText="Customer-visible format: 7 digits (e.g. 0001234)"
             />
+            {events.length > 0 && (
+              <TextField
+                select
+                label="Event"
+                value={formData.eventId || ''}
+                onChange={(e) => setFormData({ ...formData, eventId: e.target.value })}
+                helperText="Platform admins can create users in specific events"
+              >
+                {events.map((event) => (
+                  <MenuItem key={event.id} value={event.id}>{event.name}</MenuItem>
+                ))}
+              </TextField>
+            )}
             <TextField
               select
               label="Role"
-              value={formData.isAdmin ? 'admin' : 'user'}
-              onChange={(e) => setFormData({ ...formData, isAdmin: e.target.value === 'admin' })}
-              SelectProps={{ native: true }}
+              value={formData.role || 'user'}
+              onChange={(e) => setFormData({ ...formData, role: e.target.value as any })}
             >
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
+              <MenuItem value="user">User</MenuItem>
+              <MenuItem value="event_admin">Event Admin</MenuItem>
+              <MenuItem value="platform_admin">Platform Admin</MenuItem>
             </TextField>
             <TextField
               select
               label="Language"
               value={formData.languagePreference}
-              onChange={(e) => setFormData({ ...formData, languagePreference: e.target.value as 'en' | 'nl' })}
-              SelectProps={{ native: true }}
+              onChange={(e) => setFormData({ ...formData, languagePreference: e.target.value })}
             >
-              <option value="en">English</option>
-              <option value="nl">Dutch</option>
+              <MenuItem value="en">English</MenuItem>
+              <MenuItem value="nl">Dutch</MenuItem>
             </TextField>
           </Box>
         </DialogContent>
@@ -443,27 +478,26 @@ export default function UserManagement() {
               required
               value={formData.customerNumber}
               onChange={(e) => setFormData({ ...formData, customerNumber: e.target.value })}
-              helperText="Format: C1234_1234567"
+              helperText="Customer-visible format: 7 digits (e.g. 0001234)"
             />
             <TextField
               select
               label="Role"
-              value={formData.isAdmin ? 'admin' : 'user'}
-              onChange={(e) => setFormData({ ...formData, isAdmin: e.target.value === 'admin' })}
-              SelectProps={{ native: true }}
+              value={formData.role || 'user'}
+              onChange={(e) => setFormData({ ...formData, role: e.target.value as any })}
             >
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
+              <MenuItem value="user">User</MenuItem>
+              <MenuItem value="event_admin">Event Admin</MenuItem>
+              <MenuItem value="platform_admin">Platform Admin</MenuItem>
             </TextField>
             <TextField
               select
               label="Language"
               value={formData.languagePreference}
-              onChange={(e) => setFormData({ ...formData, languagePreference: e.target.value as 'en' | 'nl' })}
-              SelectProps={{ native: true }}
+              onChange={(e) => setFormData({ ...formData, languagePreference: e.target.value })}
             >
-              <option value="en">English</option>
-              <option value="nl">Dutch</option>
+              <MenuItem value="en">English</MenuItem>
+              <MenuItem value="nl">Dutch</MenuItem>
             </TextField>
           </Box>
         </DialogContent>

@@ -4,12 +4,15 @@ import api from './api';
 
 export interface User {
   id: string;
+  eventId?: string;
   email: string;
+  username?: string;
   firstName: string;
   lastName: string;
   customerNumber: string;
+  role?: 'user' | 'event_admin' | 'platform_admin';
   isAdmin: boolean;
-  languagePreference: 'en' | 'nl';
+  languagePreference: string;
   createdAt: string;
   updatedAt: string;
   customer?: {
@@ -34,21 +37,24 @@ export interface GetUsersParams {
 
 export interface CreateUserData {
   email: string;
+  username?: string;
   password: string;
   firstName: string;
   lastName: string;
   customerNumber: string;
-  isAdmin?: boolean;
-  languagePreference?: 'en' | 'nl';
+  role?: 'user' | 'event_admin' | 'platform_admin';
+  languagePreference?: string;
+  eventId?: string;
 }
 
 export interface UpdateUserData {
   email?: string;
+  username?: string;
   firstName?: string;
   lastName?: string;
   customerNumber?: string;
-  isAdmin?: boolean;
-  languagePreference?: 'en' | 'nl';
+  role?: 'user' | 'event_admin' | 'platform_admin';
+  languagePreference?: string;
 }
 
 export const adminUserService = {
@@ -114,6 +120,7 @@ export const adminUserService = {
 export interface Customer {
   id: string;
   customerNumber: string;
+  visibleCustomerNumber?: string;
   companyName: string;
   isActive: boolean;
   createdAt: string;
@@ -146,6 +153,7 @@ export interface CreateCustomerData {
   customerNumber: string;
   companyName: string;
   isActive?: boolean;
+  customerPrefix?: string;
 }
 
 export interface UpdateCustomerData {
@@ -157,7 +165,39 @@ export interface BulkImportCustomer {
   customerNumber: string;
   companyName: string;
   isActive?: boolean;
+  customerPrefix?: string;
 }
+
+export interface Event {
+  id: string;
+  code: string;
+  name: string;
+  subdomain: string;
+  customerPrefix: string;
+  defaultLocale: string;
+  allowedLocales: string[];
+  timezone: string;
+  legalPrivacyUrl?: string;
+  legalTermsUrl?: string;
+  legalCookieUrl?: string;
+  isActive: boolean;
+}
+
+export interface CreateEventData {
+  code: string;
+  name: string;
+  subdomain: string;
+  customerPrefix: string;
+  defaultLocale: string;
+  allowedLocales: string[];
+  timezone: string;
+  legalPrivacyUrl?: string;
+  legalTermsUrl?: string;
+  legalCookieUrl?: string;
+  isActive?: boolean;
+}
+
+export interface UpdateEventData extends Partial<CreateEventData> {}
 
 export const adminCustomerService = {
   /**
@@ -242,5 +282,20 @@ export const adminService = {
   async syncFromApi(data: { syncType: string; season: string }) {
     const response = await api.post('/admin/dashboard/sync', data);
     return response.data;
+  },
+
+  async getEvents() {
+    const response = await api.get('/admin/events');
+    return response.data.events as Event[];
+  },
+
+  async createEvent(data: CreateEventData) {
+    const response = await api.post('/admin/events', data);
+    return response.data.event as Event;
+  },
+
+  async updateEvent(id: string, data: UpdateEventData) {
+    const response = await api.put(`/admin/events/${id}`, data);
+    return response.data.event as Event;
   },
 };

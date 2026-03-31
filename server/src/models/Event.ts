@@ -6,6 +6,10 @@ interface EventAttributes {
   code: string;
   name: string;
   subdomain: string;
+  customerPrefix: string;
+  legalPrivacyUrl?: string;
+  legalTermsUrl?: string;
+  legalCookieUrl?: string;
   defaultLocale: string;
   allowedLocales: string[];
   timezone: string;
@@ -15,13 +19,17 @@ interface EventAttributes {
 }
 
 interface EventCreationAttributes
-  extends Optional<EventAttributes, 'id' | 'defaultLocale' | 'allowedLocales' | 'timezone' | 'isActive' | 'createdAt' | 'updatedAt'> {}
+  extends Optional<EventAttributes, 'id' | 'customerPrefix' | 'legalPrivacyUrl' | 'legalTermsUrl' | 'legalCookieUrl' | 'defaultLocale' | 'allowedLocales' | 'timezone' | 'isActive' | 'createdAt' | 'updatedAt'> {}
 
 class Event extends Model<EventAttributes, EventCreationAttributes> implements EventAttributes {
   public id!: string;
   public code!: string;
   public name!: string;
   public subdomain!: string;
+  public customerPrefix!: string;
+  public legalPrivacyUrl?: string;
+  public legalTermsUrl?: string;
+  public legalCookieUrl?: string;
   public defaultLocale!: string;
   public allowedLocales!: string[];
   public timezone!: string;
@@ -50,6 +58,26 @@ Event.init(
       type: DataTypes.STRING(60),
       allowNull: false,
       unique: true,
+    },
+    customerPrefix: {
+      type: DataTypes.STRING(5),
+      allowNull: false,
+      defaultValue: 'C1234',
+      validate: {
+        is: /^C\d{4}$/,
+      },
+    },
+    legalPrivacyUrl: {
+      type: DataTypes.STRING(500),
+      allowNull: true,
+    },
+    legalTermsUrl: {
+      type: DataTypes.STRING(500),
+      allowNull: true,
+    },
+    legalCookieUrl: {
+      type: DataTypes.STRING(500),
+      allowNull: true,
     },
     defaultLocale: {
       type: DataTypes.STRING(20),

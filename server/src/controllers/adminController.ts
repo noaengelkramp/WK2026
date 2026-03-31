@@ -1,8 +1,21 @@
 import { Request, Response } from 'express';
-import { Match, User, Customer, Team, Prediction } from '../models';
+import { Match, User, Customer, Team, Prediction, Event } from '../models';
 import { processMatchScoring } from '../services/scoringService';
 import footballApiService from '../services/footballApiService';
 import { Op } from 'sequelize';
+import { MAX_ACCOUNTS_PER_CUSTOMER_PER_EVENT, resolveCustomerNumberForEvent } from '../utils/eventCustomerPolicy';
+import { getVisibleCustomerNumber } from '../utils/customerNumber';
+
+const requirePlatformAdmin = (req: Request, res: Response): boolean => {
+  if (req.user?.role !== 'platform_admin') {
+    res.status(403).json({
+      success: false,
+      error: 'Platform admin access required',
+    });
+    return false;
+  }
+  return true;
+};
 
 /**
  * Update match result and trigger scoring
@@ -196,9 +209,14 @@ export async function getAllUsers(req: Request, res: Response) {
       ],
     });
 
+    const usersWithVisibleCustomer = users.map((user: any) => ({
+      ...user.toJSON(),
+      visibleCustomerNumber: getVisibleCustomerNumber(user.customerNumber),
+    }));
+
     res.status(200).json({
       success: true,
-      users,
+      users: usersWithVisibleCustomer,
       pagination: {
         total: count,
         page: pageNum,
@@ -224,7 +242,9 @@ export async function getUserById(req: Request, res: Response) {
     const { id } = req.params;
 
     const user = await User.findOne({
-      where: { id },
+      where: req.user?.role === 'platform_admin'
+        ? { id }
+        : { id, eventId: req.user?.eventId },
       include: [
         {
           model: Customer,
@@ -266,7 +286,7 @@ export async function createUser(req: Request, res: Response) {
 
     const targetEventId = req.user?.role === 'platform_admin' && req.body.eventId
       ? req.body.eventId
-      : req.user?.eventId;
+      : req.user?.eventId || req.event?.id;
 
     // Validation
     if (!email || !username || !password || !firstName || !lastName || !customerNumber) {
@@ -276,6 +296,24 @@ export async function createUser(req: Request, res: Response) {
       });
       return;
     }
+
+    if (!targetEventId) {
+      res.status(400).json({ success: false, error: 'Target event is required' });
+      return;
+    }
+
+    const targetEvent = await Event.findByPk(targetEventId);
+    if (!targetEvent) {
+      res.status(400).json({ success: false, error: 'Target event not found' });
+      return;
+    }
+
+    const normalizedCustomerNumber = await resolveCustomerNumberForEvent({
+      eventCode: (targetEvent as any).code,
+      customerPrefix: (targetEvent as any).customerPrefix,
+      email,
+      customerNumberInput: customerNumber,
+    });
 
     // Check if email already exists
     const existingEmail = await User.findOne({ where: { email, eventId: targetEventId } });
@@ -298,7 +336,7 @@ export async function createUser(req: Request, res: Response) {
     }
 
     // Check if customer number is valid and active
-    const customer = await Customer.findOne({ where: { customerNumber } });
+    const customer = await Customer.findOne({ where: { customerNumber: normalizedCustomerNumber } });
     if (!customer) {
       res.status(400).json({
         success: false,
@@ -315,12 +353,12 @@ export async function createUser(req: Request, res: Response) {
       return;
     }
 
-    // Check if customer number already has a user
-    const existingCustomerUser = await User.findOne({ where: { customerNumber, eventId: targetEventId } });
-    if (existingCustomerUser) {
+    // Check per-event customer account limit
+    const existingCustomerUsersCount = await User.count({ where: { customerNumber: normalizedCustomerNumber, eventId: targetEventId } });
+    if (existingCustomerUsersCount >= MAX_ACCOUNTS_PER_CUSTOMER_PER_EVENT) {
       res.status(409).json({
         success: false,
-        error: 'Customer number already has an account',
+        error: `Maximum ${MAX_ACCOUNTS_PER_CUSTOMER_PER_EVENT} accounts reached for this customer number in this event`,
       });
       return;
     }
@@ -336,12 +374,12 @@ export async function createUser(req: Request, res: Response) {
       passwordHash,
       firstName,
       lastName,
-      customerNumber,
+      customerNumber: normalizedCustomerNumber,
       role,
       languagePreference,
     });
 
-    console.log(`✅ Admin created user: ${email} (${customerNumber})`);
+    console.log(`✅ Admin created user: ${email} (${normalizedCustomerNumber})`);
 
     res.status(201).json({
       success: true,
@@ -383,6 +421,19 @@ export async function updateUser(req: Request, res: Response) {
 
     // If updating customer number, validate it
     if (updates.customerNumber && updates.customerNumber !== user.customerNumber) {
+      const userEvent = await Event.findByPk(user.eventId);
+      if (!userEvent) {
+        res.status(400).json({ success: false, error: 'Event not found for user' });
+        return;
+      }
+
+      updates.customerNumber = await resolveCustomerNumberForEvent({
+        eventCode: (userEvent as any).code,
+        customerPrefix: (userEvent as any).customerPrefix,
+        email: updates.email || user.email,
+        customerNumberInput: updates.customerNumber,
+      });
+
       const customer = await Customer.findOne({ where: { customerNumber: updates.customerNumber } });
       if (!customer) {
         res.status(400).json({
@@ -401,11 +452,12 @@ export async function updateUser(req: Request, res: Response) {
       }
 
       // Check if new customer number already has a user
-      const existingCustomerUser = await User.findOne({ where: { customerNumber: updates.customerNumber, eventId: user.eventId } });
-      if (existingCustomerUser && existingCustomerUser.id !== id) {
+      const existingCustomerUsersCount = await User.count({ where: { customerNumber: updates.customerNumber, eventId: user.eventId } });
+      const isMovingWithinSameCustomer = updates.customerNumber === user.customerNumber;
+      if (!isMovingWithinSameCustomer && existingCustomerUsersCount >= MAX_ACCOUNTS_PER_CUSTOMER_PER_EVENT) {
         res.status(409).json({
           success: false,
-          error: 'Customer number already has an account',
+          error: `Maximum ${MAX_ACCOUNTS_PER_CUSTOMER_PER_EVENT} accounts reached for this customer number in this event`,
         });
         return;
       }
@@ -585,9 +637,14 @@ export async function getAllCustomers(req: Request, res: Response) {
       ],
     });
 
+    const customersWithVisible = customers.map((customer: any) => ({
+      ...customer.toJSON(),
+      visibleCustomerNumber: getVisibleCustomerNumber(customer.customerNumber),
+    }));
+
     res.status(200).json({
       success: true,
-      customers,
+      customers: customersWithVisible,
       pagination: {
         total: count,
         page: pageNum,
@@ -652,7 +709,7 @@ export async function getCustomerById(req: Request, res: Response) {
  */
 export async function createCustomer(req: Request, res: Response) {
   try {
-    const { customerNumber, companyName, isActive = true } = req.body;
+    const { customerNumber, companyName, isActive = true, customerPrefix } = req.body;
 
     // Validation
     if (!customerNumber || !companyName) {
@@ -663,18 +720,21 @@ export async function createCustomer(req: Request, res: Response) {
       return;
     }
 
-    // Validate customer number format
-    const customerNumberRegex = /^C\d{4}_\d{7}$/;
-    if (!customerNumberRegex.test(customerNumber)) {
-      res.status(400).json({
-        success: false,
-        error: 'Invalid customer number format. Expected: C1234_1234567',
+    let normalizedCustomerNumber: string;
+    try {
+      normalizedCustomerNumber = await resolveCustomerNumberForEvent({
+        eventCode: req.event?.code || 'internal',
+        customerPrefix: customerPrefix || req.event?.customerPrefix || 'C1234',
+        email: 'internal@kramp.com',
+        customerNumberInput: customerNumber,
       });
+    } catch (e: any) {
+      res.status(400).json({ success: false, error: e.message || 'Invalid customer number' });
       return;
     }
 
     // Check if customer number already exists
-    const existingCustomer = await Customer.findOne({ where: { customerNumber } });
+    const existingCustomer = await Customer.findOne({ where: { customerNumber: normalizedCustomerNumber } });
     if (existingCustomer) {
       res.status(409).json({
         success: false,
@@ -685,12 +745,12 @@ export async function createCustomer(req: Request, res: Response) {
 
     // Create customer
     const customer = await Customer.create({
-      customerNumber,
+      customerNumber: normalizedCustomerNumber,
       companyName,
       isActive,
     });
 
-    console.log(`✅ Admin created customer: ${customerNumber} (${companyName})`);
+    console.log(`✅ Admin created customer: ${normalizedCustomerNumber} (${companyName})`);
 
     res.status(201).json({
       success: true,
@@ -829,7 +889,7 @@ export async function bulkImportCustomers(req: Request, res: Response) {
     // Validate and import each customer
     for (const customerData of customers) {
       try {
-        const { customerNumber, companyName, isActive = true } = customerData;
+        const { customerNumber, companyName, isActive = true, customerPrefix } = customerData;
 
         // Validation
         if (!customerNumber || !companyName) {
@@ -838,25 +898,31 @@ export async function bulkImportCustomers(req: Request, res: Response) {
           continue;
         }
 
-        // Validate format
-        const customerNumberRegex = /^C\d{4}_\d{7}$/;
-        if (!customerNumberRegex.test(customerNumber)) {
+        let normalizedCustomerNumber: string;
+        try {
+          normalizedCustomerNumber = await resolveCustomerNumberForEvent({
+            eventCode: req.event?.code || 'internal',
+            customerPrefix: customerPrefix || req.event?.customerPrefix || 'C1234',
+            email: 'internal@kramp.com',
+            customerNumberInput: customerNumber,
+          });
+        } catch {
           results.failed++;
           results.errors.push({ customerNumber, error: 'Invalid format' });
           continue;
         }
 
         // Check if exists
-        const existing = await Customer.findOne({ where: { customerNumber } });
+        const existing = await Customer.findOne({ where: { customerNumber: normalizedCustomerNumber } });
         if (existing) {
           results.failed++;
-          results.errors.push({ customerNumber, error: 'Already exists' });
+          results.errors.push({ customerNumber: normalizedCustomerNumber, error: 'Already exists' });
           continue;
         }
 
         // Create customer
         await Customer.create({
-          customerNumber,
+          customerNumber: normalizedCustomerNumber,
           companyName,
           isActive,
         });
@@ -884,6 +950,108 @@ export async function bulkImportCustomers(req: Request, res: Response) {
       success: false,
       error: 'Failed to bulk import customers',
     });
+  }
+}
+
+// ==================== EVENT MANAGEMENT (PLATFORM ADMIN) ====================
+
+export async function getAllEvents(req: Request, res: Response) {
+  try {
+    if (!requirePlatformAdmin(req, res)) return;
+
+    const events = await Event.findAll({ order: [['name', 'ASC']] });
+    res.status(200).json({ success: true, events });
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch events' });
+  }
+}
+
+export async function createEvent(req: Request, res: Response) {
+  try {
+    if (!requirePlatformAdmin(req, res)) return;
+
+    const {
+      code,
+      name,
+      subdomain,
+      customerPrefix = 'C1234',
+      defaultLocale = 'en',
+      allowedLocales = ['en'],
+      timezone = 'Europe/Amsterdam',
+      legalPrivacyUrl,
+      legalTermsUrl,
+      legalCookieUrl,
+      isActive = true,
+    } = req.body;
+
+    if (!code || !name || !subdomain) {
+      res.status(400).json({ success: false, error: 'code, name, subdomain are required' });
+      return;
+    }
+
+    const existing = await Event.findOne({ where: { [Op.or]: [{ code }, { subdomain }] } });
+    if (existing) {
+      res.status(409).json({ success: false, error: 'Event code or subdomain already exists' });
+      return;
+    }
+
+    const event = await Event.create({
+      code,
+      name,
+      subdomain,
+      customerPrefix,
+      defaultLocale,
+      allowedLocales,
+      timezone,
+      legalPrivacyUrl,
+      legalTermsUrl,
+      legalCookieUrl,
+      isActive,
+    } as any);
+
+    res.status(201).json({ success: true, message: 'Event created successfully', event });
+  } catch (error) {
+    console.error('Error creating event:', error);
+    res.status(500).json({ success: false, error: 'Failed to create event' });
+  }
+}
+
+export async function updateEvent(req: Request, res: Response) {
+  try {
+    if (!requirePlatformAdmin(req, res)) return;
+
+    const rawId = req.params.id;
+    const id = Array.isArray(rawId) ? rawId[0] : rawId;
+    const event = await Event.findByPk(id);
+    if (!event) {
+      res.status(404).json({ success: false, error: 'Event not found' });
+      return;
+    }
+
+    const allowedUpdates = [
+      'name',
+      'subdomain',
+      'customerPrefix',
+      'defaultLocale',
+      'allowedLocales',
+      'timezone',
+      'legalPrivacyUrl',
+      'legalTermsUrl',
+      'legalCookieUrl',
+      'isActive',
+    ];
+
+    const updates: any = {};
+    for (const key of allowedUpdates) {
+      if (req.body[key] !== undefined) updates[key] = req.body[key];
+    }
+
+    await event.update(updates);
+    res.status(200).json({ success: true, message: 'Event updated successfully', event });
+  } catch (error) {
+    console.error('Error updating event:', error);
+    res.status(500).json({ success: false, error: 'Failed to update event' });
   }
 }
 

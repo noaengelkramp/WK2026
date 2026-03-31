@@ -24,11 +24,15 @@ import MatchManagement from '../components/admin/MatchManagement';
 import TeamManagement from '../components/admin/TeamManagement';
 import Settings from '../components/admin/Settings';
 import TestingPanel from '../components/admin/TestingPanel';
+import EventManagement from '../components/admin/EventManagement';
+import { useAuth } from '../contexts/AuthContext';
 
-type TabValue = 'dashboard' | 'users' | 'customers' | 'matches' | 'teams' | 'settings' | 'testing';
+type TabValue = 'dashboard' | 'users' | 'customers' | 'matches' | 'teams' | 'settings' | 'testing' | 'events';
 
 export default function AdminPanel() {
   const [selectedTab, setSelectedTab] = useState<TabValue>('dashboard');
+  const { user } = useAuth();
+  const isPlatformAdmin = user?.role === 'platform_admin';
 
   return (
     <Box sx={{ pb: 4 }}>
@@ -65,6 +69,7 @@ export default function AdminPanel() {
           <Tab icon={<FlagIcon />} iconPosition="start" label="Teams" value="teams" />
           <Tab icon={<SettingsIcon />} iconPosition="start" label="Settings" value="settings" />
           <Tab icon={<ScienceIcon />} iconPosition="start" label="Testing" value="testing" />
+          {isPlatformAdmin && <Tab icon={<SettingsIcon />} iconPosition="start" label="Events" value="events" />}
         </Tabs>
       </Card>
 
@@ -89,6 +94,9 @@ export default function AdminPanel() {
 
         {/* Testing Tab */}
         {selectedTab === 'testing' && <TestingPanel />}
+
+        {/* Event Management Tab */}
+        {selectedTab === 'events' && isPlatformAdmin && <EventManagement />}
       </Box>
     </Box>
   );
