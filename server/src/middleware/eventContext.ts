@@ -25,8 +25,23 @@ const getHostWithoutPort = (hostHeader?: string): string => {
   return hostHeader.split(':')[0].toLowerCase();
 };
 
+const getRootSelectorHosts = (): Set<string> => {
+  const defaults = ['poules.kramp.com', 'www.poules.kramp.com'];
+  const fromEnv = (process.env.ROOT_SELECTOR_HOSTS || '')
+    .split(',')
+    .map((host) => host.trim().toLowerCase())
+    .filter(Boolean);
+
+  return new Set([...defaults, ...fromEnv]);
+};
+
 const getSubdomain = (host: string): string | null => {
   if (!host) return null;
+
+  const rootSelectorHosts = getRootSelectorHosts();
+  if (rootSelectorHosts.has(host)) {
+    return null;
+  }
 
   if (host === 'localhost' || host.endsWith('.localhost')) {
     const parts = host.split('.');
@@ -35,7 +50,7 @@ const getSubdomain = (host: string): string | null => {
 
   const parts = host.split('.');
   if (parts.length < 3) {
-    return host === 'poules.kramp.com' ? null : 'internal';
+    return 'internal';
   }
 
   return parts[0];
