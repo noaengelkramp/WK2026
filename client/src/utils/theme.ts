@@ -135,6 +135,20 @@ export const theme = createTheme({
         },
       },
     },
+    MuiCardContent: {
+      styleOverrides: {
+        root: {
+          textAlign: 'center',
+        },
+      },
+    },
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          textAlign: 'center',
+        },
+      },
+    },
     MuiPaper: {
       defaultProps: {
         elevation: 0,
@@ -183,6 +197,7 @@ export const theme = createTheme({
         root: {
           borderBottom: '1px solid #E0E0E0',
           padding: '12px 16px',
+          textAlign: 'center',
         },
       },
     },

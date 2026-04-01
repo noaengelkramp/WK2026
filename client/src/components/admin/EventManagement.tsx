@@ -26,6 +26,7 @@ import {
 import { adminService } from '../../services/adminService';
 import type { CreateEventData, Event } from '../../services/adminService';
 import BuildIcon from '@mui/icons-material/Build';
+import EditIcon from '@mui/icons-material/Edit';
 
 const defaultEventForm: CreateEventData = {
   code: '',
@@ -46,8 +47,10 @@ export default function EventManagement() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
+  const [openEditDialog, setOpenEditDialog] = useState(false);
   const [formData, setFormData] = useState<CreateEventData>(defaultEventForm);
   const [bootstrappingEventId, setBootstrappingEventId] = useState<string | null>(null);
+  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
 
   const loadEvents = async () => {
     try {
@@ -77,6 +80,50 @@ export default function EventManagement() {
       loadEvents();
     } catch (err: any) {
       setError(err.response?.data?.error || 'Failed to create event');
+    }
+  };
+
+  const openEditEventDialog = (event: Event) => {
+    setEditingEvent(event);
+    setFormData({
+      code: event.code,
+      name: event.name,
+      subdomain: event.subdomain,
+      customerPrefix: event.customerPrefix,
+      defaultLocale: event.defaultLocale,
+      allowedLocales: event.allowedLocales,
+      timezone: event.timezone,
+      legalPrivacyUrl: event.legalPrivacyUrl || '',
+      legalTermsUrl: event.legalTermsUrl || '',
+      legalCookieUrl: event.legalCookieUrl || '',
+      isActive: event.isActive,
+    });
+    setOpenEditDialog(true);
+  };
+
+  const handleUpdateEvent = async () => {
+    if (!editingEvent) return;
+    try {
+      setError(null);
+      await adminService.updateEvent(editingEvent.id, {
+        name: formData.name,
+        subdomain: formData.subdomain,
+        customerPrefix: formData.customerPrefix,
+        defaultLocale: formData.defaultLocale,
+        allowedLocales: formData.allowedLocales,
+        timezone: formData.timezone,
+        legalPrivacyUrl: formData.legalPrivacyUrl,
+        legalTermsUrl: formData.legalTermsUrl,
+        legalCookieUrl: formData.legalCookieUrl,
+        isActive: formData.isActive,
+      });
+      setSuccess('Event updated successfully');
+      setOpenEditDialog(false);
+      setEditingEvent(null);
+      setFormData(defaultEventForm);
+      loadEvents();
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Failed to update event');
     }
   };
 
@@ -119,6 +166,7 @@ export default function EventManagement() {
               <TableCell>Customer Prefix</TableCell>
               <TableCell>Locales</TableCell>
               <TableCell>Status</TableCell>
+              <TableCell>Edit</TableCell>
               <TableCell>Bootstrap</TableCell>
             </TableRow>
           </TableHead>
@@ -132,6 +180,15 @@ export default function EventManagement() {
                 <TableCell>{event.allowedLocales.join(', ')}</TableCell>
                 <TableCell>
                   <Chip label={event.isActive ? 'Active' : 'Inactive'} color={event.isActive ? 'success' : 'default'} size="small" />
+                </TableCell>
+                <TableCell>
+                  <Tooltip title="Edit event configuration">
+                    <span>
+                      <IconButton color="primary" onClick={() => openEditEventDialog(event)}>
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                    </span>
+                  </Tooltip>
                 </TableCell>
                 <TableCell>
                   <Tooltip title="Initialize scoring rules, bonus questions, and default prizes">
@@ -197,6 +254,54 @@ export default function EventManagement() {
         <DialogActions>
           <Button onClick={() => setOpenCreateDialog(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleCreateEvent}>Create</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={openEditDialog} onClose={() => setOpenEditDialog(false)} maxWidth="md" fullWidth>
+        <DialogTitle>Edit Event</DialogTitle>
+        <DialogContent>
+          <Grid container spacing={2} sx={{ mt: 0.5 }}>
+            <Grid size={{ xs: 12, md: 4 }}>
+              <TextField label="Code" fullWidth value={formData.code} disabled helperText="Code cannot be changed" />
+            </Grid>
+            <Grid size={{ xs: 12, md: 4 }}>
+              <TextField label="Name" fullWidth value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
+            </Grid>
+            <Grid size={{ xs: 12, md: 4 }}>
+              <TextField label="Subdomain" fullWidth value={formData.subdomain} onChange={(e) => setFormData({ ...formData, subdomain: e.target.value })} />
+            </Grid>
+            <Grid size={{ xs: 12, md: 4 }}>
+              <TextField label="Customer Prefix" fullWidth value={formData.customerPrefix} onChange={(e) => setFormData({ ...formData, customerPrefix: e.target.value })} helperText="Format C1234" />
+            </Grid>
+            <Grid size={{ xs: 12, md: 4 }}>
+              <TextField label="Default Locale" fullWidth value={formData.defaultLocale} onChange={(e) => setFormData({ ...formData, defaultLocale: e.target.value })} />
+            </Grid>
+            <Grid size={{ xs: 12, md: 4 }}>
+              <TextField label="Allowed Locales (comma-separated)" fullWidth value={formData.allowedLocales.join(', ')} onChange={(e) => setFormData({ ...formData, allowedLocales: e.target.value.split(',').map((v) => v.trim()).filter(Boolean) })} />
+            </Grid>
+            <Grid size={12}>
+              <TextField label="Timezone" fullWidth value={formData.timezone} onChange={(e) => setFormData({ ...formData, timezone: e.target.value })} />
+            </Grid>
+            <Grid size={12}>
+              <TextField label="Legal Privacy URL" fullWidth value={formData.legalPrivacyUrl} onChange={(e) => setFormData({ ...formData, legalPrivacyUrl: e.target.value })} />
+            </Grid>
+            <Grid size={12}>
+              <TextField label="Legal Terms URL" fullWidth value={formData.legalTermsUrl} onChange={(e) => setFormData({ ...formData, legalTermsUrl: e.target.value })} />
+            </Grid>
+            <Grid size={12}>
+              <TextField label="Legal Cookie URL" fullWidth value={formData.legalCookieUrl} onChange={(e) => setFormData({ ...formData, legalCookieUrl: e.target.value })} />
+            </Grid>
+            <Grid size={12}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Switch checked={!!formData.isActive} onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })} />
+                <Typography>Active</Typography>
+              </Box>
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenEditDialog(false)}>Cancel</Button>
+          <Button variant="contained" onClick={handleUpdateEvent}>Save Changes</Button>
         </DialogActions>
       </Dialog>
     </Box>
