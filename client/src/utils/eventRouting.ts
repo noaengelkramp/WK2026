@@ -1,7 +1,31 @@
+const NON_EVENT_PREFIXES = new Set([
+  'login',
+  'register',
+  'verify-email',
+  'matches',
+  'groups',
+  'statistics',
+  'prizes',
+  'rules',
+  'admin',
+  'standings',
+  'my-prediction',
+  'api',
+  'assets',
+  'static',
+]);
+
 export const getEventCodeFromPath = (path: string = window.location.pathname): string | null => {
   const normalized = (path || '/').split('?')[0].split('#')[0];
   const parts = normalized.split('/').filter(Boolean);
-  return parts.length > 0 ? parts[0].toLowerCase() : null;
+  if (!parts.length) return null;
+
+  const first = parts[0].toLowerCase();
+  if (NON_EVENT_PREFIXES.has(first)) {
+    return null;
+  }
+
+  return first;
 };
 
 export const stripEventPrefix = (path: string): string => {
