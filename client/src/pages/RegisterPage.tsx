@@ -27,8 +27,6 @@ export default function RegisterPage() {
   const { register } = useAuth();
   const eventCode = getEventCodeFromPath();
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
     username: '',
     email: '',
     password: '',
@@ -68,7 +66,7 @@ export default function RegisterPage() {
     setError('');
 
     // Validation
-    if (!formData.firstName || !formData.lastName || !formData.username || !formData.email || !formData.password || (!isInternalEvent && !formData.customerNumber)) {
+    if (!formData.username || !formData.email || !formData.password || (!isInternalEvent && !formData.customerNumber)) {
       setError('Please fill in all fields');
       return;
     }
@@ -101,8 +99,6 @@ export default function RegisterPage() {
       await register({
         email: formData.email,
         password: formData.password,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
         username: formData.username,
         customerNumber: formData.customerNumber || undefined,
       });
@@ -144,7 +140,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#FFFFFF' }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: '#FFFFFF', textAlign: 'center' }}>
       <Container maxWidth="lg" sx={{ minHeight: '100vh', py: { xs: 4, md: 8 } }}>
         <Grid container spacing={0} sx={{ minHeight: 'calc(100vh - 120px)' }}>
           <Grid size={{ xs: 12, md: 6 }}>
@@ -244,30 +240,6 @@ export default function RegisterPage() {
 
                 <form onSubmit={handleSubmit}>
                   <Grid container spacing={2}>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                      <TextField
-                        fullWidth
-                        label={t('register.firstName')}
-                        name="firstName"
-                        variant="outlined"
-                        value={formData.firstName}
-                        onChange={handleChange}
-                        required
-                        sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
-                      />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                      <TextField
-                        fullWidth
-                        label={t('register.lastName')}
-                        name="lastName"
-                        variant="outlined"
-                        value={formData.lastName}
-                        onChange={handleChange}
-                        required
-                        sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
-                      />
-                    </Grid>
                     <Grid size={12}>
                       <TextField
                         fullWidth

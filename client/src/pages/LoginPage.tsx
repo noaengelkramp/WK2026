@@ -60,7 +60,7 @@ export default function LoginPage() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#FFFFFF' }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: '#FFFFFF', textAlign: 'center' }}>
       <Container maxWidth="lg" sx={{ minHeight: '100vh', py: { xs: 4, md: 8 } }}>
         <Grid container spacing={0} sx={{ minHeight: 'calc(100vh - 120px)' }}>
           <Grid size={{ xs: 12, md: 6 }}>

@@ -123,7 +123,7 @@ export default function CountrySelectorPage() {
   const combinePrivacyAndCookie = isSameLegalLink(resolvedPrivacyUrl, resolvedCookieUrl);
 
   return (
-    <Container maxWidth="lg" sx={{ py: 8, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <Container maxWidth="lg" sx={{ py: 8, minHeight: '100vh', display: 'flex', flexDirection: 'column', textAlign: 'center' }}>
       <Box sx={{ textAlign: 'center', mb: 6 }}>
         <PublicIcon sx={{ fontSize: 42, color: '#9B1915', mb: 1 }} />
         <Typography variant="h3" sx={{ fontWeight: 700, mb: 1 }}>

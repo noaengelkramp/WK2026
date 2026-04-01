@@ -193,7 +193,7 @@ export default function Layout({ children }: LayoutProps) {
           </Typography>
           <IconButton color="inherit" onClick={handleUserMenuOpen}>
             <Avatar sx={{ width: 32, height: 32, bgcolor: theme.palette.secondary.main }}>
-              {user.firstName[0]}{user.lastName[0]}
+              {user.username?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || 'U'}
             </Avatar>
           </IconButton>
           <Menu
@@ -203,7 +203,7 @@ export default function Layout({ children }: LayoutProps) {
           >
             <MenuItem disabled>
               <PersonIcon sx={{ mr: 1 }} />
-              {user.firstName} {user.lastName}
+              {user.username || user.email}
             </MenuItem>
             <Divider />
             <MenuItem onClick={handleLanguageMenuOpen}>

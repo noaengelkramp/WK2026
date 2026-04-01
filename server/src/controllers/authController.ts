@@ -16,12 +16,14 @@ export const register = async (req: Request, res: Response, next: NextFunction):
       throw new AppError('Event context is required for registration', 400);
     }
 
-    const { email, username, password, firstName, lastName, customerNumber, languagePreference } = req.body;
+    const { email, username, password, customerNumber, languagePreference } = req.body;
 
     // Validate required fields
-    if (!email || !username || !password || !firstName || !lastName) {
+    if (!email || !username || !password) {
       throw new AppError('Missing required fields', 400);
     }
+
+    const displayName = username;
 
     const normalizedCustomerNumber = await resolveCustomerNumberForEvent({
       eventCode: req.event.code,
@@ -78,8 +80,8 @@ export const register = async (req: Request, res: Response, next: NextFunction):
       email,
       username,
       passwordHash,
-      firstName,
-      lastName,
+      firstName: displayName,
+      lastName: '-',
       customerNumber: normalizedCustomerNumber,
       languagePreference: selectedLanguage,
       role: 'user',
@@ -102,7 +104,7 @@ export const register = async (req: Request, res: Response, next: NextFunction):
     // Send verification email (async, don't wait)
     emailService.sendVerificationEmail(
       user.email,
-      user.firstName,
+      user.username,
       emailVerificationToken,
       user.languagePreference
     ).catch(err => {
@@ -301,7 +303,7 @@ export const verifyEmail = async (req: Request, res: Response, next: NextFunctio
     // Send welcome email (async, don't wait)
     emailService.sendWelcomeEmail(
       user.email,
-      user.firstName,
+      user.username,
       user.languagePreference
     ).catch(err => {
       console.error('Failed to send welcome email:', err);
@@ -351,7 +353,7 @@ export const resendVerificationEmail = async (req: Request, res: Response, next:
     // Send verification email
     await emailService.sendVerificationEmail(
       user.email,
-      user.firstName,
+      user.username,
       emailVerificationToken,
       user.languagePreference
     );

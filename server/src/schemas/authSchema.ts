@@ -22,14 +22,6 @@ export const registerSchema = z.object({
     password: z.string()
       .min(8, 'Password must be at least 8 characters')
       .max(100, 'Password is too long'),
-    firstName: z.string()
-      .trim()
-      .min(1, 'First name is required')
-      .max(100),
-    lastName: z.string()
-      .trim()
-      .min(1, 'Last name is required')
-      .max(100),
     customerNumber: z.string()
       .regex(CUSTOMER_NUMBER_REGEX, 'Invalid customer number format. Use 7 digits or C1234_1234567')
       .optional(),

@@ -9,8 +9,6 @@ export interface LoginCredentials {
 export interface RegisterData {
   email: string;
   password: string;
-  firstName: string;
-  lastName: string;
   username: string;
   customerNumber?: string;
 }
