@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Card,
@@ -29,6 +30,7 @@ import { dataService } from '../services/dataService';
 import type { ScoringRule, BonusQuestion } from '../types';
 
 export default function RulesPage() {
+  const { t } = useTranslation();
   const [scoringRules, setScoringRules] = useState<ScoringRule[]>([]);
   const [bonusQuestions, setBonusQuestions] = useState<BonusQuestion[]>([]);
   const [loading, setLoading] = useState(true);
@@ -75,18 +77,18 @@ export default function RulesPage() {
   return (
     <Box>
       <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold' }}>
-        Game Rules & Scoring
+        {t('rules.title')}
       </Typography>
 
       <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-        Learn how to play the World Cup 2026 Prediction Game and maximize your points!
+        {t('rules.subtitle')}
       </Typography>
 
       {/* Overview Card */}
       <Card variant="outlined" sx={{ mb: 3, borderLeft: '4px solid #9B1915' }}>
         <CardContent>
           <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, fontWeight: 'bold' }}>
-            <SoccerIcon color="primary" /> How to Play
+            <SoccerIcon color="primary" /> {t('rules.howToPlay')}
           </Typography>
           <Typography variant="body1">
             1. <strong>Make your predictions</strong> for all 104 World Cup matches before the deadline
@@ -117,7 +119,7 @@ export default function RulesPage() {
       <Accordion defaultExpanded variant="outlined" sx={{ mb: 2 }}>
         <AccordionSummary expandIcon={<ExpandIcon />}>
           <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-            Scoring System
+              {t('rules.scoringSystem')}
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
@@ -208,7 +210,7 @@ export default function RulesPage() {
       <Accordion variant="outlined" sx={{ mb: 2 }}>
         <AccordionSummary expandIcon={<ExpandIcon />}>
           <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-            Tie-Breaking Rules
+              {t('rules.tieBreaking')}
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
@@ -239,7 +241,7 @@ export default function RulesPage() {
       <Accordion variant="outlined" sx={{ mb: 2 }}>
         <AccordionSummary expandIcon={<ExpandIcon />}>
           <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-            Updating Your Predictions
+              {t('rules.updatingPredictions')}
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
@@ -274,7 +276,7 @@ export default function RulesPage() {
         <AccordionSummary expandIcon={<ExpandIcon />}>
           <Typography variant="h5" sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1 }}>
             <TrophyIcon color="primary" />
-            Prizes & Winners
+            {t('rules.prizesWinners')}
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
@@ -314,7 +316,7 @@ export default function RulesPage() {
         <AccordionSummary expandIcon={<ExpandIcon />}>
           <Typography variant="h5" sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1 }}>
             <HelpIcon color="primary" />
-            Frequently Asked Questions
+            {t('rules.faq')}
           </Typography>
         </AccordionSummary>
         <AccordionDetails>

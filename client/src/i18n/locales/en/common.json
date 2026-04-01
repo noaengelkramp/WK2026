@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "home": "Home",
+    "myPrediction": "My Prediction",
+    "standings": "Standings",
+    "matches": "Matches",
+    "groups": "Groups",
+    "statistics": "Statistics",
+    "prizes": "Prizes",
+    "rules": "Rules",
+    "admin": "Admin Panel",
+    "logout": "Logout",
+    "selectLanguage": "Select Language"
+  },
+  "login": {
+    "title": "Sign in",
+    "subtitle": "Welcome back! Please enter your credentials to access the challenge.",
+    "identifier": "Email or Username",
+    "password": "Password",
+    "submit": "Sign In",
+    "newHere": "New here?",
+    "createAccount": "Create Account",
+    "forgotPassword": "Forgot your password?",
+    "heroTag": "KRAMP PREDICTION CHALLENGE",
+    "heroTitle": "World Cup 2026",
+    "heroDescription": "Join the official Kramp prediction game for our customers. Compete with other professionals across Europe, track your ranking, and win exclusive prizes."
+  },
+  "register": {
+    "title": "Register",
+    "subtitle": "Enter your details below to create your participant account.",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "username": "Username",
+    "email": "Email Address",
+    "customerNumber": "Customer Number",
+    "customerNumberHint": "Enter your 7-digit customer number",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "createAccount": "Create Account",
+    "alreadyHaveAccount": "Already have an account? Sign in",
+    "internalPolicy": "Internal event: @kramp.com email required",
+    "externalPolicy": "External event: max 5 accounts per customer number"
+  },
+  "home": {
+    "title": "World Cup 2026 Prediction Challenge",
+    "subtitle": "Compete with other football fans and win amazing prizes.",
+    "upcomingMatch": "Upcoming Match",
+    "predictNow": "Predict Now",
+    "noUpcoming": "No upcoming matches scheduled",
+    "leaderboard": "Leaderboard",
+    "viewFullStandings": "View Full Standings",
+    "quickLinks": "Quick Links"
+  },
+  "rules": {
+    "title": "Game Rules & Scoring",
+    "subtitle": "Learn how to play the World Cup 2026 Prediction Game and maximize your points!",
+    "howToPlay": "How to Play",
+    "scoringSystem": "Scoring System",
+    "tieBreaking": "Tie-Breaking Rules",
+    "updatingPredictions": "Updating Your Predictions",
+    "prizesWinners": "Prizes & Winners",
+    "faq": "Frequently Asked Questions"
+  },
+  "prizes": {
+    "title": "Prize Catalog",
+    "subtitle": "Exclusive rewards for the top-performing predictors in the Kramp 2026 Challenge.",
+    "rewards": "Competition Rewards",
+    "eligibility": "Eligibility & Guidelines",
+    "announcement": "Announcement Schedule"
+  }
+}

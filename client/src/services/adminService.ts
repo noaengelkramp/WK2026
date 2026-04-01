@@ -298,4 +298,17 @@ export const adminService = {
     const response = await api.put(`/admin/events/${id}`, data);
     return response.data.event as Event;
   },
+
+  async bootstrapEvent(id: string) {
+    const response = await api.post(`/admin/events/${id}/bootstrap`);
+    return response.data as {
+      success: boolean;
+      message: string;
+      created: {
+        scoringRules: number;
+        bonusQuestions: number;
+        prizes: number;
+      };
+    };
+  },
 };

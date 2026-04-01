@@ -14,16 +14,35 @@ import {
   Divider,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { getErrorMessage } from '../services/api';
+import { withEventPrefix, getEventCodeFromPath } from '../utils/eventRouting';
+import { eventService } from '../services/eventService';
+import i18n, { normalizeLocaleToLanguage } from '../i18n';
+import { useEffect } from 'react';
 
 export default function LoginPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { login } = useAuth();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const eventCode = getEventCodeFromPath();
+
+  useEffect(() => {
+    eventService.getCurrent()
+      .then((response) => {
+        if (response.mode === 'event' && response.event) {
+          i18n.changeLanguage(normalizeLocaleToLanguage(response.event.defaultLocale));
+        }
+      })
+      .catch(() => {
+        // ignore
+      });
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +51,7 @@ export default function LoginPage() {
     
     try {
       await login({ identifier, password });
-      navigate('/');
+      navigate(withEventPrefix(eventCode, '/'));
     } catch (err: any) {
       setError(getErrorMessage(err));
     } finally {
@@ -60,13 +79,13 @@ export default function LoginPage() {
             >
               <Box>
                 <Typography variant="overline" sx={{ color: '#9B1915', fontWeight: 700, letterSpacing: '0.1em' }}>
-                  KRAMP PREDICTION CHALLENGE
+                  {t('login.heroTag')}
                 </Typography>
                 <Typography variant="h3" sx={{ mt: 1, fontWeight: 700, color: '#212121' }}>
-                  World Cup 2026
+                  {t('login.heroTitle')}
                 </Typography>
                 <Typography variant="body1" sx={{ mt: 2, color: '#666666', fontSize: '1.1rem' }}>
-                  Join the official Kramp prediction game for our customers. Compete with other professionals across Europe, track your ranking, and win exclusive prizes.
+                  {t('login.heroDescription')}
                 </Typography>
 
                 <Grid container spacing={2} sx={{ mt: 4 }}>
@@ -139,10 +158,10 @@ export default function LoginPage() {
                 </Box>
 
                 <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, color: '#212121' }}>
-                  Sign in
+                  {t('login.title')}
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
-                  Welcome back! Please enter your credentials to access the challenge.
+                  {t('login.subtitle')}
                 </Typography>
 
                 {error && (
@@ -154,7 +173,7 @@ export default function LoginPage() {
                   <form onSubmit={handleSubmit}>
                     <TextField
                       fullWidth
-                      label="Email or Username"
+                      label={t('login.identifier')}
                       type="text"
                       variant="outlined"
                       value={identifier}
@@ -165,7 +184,7 @@ export default function LoginPage() {
                     />
                   <TextField
                     fullWidth
-                    label="Password"
+                    label={t('login.password')}
                     type="password"
                     variant="outlined"
                     value={password}
@@ -182,13 +201,13 @@ export default function LoginPage() {
                     disabled={loading}
                     sx={{ mt: 4, height: 48 }}
                   >
-                    {loading ? <CircularProgress size={24} color="inherit" /> : 'Sign In'}
+                    {loading ? <CircularProgress size={24} color="inherit" /> : t('login.submit')}
                   </Button>
                 </form>
 
                 <Divider sx={{ my: 4 }}>
                   <Typography variant="caption" sx={{ color: '#999', textTransform: 'uppercase', fontWeight: 700 }}>
-                    New here?
+                    {t('login.newHere')}
                   </Typography>
                 </Divider>
 
@@ -196,10 +215,10 @@ export default function LoginPage() {
                   fullWidth
                   variant="outlined"
                   size="large"
-                  onClick={() => navigate('/register')}
+                  onClick={() => navigate(withEventPrefix(eventCode, '/register'))}
                   sx={{ height: 48 }}
                 >
-                  Create Account
+                  {t('login.createAccount')}
                 </Button>
 
                 <Box sx={{ textAlign: 'center', mt: 4 }}>
@@ -209,7 +228,7 @@ export default function LoginPage() {
                     onClick={() => alert('Please contact IT support for password recovery.')}
                     sx={{ cursor: 'pointer', color: '#666', textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
                   >
-                    Forgot your password?
+                    {t('login.forgotPassword')}
                   </Link>
                 </Box>
               </CardContent>

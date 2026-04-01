@@ -19,9 +19,13 @@ import {
   TableRow,
   TextField,
   Typography,
+  IconButton,
+  Tooltip,
+  CircularProgress,
 } from '@mui/material';
 import { adminService } from '../../services/adminService';
 import type { CreateEventData, Event } from '../../services/adminService';
+import BuildIcon from '@mui/icons-material/Build';
 
 const defaultEventForm: CreateEventData = {
   code: '',
@@ -43,6 +47,7 @@ export default function EventManagement() {
   const [success, setSuccess] = useState<string | null>(null);
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [formData, setFormData] = useState<CreateEventData>(defaultEventForm);
+  const [bootstrappingEventId, setBootstrappingEventId] = useState<string | null>(null);
 
   const loadEvents = async () => {
     try {
@@ -75,6 +80,21 @@ export default function EventManagement() {
     }
   };
 
+  const handleBootstrapEvent = async (event: Event) => {
+    try {
+      setError(null);
+      setBootstrappingEventId(event.id);
+      const result = await adminService.bootstrapEvent(event.id);
+      setSuccess(
+        `${event.name} initialized: ${result.created.scoringRules} scoring rules, ${result.created.bonusQuestions} bonus questions, ${result.created.prizes} prizes`
+      );
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Failed to bootstrap event defaults');
+    } finally {
+      setBootstrappingEventId(null);
+    }
+  };
+
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
@@ -99,6 +119,7 @@ export default function EventManagement() {
               <TableCell>Customer Prefix</TableCell>
               <TableCell>Locales</TableCell>
               <TableCell>Status</TableCell>
+              <TableCell>Bootstrap</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -111,6 +132,19 @@ export default function EventManagement() {
                 <TableCell>{event.allowedLocales.join(', ')}</TableCell>
                 <TableCell>
                   <Chip label={event.isActive ? 'Active' : 'Inactive'} color={event.isActive ? 'success' : 'default'} size="small" />
+                </TableCell>
+                <TableCell>
+                  <Tooltip title="Initialize scoring rules, bonus questions, and default prizes">
+                    <span>
+                      <IconButton
+                        color="primary"
+                        onClick={() => handleBootstrapEvent(event)}
+                        disabled={bootstrappingEventId === event.id}
+                      >
+                        {bootstrappingEventId === event.id ? <CircularProgress size={20} /> : <BuildIcon fontSize="small" />}
+                      </IconButton>
+                    </span>
+                  </Tooltip>
                 </TableCell>
               </TableRow>
             ))}

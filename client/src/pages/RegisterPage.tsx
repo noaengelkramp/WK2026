@@ -14,13 +14,18 @@ import {
   Grid,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { getErrorMessage } from '../services/api';
 import { eventService } from '../services/eventService';
+import i18n, { normalizeLocaleToLanguage } from '../i18n';
+import { withEventPrefix, getEventCodeFromPath } from '../utils/eventRouting';
 
 export default function RegisterPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { register } = useAuth();
+  const eventCode = getEventCodeFromPath();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -42,6 +47,8 @@ export default function RegisterPage() {
         if (response.mode === 'event' && response.event) {
           setIsInternalEvent(response.event.code === 'internal');
           setEventName(response.event.name || '');
+          const nextLang = normalizeLocaleToLanguage(response.event.defaultLocale);
+          i18n.changeLanguage(nextLang);
         }
       })
       .catch(() => {
@@ -101,7 +108,7 @@ export default function RegisterPage() {
       });
       setSuccess(true);
       setTimeout(() => {
-        navigate('/');
+        navigate(withEventPrefix(eventCode, '/'));
       }, 2000);
     } catch (err: any) {
       setError(getErrorMessage(err));
@@ -214,18 +221,18 @@ export default function RegisterPage() {
                 </Box>
 
                 <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, color: '#212121' }}>
-                  Register
+                  {t('register.title')}
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
-                  Enter your details below to create your participant account.
+                  {t('register.subtitle')}
                 </Typography>
 
                 <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 3 }}>
                   {eventName && <Chip label={`Event: ${eventName}`} size="small" color="default" />}
                   {isInternalEvent ? (
-                    <Chip label="Internal event: @kramp.com email required" size="small" color="warning" />
+                    <Chip label={t('register.internalPolicy')} size="small" color="warning" />
                   ) : (
-                    <Chip label="External event: max 5 accounts per customer number" size="small" color="info" />
+                    <Chip label={t('register.externalPolicy')} size="small" color="info" />
                   )}
                 </Box>
 
@@ -240,7 +247,7 @@ export default function RegisterPage() {
                     <Grid size={{ xs: 12, md: 6 }}>
                       <TextField
                         fullWidth
-                        label="First Name"
+                        label={t('register.firstName')}
                         name="firstName"
                         variant="outlined"
                         value={formData.firstName}
@@ -252,7 +259,7 @@ export default function RegisterPage() {
                     <Grid size={{ xs: 12, md: 6 }}>
                       <TextField
                         fullWidth
-                        label="Last Name"
+                        label={t('register.lastName')}
                         name="lastName"
                         variant="outlined"
                         value={formData.lastName}
@@ -264,7 +271,7 @@ export default function RegisterPage() {
                     <Grid size={12}>
                       <TextField
                         fullWidth
-                        label="Username"
+                        label={t('register.username')}
                         name="username"
                         variant="outlined"
                         value={formData.username}
@@ -277,7 +284,7 @@ export default function RegisterPage() {
                     <Grid size={12}>
                       <TextField
                         fullWidth
-                        label="Email Address"
+                        label={t('register.email')}
                         name="email"
                         type="email"
                         variant="outlined"
@@ -291,14 +298,14 @@ export default function RegisterPage() {
                     <Grid size={12}>
                       <TextField
                         fullWidth
-                        label="Customer Number"
+                        label={t('register.customerNumber')}
                         name="customerNumber"
                         variant="outlined"
                         value={formData.customerNumber}
                         onChange={handleChange}
                         required
                         placeholder="0000000"
-                        helperText="Enter your 7-digit customer number"
+                        helperText={t('register.customerNumberHint')}
                         sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
                       />
                     </Grid>
@@ -306,7 +313,7 @@ export default function RegisterPage() {
                     <Grid size={12}>
                       <TextField
                         fullWidth
-                        label="Password"
+                        label={t('register.password')}
                         name="password"
                         type="password"
                         variant="outlined"
@@ -320,7 +327,7 @@ export default function RegisterPage() {
                     <Grid size={12}>
                       <TextField
                         fullWidth
-                        label="Confirm Password"
+                        label={t('register.confirmPassword')}
                         name="confirmPassword"
                         type="password"
                         variant="outlined"
@@ -339,7 +346,7 @@ export default function RegisterPage() {
                     disabled={loading}
                     sx={{ mt: 4, height: 48 }}
                   >
-                    {loading ? <CircularProgress size={24} color="inherit" /> : 'Create Account'}
+                    {loading ? <CircularProgress size={24} color="inherit" /> : t('register.createAccount')}
                   </Button>
                 </form>
 
@@ -347,10 +354,10 @@ export default function RegisterPage() {
                   <Link
                     component="button"
                     variant="body2"
-                    onClick={() => navigate('/login')}
+                    onClick={() => navigate(withEventPrefix(eventCode, '/login'))}
                     sx={{ cursor: 'pointer', color: '#666', textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
                   >
-                    Already have an account? Sign in
+                    {t('register.alreadyHaveAccount')}
                   </Link>
                 </Box>
               </CardContent>

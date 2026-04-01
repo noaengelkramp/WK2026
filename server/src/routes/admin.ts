@@ -25,6 +25,7 @@ import {
   getAllEvents,
   createEvent,
   updateEvent,
+  bootstrapEventDefaults,
 } from '../controllers/adminController';
 import { authenticate, requireAdmin } from '../middleware/auth';
 import { populateMatchesFromApi } from '../utils/populateMatches';
@@ -119,6 +120,9 @@ router.post('/events', createEvent);
 
 // PUT /api/admin/events/:id - Update event
 router.put('/events/:id', updateEvent);
+
+// POST /api/admin/events/:id/bootstrap - Initialize event defaults
+router.post('/events/:id/bootstrap', bootstrapEventDefaults);
 
 // ==================== TESTING & HISTORIC DATA ====================
 /**

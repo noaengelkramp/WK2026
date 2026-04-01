@@ -17,8 +17,10 @@ import {
   InfoOutlined as InfoIcon,
   CalendarTodayOutlined as CalendarIcon,
 } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 
 export default function PrizesPage() {
+  const { t } = useTranslation();
   const prizes = [
     {
       place: '1st Place',
@@ -44,10 +46,10 @@ export default function PrizesPage() {
     <Box sx={{ pb: 4 }}>
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, color: '#212121' }}>
-          Prize Catalog
+          {t('prizes.title')}
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Exclusive rewards for the top-performing predictors in the Kramp 2026 Challenge.
+          {t('prizes.subtitle')}
         </Typography>
       </Box>
 
@@ -57,9 +59,9 @@ export default function PrizesPage() {
         </Typography>
       </Alert>
 
-      <Typography variant="subtitle2" sx={{ mb: 3, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#666' }}>
-        Competition Rewards
-      </Typography>
+        <Typography variant="subtitle2" sx={{ mb: 3, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#666' }}>
+          {t('prizes.rewards')}
+        </Typography>
 
       <Grid container spacing={3} sx={{ mb: 6 }}>
         {prizes.map((prize, index) => (
@@ -84,9 +86,9 @@ export default function PrizesPage() {
         ))}
       </Grid>
 
-      <Typography variant="subtitle2" sx={{ mb: 3, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#666' }}>
-        Eligibility & Guidelines
-      </Typography>
+        <Typography variant="subtitle2" sx={{ mb: 3, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#666' }}>
+          {t('prizes.eligibility')}
+        </Typography>
 
       <Card variant="outlined" sx={{ borderRadius: 0 }}>
         <CardContent sx={{ p: 0 }}>
@@ -130,7 +132,7 @@ export default function PrizesPage() {
         <CardContent sx={{ p: 4 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
             <CalendarIcon sx={{ color: '#9B1915' }} />
-            <Typography variant="h6" sx={{ fontWeight: 700 }}>Announcement Schedule</Typography>
+            <Typography variant="h6" sx={{ fontWeight: 700 }}>{t('prizes.announcement')}</Typography>
           </Box>
           <Typography variant="body2" sx={{ opacity: 0.8, mb: 2 }}>
             Official winners will be published on our platform and via email on July 20, 2026. Standings on this platform are updated in real-time but remain unofficial until final verification.

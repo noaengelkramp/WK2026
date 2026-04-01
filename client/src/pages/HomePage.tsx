@@ -21,9 +21,11 @@ import {
   ChevronRight as ChevronRightIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { dataService } from '../services/dataService';
 import { standingsService } from '../services/standingsService';
 import type { Match, LeaderboardEntry } from '../types';
+import { withEventPrefix, getEventCodeFromPath } from '../utils/eventRouting';
 
 // Cache duration: 5 minutes (to avoid excessive API calls during development)
 const CACHE_DURATION = 5 * 60 * 1000;
@@ -51,7 +53,9 @@ const setCachedData = <T,>(key: string, data: T): void => {
 };
 
 export default function HomePage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
+  const eventCode = getEventCodeFromPath();
   
   // State for data
   const [nextMatch, setNextMatch] = useState<Match | null>(null);
@@ -127,10 +131,10 @@ export default function HomePage() {
     <Box sx={{ pb: 4 }}>
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, color: '#212121' }}>
-          World Cup 2026 Prediction Challenge
+          {t('home.title')}
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Compete with other football fans and win amazing prizes.
+          {t('home.subtitle')}
         </Typography>
       </Box>
 
@@ -148,7 +152,7 @@ export default function HomePage() {
               justifyContent: 'space-between'
             }}>
               <Typography variant="subtitle2" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#666666' }}>
-                Upcoming Match
+                {t('home.upcomingMatch')}
               </Typography>
               <Chip 
                 label="LIVE SOON" 
@@ -233,16 +237,16 @@ export default function HomePage() {
                       color="primary"
                       size="large"
                       endIcon={<ChevronRightIcon fontSize="small" />}
-                      onClick={() => navigate('/my-prediction')}
+                      onClick={() => navigate(withEventPrefix(eventCode, '/my-prediction'))}
                       sx={{ px: 4 }}
                     >
-                      Predict Now
+                      {t('home.predictNow')}
                     </Button>
                   </Grid>
                 </Grid>
               ) : (
                 <Alert severity="info" variant="outlined" sx={{ borderRadius: 0 }}>
-                  No upcoming matches scheduled
+                  {t('home.noUpcoming')}
                 </Alert>
               )}
             </CardContent>
@@ -307,15 +311,15 @@ export default function HomePage() {
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
                 <Box>
                   <Typography variant="h5" sx={{ fontWeight: 700 }}>
-                    Leaderboard
+                    {t('home.leaderboard')}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Live snapshot of the top performing participants.
                   </Typography>
                 </Box>
-                <Button variant="outlined" size="small" onClick={() => navigate('/standings/individual')}>
-                  View Full Standings
-                </Button>
+                 <Button variant="outlined" size="small" onClick={() => navigate(withEventPrefix(eventCode, '/standings/individual'))}>
+                   {t('home.viewFullStandings')}
+                 </Button>
               </Box>
               
               {loadingPlayers ? (
@@ -375,7 +379,7 @@ export default function HomePage() {
         {/* Quick Links */}
         <Grid size={12}>
           <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 700, textTransform: 'uppercase', color: '#666' }}>
-            Quick Links
+            {t('home.quickLinks')}
           </Typography>
           <Grid container spacing={2}>
             {[
@@ -387,7 +391,7 @@ export default function HomePage() {
               <Grid key={item.path} size={{ xs: 12, sm: 6, md: 3 }}>
                 <Card
                   variant="outlined"
-                  onClick={() => navigate(item.path)}
+                   onClick={() => navigate(withEventPrefix(eventCode, item.path))}
                   sx={{
                     cursor: 'pointer',
                     borderRadius: 0,

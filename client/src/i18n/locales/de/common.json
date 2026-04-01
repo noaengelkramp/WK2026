@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "home": "Startseite",
+    "myPrediction": "Meine Tipps",
+    "standings": "Rangliste",
+    "matches": "Spiele",
+    "groups": "Gruppen",
+    "statistics": "Statistiken",
+    "prizes": "Preise",
+    "rules": "Regeln",
+    "admin": "Admin-Bereich",
+    "logout": "Abmelden",
+    "selectLanguage": "Sprache wählen"
+  },
+  "login": {
+    "title": "Anmelden",
+    "subtitle": "Willkommen zurück! Bitte gib deine Zugangsdaten ein.",
+    "identifier": "E-Mail oder Benutzername",
+    "password": "Passwort",
+    "submit": "Anmelden",
+    "newHere": "Neu hier?",
+    "createAccount": "Konto erstellen",
+    "forgotPassword": "Passwort vergessen?",
+    "heroTag": "KRAMP TIPPSPIEL",
+    "heroTitle": "Weltmeisterschaft 2026",
+    "heroDescription": "Nimm am offiziellen Kramp-Tippspiel teil. Miss dich mit anderen Teilnehmenden in Europa, verfolge deine Platzierung und gewinne exklusive Preise."
+  },
+  "register": {
+    "title": "Registrieren",
+    "subtitle": "Gib unten deine Daten ein, um dein Konto zu erstellen.",
+    "firstName": "Vorname",
+    "lastName": "Nachname",
+    "username": "Benutzername",
+    "email": "E-Mail-Adresse",
+    "customerNumber": "Kundennummer",
+    "customerNumberHint": "Gib deine 7-stellige Kundennummer ein",
+    "password": "Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "createAccount": "Konto erstellen",
+    "alreadyHaveAccount": "Du hast bereits ein Konto? Anmelden",
+    "internalPolicy": "Internes Event: @kramp.com E-Mail erforderlich",
+    "externalPolicy": "Externes Event: max. 5 Konten pro Kundennummer"
+  },
+  "home": {
+    "title": "WM 2026 Tippspiel",
+    "subtitle": "Tritt gegen andere Fußballfans an und gewinne tolle Preise.",
+    "upcomingMatch": "Nächstes Spiel",
+    "predictNow": "Jetzt tippen",
+    "noUpcoming": "Keine bevorstehenden Spiele geplant",
+    "leaderboard": "Rangliste",
+    "viewFullStandings": "Gesamte Rangliste anzeigen",
+    "quickLinks": "Schnellzugriffe"
+  },
+  "rules": {
+    "title": "Spielregeln & Punkte",
+    "subtitle": "So funktioniert das WM 2026 Tippspiel und so holst du mehr Punkte!",
+    "howToPlay": "So funktioniert's",
+    "scoringSystem": "Punktesystem",
+    "tieBreaking": "Regeln bei Punktgleichheit",
+    "updatingPredictions": "Tipps aktualisieren",
+    "prizesWinners": "Preise & Gewinner",
+    "faq": "Häufige Fragen"
+  },
+  "prizes": {
+    "title": "Preiskatalog",
+    "subtitle": "Exklusive Preise für die besten Teilnehmenden der Kramp 2026 Challenge.",
+    "rewards": "Wettbewerbspreise",
+    "eligibility": "Teilnahmebedingungen & Hinweise",
+    "announcement": "Bekanntgabe der Gewinner"
+  }
+}

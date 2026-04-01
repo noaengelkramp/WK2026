@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Match, User, Customer, Team, Prediction, Event } from '../models';
+import { Match, User, Customer, Team, Prediction, Event, ScoringRule, BonusQuestion, Prize } from '../models';
 import { processMatchScoring } from '../services/scoringService';
 import footballApiService from '../services/footballApiService';
 import { Op } from 'sequelize';
@@ -1052,6 +1052,128 @@ export async function updateEvent(req: Request, res: Response) {
   } catch (error) {
     console.error('Error updating event:', error);
     res.status(500).json({ success: false, error: 'Failed to update event' });
+  }
+}
+
+export async function bootstrapEventDefaults(req: Request, res: Response) {
+  try {
+    if (!requirePlatformAdmin(req, res)) return;
+
+    const rawId = req.params.id;
+    const id = Array.isArray(rawId) ? rawId[0] : rawId;
+    const event = await Event.findByPk(id);
+
+    if (!event) {
+      res.status(404).json({ success: false, error: 'Event not found' });
+      return;
+    }
+
+    const scoringDefaults = [
+      { stage: 'group', pointsExactScore: 5, pointsCorrectWinner: 3, description: 'Group stage matches' },
+      { stage: 'round32', pointsExactScore: 7, pointsCorrectWinner: 5, description: 'Round of 32 knockout matches' },
+      { stage: 'round16', pointsExactScore: 10, pointsCorrectWinner: 7, description: 'Round of 16 knockout matches' },
+      { stage: 'quarter', pointsExactScore: 12, pointsCorrectWinner: 9, description: 'Quarter-final matches' },
+      { stage: 'semi', pointsExactScore: 15, pointsCorrectWinner: 12, description: 'Semi-final matches' },
+      { stage: 'third_place', pointsExactScore: 10, pointsCorrectWinner: 7, description: 'Third place playoff' },
+      { stage: 'final', pointsExactScore: 20, pointsCorrectWinner: 15, description: 'Final match' },
+    ] as const;
+
+    const bonusDefaults = [
+      {
+        questionType: 'champion',
+        questionTextEn: 'Who will win the World Cup 2026?',
+        questionTextNl: 'Wie wint het WK 2026?',
+        points: 25,
+      },
+      {
+        questionType: 'top_scorer',
+        questionTextEn: 'Who will be the top scorer of the tournament?',
+        questionTextNl: 'Wie wordt topscorer van het toernooi?',
+        points: 20,
+      },
+      {
+        questionType: 'total_goals',
+        questionTextEn: 'How many goals will be scored in total during the tournament?',
+        questionTextNl: 'Hoeveel doelpunten worden er in totaal gescoord tijdens het toernooi?',
+        points: 15,
+      },
+      {
+        questionType: 'highest_scoring_team',
+        questionTextEn: 'Which team will score the most goals in the tournament?',
+        questionTextNl: 'Welk team scoort de meeste doelpunten in het toernooi?',
+        points: 15,
+      },
+      {
+        questionType: 'most_yellow_cards',
+        questionTextEn: 'Which team will receive the most yellow cards?',
+        questionTextNl: 'Welk team krijgt de meeste gele kaarten?',
+        points: 15,
+      },
+    ] as const;
+
+    const prizeDefaults = [
+      {
+        rank: 1,
+        titleEn: '1st Place Prize',
+        titleNl: '1e Plaats Prijs',
+        descriptionEn: 'Premium top prize for the best predictor of this event.',
+        descriptionNl: 'Premium hoofdprijs voor de beste voorspeller van dit event.',
+      },
+      {
+        rank: 2,
+        titleEn: '2nd Place Prize',
+        titleNl: '2e Plaats Prijs',
+        descriptionEn: 'High-value runner-up prize for outstanding performance.',
+        descriptionNl: 'Hoogwaardige tweede prijs voor uitstekende prestaties.',
+      },
+      {
+        rank: 3,
+        titleEn: '3rd Place Prize',
+        titleNl: '3e Plaats Prijs',
+        descriptionEn: 'Third-place prize for a strong tournament prediction result.',
+        descriptionNl: 'Derde prijs voor een sterk voorspellingstoernooiresultaat.',
+      },
+    ] as const;
+
+    let scoringCreated = 0;
+    for (const rule of scoringDefaults) {
+      const [, created] = await ScoringRule.findOrCreate({
+        where: { eventId: event.id, stage: rule.stage },
+        defaults: { eventId: event.id, ...rule },
+      });
+      if (created) scoringCreated += 1;
+    }
+
+    let bonusCreated = 0;
+    for (const question of bonusDefaults) {
+      const [, created] = await BonusQuestion.findOrCreate({
+        where: { eventId: event.id, questionType: question.questionType },
+        defaults: { eventId: event.id, ...question },
+      });
+      if (created) bonusCreated += 1;
+    }
+
+    let prizesCreated = 0;
+    for (const prize of prizeDefaults) {
+      const [, created] = await Prize.findOrCreate({
+        where: { eventId: event.id, rank: prize.rank },
+        defaults: { eventId: event.id, ...prize },
+      });
+      if (created) prizesCreated += 1;
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Event defaults initialized for ${event.name}`,
+      created: {
+        scoringRules: scoringCreated,
+        bonusQuestions: bonusCreated,
+        prizes: prizesCreated,
+      },
+    });
+  } catch (error) {
+    console.error('Error bootstrapping event defaults:', error);
+    res.status(500).json({ success: false, error: 'Failed to bootstrap event defaults' });
   }
 }
 

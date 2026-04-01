@@ -35,6 +35,7 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { getEventCodeFromPath, withEventPrefix } from '../../utils/eventRouting';
+import { useTranslation } from 'react-i18next';
 
 const drawerWidth = 240;
 
@@ -50,10 +51,11 @@ const languages = [
 ];
 
 export default function Layout({ children }: LayoutProps) {
+  const { t, i18n } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [languageMenuAnchor, setLanguageMenuAnchor] = useState<null | HTMLElement>(null);
-  const [selectedLanguage, setSelectedLanguage] = useState('en');
+  const [selectedLanguage, setSelectedLanguage] = useState(i18n.language || 'en');
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
@@ -87,6 +89,7 @@ export default function Layout({ children }: LayoutProps) {
 
   const handleLanguageSelect = (langCode: string) => {
     setSelectedLanguage(langCode);
+    i18n.changeLanguage(langCode);
     handleLanguageMenuClose();
     handleUserMenuClose();
     // TODO: In production, this would call an API to update user preference
@@ -97,21 +100,21 @@ export default function Layout({ children }: LayoutProps) {
   const currentLanguage = languages.find(lang => lang.code === selectedLanguage) || languages[0];
 
   const menuItems = [
-    { text: 'Home', icon: <HomeIcon />, path: '/' },
-    { text: 'My Prediction', icon: <SoccerIcon />, path: '/my-prediction' },
-    { text: 'Standings', icon: <TrophyIcon />, path: '/standings/individual' },
-    { text: 'Matches', icon: <SoccerIcon />, path: '/matches' },
-    { text: 'Groups', icon: <PeopleIcon />, path: '/groups' },
-    { text: 'Statistics', icon: <ChartIcon />, path: '/statistics' },
-    { text: 'Prizes', icon: <PrizeIcon />, path: '/prizes' },
-    { text: 'Rules', icon: <RulesIcon />, path: '/rules' },
+    { text: t('nav.home'), icon: <HomeIcon />, path: '/' },
+    { text: t('nav.myPrediction'), icon: <SoccerIcon />, path: '/my-prediction' },
+    { text: t('nav.standings'), icon: <TrophyIcon />, path: '/standings/individual' },
+    { text: t('nav.matches'), icon: <SoccerIcon />, path: '/matches' },
+    { text: t('nav.groups'), icon: <PeopleIcon />, path: '/groups' },
+    { text: t('nav.statistics'), icon: <ChartIcon />, path: '/statistics' },
+    { text: t('nav.prizes'), icon: <PrizeIcon />, path: '/prizes' },
+    { text: t('nav.rules'), icon: <RulesIcon />, path: '/rules' },
   ];
 
   const eventCode = getEventCodeFromPath();
   const eventPath = (path: string) => withEventPrefix(eventCode, path);
 
   if (user.isAdmin || user.role === 'event_admin' || user.role === 'platform_admin') {
-    menuItems.push({ text: 'Admin Panel', icon: <AdminIcon />, path: '/admin' });
+    menuItems.push({ text: t('nav.admin'), icon: <AdminIcon />, path: '/admin' });
   }
 
   const handleLogout = () => {
@@ -211,7 +214,7 @@ export default function Layout({ children }: LayoutProps) {
             </MenuItem>
             <MenuItem onClick={handleLogout}>
               <LogoutIcon sx={{ mr: 1 }} />
-              Logout
+              {t('nav.logout')}
             </MenuItem>
           </Menu>
 
@@ -231,7 +234,7 @@ export default function Layout({ children }: LayoutProps) {
           >
             <MenuItem disabled sx={{ opacity: 1, fontWeight: 'bold' }}>
               <LanguageIcon sx={{ mr: 1 }} />
-              Select Language
+              {t('nav.selectLanguage')}
             </MenuItem>
             <Divider />
             {languages.map((lang) => (

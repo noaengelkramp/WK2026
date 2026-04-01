@@ -19,6 +19,9 @@ import AdminPanel from './pages/AdminPanel';
 import CountrySelectorPage from './pages/CountrySelectorPage';
 import { CircularProgress, Box } from '@mui/material';
 import { getEventCodeFromPath, isPublicEventRoute, stripEventPrefix, withEventPrefix } from './utils/eventRouting';
+import { useEffect } from 'react';
+import i18n, { normalizeLocaleToLanguage } from './i18n';
+import { eventService } from './services/eventService';
 
 // Protected routes component
 const ProtectedRoutes = () => {
@@ -69,6 +72,18 @@ const RootRoute = () => {
 };
 
 function App() {
+  useEffect(() => {
+    eventService.getCurrent()
+      .then((response) => {
+        if (response.mode === 'event' && response.event) {
+          i18n.changeLanguage(normalizeLocaleToLanguage(response.event.defaultLocale));
+        }
+      })
+      .catch(() => {
+        // no-op
+      });
+  }, []);
+
   const EventAppRouter = () => {
     const eventCode = getEventCodeFromPath();
     if (!eventCode) return <Navigate to="/" replace />;
