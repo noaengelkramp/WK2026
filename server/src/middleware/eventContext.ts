@@ -59,7 +59,20 @@ const getSubdomain = (host: string): string | null => {
 
 const getEventCodeFromPath = (path: string): string | null => {
   const parts = (path || '/').split('/').filter(Boolean);
-  return parts.length ? parts[0].toLowerCase() : null;
+  if (!parts.length) return null;
+
+  const first = parts[0].toLowerCase();
+  const reservedPrefixes = new Set([
+    'api',
+    'assets',
+    'static',
+    'favicon.ico',
+    'robots.txt',
+    'manifest.json',
+    'health',
+  ]);
+
+  return reservedPrefixes.has(first) ? null : first;
 };
 
 /**
