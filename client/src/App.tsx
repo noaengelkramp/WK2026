@@ -26,6 +26,7 @@ import { eventService } from './services/eventService';
 // Protected routes component
 const ProtectedRoutes = () => {
   const { isAuthenticated, isLoading } = useAuth();
+  const eventCode = getEventCodeFromPath();
 
   if (isLoading) {
     return (
@@ -36,23 +37,22 @@ const ProtectedRoutes = () => {
   }
 
   if (!isAuthenticated) {
-    const eventCode = getEventCodeFromPath();
     return <Navigate to={withEventPrefix(eventCode, '/login')} replace />;
   }
 
   return (
     <Layout>
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/my-prediction" element={<MyPredictionPage />} />
-        <Route path="/standings/individual" element={<StandingsIndividualPage />} />
-        <Route path="/matches" element={<MatchesPage />} />
-        <Route path="/groups" element={<GroupsPage />} />
-        <Route path="/statistics" element={<StatisticsPage />} />
-        <Route path="/prizes" element={<PrizesPage />} />
-        <Route path="/rules" element={<RulesPage />} />
-        <Route path="/admin" element={<AdminPanel />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route index element={<HomePage />} />
+        <Route path="my-prediction" element={<MyPredictionPage />} />
+        <Route path="standings/individual" element={<StandingsIndividualPage />} />
+        <Route path="matches" element={<MatchesPage />} />
+        <Route path="groups" element={<GroupsPage />} />
+        <Route path="statistics" element={<StatisticsPage />} />
+        <Route path="prizes" element={<PrizesPage />} />
+        <Route path="rules" element={<RulesPage />} />
+        <Route path="admin" element={<AdminPanel />} />
+        <Route path="*" element={<Navigate to={withEventPrefix(eventCode, '/')} replace />} />
       </Routes>
     </Layout>
   );
