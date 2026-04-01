@@ -23,7 +23,11 @@
     "forgotPassword": "Forgot your password?",
     "heroTag": "KRAMP PREDICTION CHALLENGE",
     "heroTitle": "World Cup 2026",
-    "heroDescription": "Join the official Kramp prediction game for our customers. Compete with other professionals across Europe, track your ranking, and win exclusive prizes."
+    "heroDescription": "Join the official Kramp prediction game for our customers. Compete with other professionals across Europe, track your ranking, and win exclusive prizes.",
+    "whyParticipate": "Why participate?",
+    "benefit1": "Win high-end tech and professional football gear",
+    "benefit2": "Real-time leaderboards and expert statistics",
+    "benefit3": "Easy prediction management for all 104 matches"
   },
   "register": {
     "title": "Register",
@@ -39,7 +43,32 @@
     "createAccount": "Create Account",
     "alreadyHaveAccount": "Already have an account? Sign in",
     "internalPolicy": "Internal event: @kramp.com email required",
-    "externalPolicy": "External event: max 5 accounts per customer number"
+    "externalPolicy": "External event: max 5 accounts per customer number",
+    "heroTag": "JOIN THE COMPETITION",
+    "heroTitle": "Create your account",
+    "heroDescription": "Get access to matches, standings, and exclusive prizes by joining the Kramp prediction challenge.",
+    "benefitsTitle": "Benefits",
+    "benefit1": "Track your progress across all 104 matches",
+    "benefit2": "Earn points and climb the global leaderboard",
+    "benefit3": "Compete for the department ranking",
+    "usernameHint": "This will be your public name on the leaderboards",
+    "passwordHint": "Minimum 8 characters",
+    "successTitle": "Registration Successful",
+    "successRedirect": "Redirecting to home page..."
+  },
+  "selector": {
+    "title": "Select Your Country Event",
+    "subtitle": "Each country has its own participant base, prizes, and leaderboard.",
+    "subdomain": "Subdomain",
+    "languages": "Languages",
+    "enter": "Enter {{eventName}}",
+    "noEvents": "No active country events found.",
+    "loadError": "Failed to load country list.",
+    "termsNotice": "By entering an event, you agree to the applicable terms and privacy notice.",
+    "privacy": "Privacy Policy",
+    "cookie": "Cookie Policy",
+    "privacyCookie": "Privacy & Cookie Policy",
+    "terms": "Terms of Service"
   },
   "home": {
     "title": "World Cup 2026 Prediction Challenge",

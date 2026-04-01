@@ -14,12 +14,13 @@ interface EventAttributes {
   allowedLocales: string[];
   timezone: string;
   isActive: boolean;
+  leaderboardLockedAt?: Date | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
 interface EventCreationAttributes
-  extends Optional<EventAttributes, 'id' | 'customerPrefix' | 'legalPrivacyUrl' | 'legalTermsUrl' | 'legalCookieUrl' | 'defaultLocale' | 'allowedLocales' | 'timezone' | 'isActive' | 'createdAt' | 'updatedAt'> {}
+  extends Optional<EventAttributes, 'id' | 'customerPrefix' | 'legalPrivacyUrl' | 'legalTermsUrl' | 'legalCookieUrl' | 'defaultLocale' | 'allowedLocales' | 'timezone' | 'isActive' | 'leaderboardLockedAt' | 'createdAt' | 'updatedAt'> {}
 
 class Event extends Model<EventAttributes, EventCreationAttributes> implements EventAttributes {
   public id!: string;
@@ -34,6 +35,7 @@ class Event extends Model<EventAttributes, EventCreationAttributes> implements E
   public allowedLocales!: string[];
   public timezone!: string;
   public isActive!: boolean;
+  public leaderboardLockedAt?: Date | null;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -98,6 +100,10 @@ Event.init(
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
+    },
+    leaderboardLockedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
     },
   },
   {

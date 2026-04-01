@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import PublicIcon from '@mui/icons-material/Public';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import type { EventContext } from '../services/eventService';
 import { eventService } from '../services/eventService';
 
@@ -73,6 +74,7 @@ const isPathRoutingMode = (): boolean => {
 };
 
 export default function CountrySelectorPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [events, setEvents] = useState<EventContext[]>([]);
   const [loading, setLoading] = useState(true);
@@ -100,16 +102,16 @@ export default function CountrySelectorPage() {
           return;
         }
 
-        setError(response.message || 'Unable to load country events.');
+        setError(response.message || t('selector.loadError'));
       } catch (err: any) {
-        setError(err?.response?.data?.message || 'Failed to load country list.');
+        setError(err?.response?.data?.message || t('selector.loadError'));
       } finally {
         setLoading(false);
       }
     };
 
     loadEvents();
-  }, []);
+  }, [t]);
 
   const sortedEvents = useMemo(
     () => [...events].sort((a, b) => a.name.localeCompare(b.name)),
@@ -127,10 +129,10 @@ export default function CountrySelectorPage() {
       <Box sx={{ textAlign: 'center', mb: 6 }}>
         <PublicIcon sx={{ fontSize: 42, color: '#9B1915', mb: 1 }} />
         <Typography variant="h3" sx={{ fontWeight: 700, mb: 1 }}>
-          Select Your Country Event
+          {t('selector.title')}
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Each country has its own participant base, prizes, and leaderboard.
+          {t('selector.subtitle')}
         </Typography>
       </Box>
 
@@ -141,7 +143,7 @@ export default function CountrySelectorPage() {
       ) : error ? (
         <Alert severity="error" variant="outlined">{error}</Alert>
       ) : sortedEvents.length === 0 ? (
-        <Alert severity="info" variant="outlined">No active country events found.</Alert>
+        <Alert severity="info" variant="outlined">{t('selector.noEvents')}</Alert>
       ) : (
         <Grid container spacing={3}>
           {sortedEvents.map((event) => (
@@ -152,10 +154,10 @@ export default function CountrySelectorPage() {
                     {event.name}
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    Subdomain: {event.subdomain}
+                    {t('selector.subdomain')}: {event.subdomain}
                   </Typography>
                   <Typography variant="body2" sx={{ mb: 2 }}>
-                    Languages: {event.allowedLocales.join(', ')}
+                    {t('selector.languages')}: {event.allowedLocales.join(', ')}
                   </Typography>
                   <Button
                     fullWidth
@@ -169,7 +171,7 @@ export default function CountrySelectorPage() {
                       }
                     }}
                   >
-                    Enter {event.name}
+                    {t('selector.enter', { eventName: event.name })}
                   </Button>
                 </CardContent>
               </Card>
@@ -189,7 +191,7 @@ export default function CountrySelectorPage() {
         }}
       >
         <Typography variant="body2" sx={{ mb: 1 }}>
-          By entering an event, you agree to the applicable terms and privacy notice.
+          {t('selector.termsNotice')}
         </Typography>
         <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
           {combinePrivacyAndCookie ? (
@@ -201,7 +203,7 @@ export default function CountrySelectorPage() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              Privacy & Cookie Policy
+              {t('selector.privacyCookie')}
             </Button>
           ) : (
             <>
@@ -213,7 +215,7 @@ export default function CountrySelectorPage() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Privacy Policy
+                {t('selector.privacy')}
               </Button>
               <Button
                 size="small"
@@ -223,7 +225,7 @@ export default function CountrySelectorPage() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Cookie Policy
+                {t('selector.cookie')}
               </Button>
             </>
           )}
@@ -235,7 +237,7 @@ export default function CountrySelectorPage() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Terms of Service
+            {t('selector.terms')}
           </Button>
         </Box>
       </Box>

@@ -16,6 +16,7 @@ declare global {
       legalPrivacyUrl?: string;
       legalTermsUrl?: string;
       legalCookieUrl?: string;
+      leaderboardLockedAt?: string | null;
     };
   }
 }
@@ -121,6 +122,7 @@ export const resolveEvent = async (req: Request, res: Response, next: NextFuncti
       legalPrivacyUrl: (event as any).legalPrivacyUrl || undefined,
       legalTermsUrl: (event as any).legalTermsUrl || undefined,
       legalCookieUrl: (event as any).legalCookieUrl || undefined,
+      leaderboardLockedAt: (event as any).leaderboardLockedAt || null,
     };
 
     next();

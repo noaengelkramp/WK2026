@@ -131,10 +131,10 @@ export default function RegisterPage() {
       <Card variant="outlined" sx={{ borderRadius: 0 }}>
         <CardContent sx={{ p: 4, textAlign: 'center' }}>
           <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold' }}>
-            Registration Successful
+            {t('register.successTitle')}
           </Typography>
           <Typography color="text.secondary">
-            Redirecting to home page...
+            {t('register.successRedirect')}
           </Typography>
         </CardContent>
       </Card>
@@ -163,24 +163,24 @@ export default function RegisterPage() {
             >
               <Box>
                 <Typography variant="overline" sx={{ color: '#9B1915', fontWeight: 700, letterSpacing: '0.1em' }}>
-                  JOIN THE COMPETITION
+                  {t('register.heroTag')}
                 </Typography>
                 <Typography variant="h3" sx={{ mt: 1, fontWeight: 700, color: '#212121' }}>
-                  Create your account
+                  {t('register.heroTitle')}
                 </Typography>
                 <Typography variant="body1" sx={{ mt: 2, color: '#666666', fontSize: '1.1rem' }}>
-                  Get access to matches, standings, and exclusive prizes by joining the Kramp prediction challenge.
+                  {t('register.heroDescription')}
                 </Typography>
 
                 <Box sx={{ mt: 6 }}>
                   <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 700, textTransform: 'uppercase', color: '#212121' }}>
-                    Benefits
+                    {t('register.benefitsTitle')}
                   </Typography>
                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                     {[
-                      'Track your progress across all 104 matches',
-                      'Earn points and climb the global leaderboard',
-                      'Compete for the department ranking',
+                      t('register.benefit1'),
+                      t('register.benefit2'),
+                      t('register.benefit3'),
                     ].map((item) => (
                       <Box key={item} sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                         <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#9B1915' }} />
@@ -253,7 +253,7 @@ export default function RegisterPage() {
                         value={formData.username}
                         onChange={handleChange}
                         required
-                        helperText="This will be your public name on the leaderboards"
+                        helperText={t('register.usernameHint')}
                         sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
                       />
                     </Grid>
@@ -296,7 +296,7 @@ export default function RegisterPage() {
                         value={formData.password}
                         onChange={handleChange}
                         required
-                        helperText="Minimum 8 characters"
+                        helperText={t('register.passwordHint')}
                         sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
                       />
                     </Grid>

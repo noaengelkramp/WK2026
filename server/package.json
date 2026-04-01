@@ -11,7 +11,10 @@
     "migrate:multievent": "ts-node src/utils/migrateMultiEvent.ts",
     "seed": "ts-node src/utils/seed.ts",
     "populate-matches": "ts-node src/utils/populateMatches.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run test:tiebreak && npm run test:bonus && npm run test:lock",
+    "test:tiebreak": "ts-node src/tests/tieBreak.test.ts",
+    "test:bonus": "ts-node src/tests/bonusScoring.test.ts",
+    "test:lock": "ts-node src/tests/leaderboardLock.test.ts"
   },
   "keywords": [
     "world-cup",

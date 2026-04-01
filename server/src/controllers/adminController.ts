@@ -5,6 +5,8 @@ import footballApiService from '../services/footballApiService';
 import { Op } from 'sequelize';
 import { MAX_ACCOUNTS_PER_CUSTOMER_PER_EVENT, resolveCustomerNumberForEvent } from '../utils/eventCustomerPolicy';
 import { getVisibleCustomerNumber } from '../utils/customerNumber';
+import { getIndividualStandings } from './standingsController';
+import { resolveBonusQuestionsForEvent } from '../services/bonusScoringService';
 
 const requirePlatformAdmin = (req: Request, res: Response): boolean => {
   if (req.user?.role !== 'platform_admin') {
@@ -78,6 +80,14 @@ export async function updateMatchResult(req: Request, res: Response) {
     // Process scoring for all predictions on this match
     try {
       await processMatchScoring(match.id);
+      const eventIds = await Prediction.findAll({
+        where: { matchId: match.id },
+        attributes: ['eventId'],
+        group: ['eventId'],
+      });
+      for (const item of eventIds as any[]) {
+        await resolveBonusQuestionsForEvent(item.eventId);
+      }
       console.log(`✅ Scoring processed for match ${match.id}`);
     } catch (scoringError) {
       console.error('Error processing scoring:', scoringError);
@@ -1040,6 +1050,7 @@ export async function updateEvent(req: Request, res: Response) {
       'legalTermsUrl',
       'legalCookieUrl',
       'isActive',
+      'leaderboardLockedAt',
     ];
 
     const updates: any = {};
@@ -1052,6 +1063,46 @@ export async function updateEvent(req: Request, res: Response) {
   } catch (error) {
     console.error('Error updating event:', error);
     res.status(500).json({ success: false, error: 'Failed to update event' });
+  }
+}
+
+export async function lockEventLeaderboard(req: Request, res: Response) {
+  try {
+    if (!requirePlatformAdmin(req, res)) return;
+
+    const rawId = req.params.id;
+    const id = Array.isArray(rawId) ? rawId[0] : rawId;
+    const event = await Event.findByPk(id);
+    if (!event) {
+      res.status(404).json({ success: false, error: 'Event not found' });
+      return;
+    }
+
+    await event.update({ leaderboardLockedAt: new Date() } as any);
+    res.status(200).json({ success: true, message: `Leaderboard locked for ${event.name}`, event });
+  } catch (error) {
+    console.error('Error locking leaderboard:', error);
+    res.status(500).json({ success: false, error: 'Failed to lock leaderboard' });
+  }
+}
+
+export async function unlockEventLeaderboard(req: Request, res: Response) {
+  try {
+    if (!requirePlatformAdmin(req, res)) return;
+
+    const rawId = req.params.id;
+    const id = Array.isArray(rawId) ? rawId[0] : rawId;
+    const event = await Event.findByPk(id);
+    if (!event) {
+      res.status(404).json({ success: false, error: 'Event not found' });
+      return;
+    }
+
+    await event.update({ leaderboardLockedAt: null } as any);
+    res.status(200).json({ success: true, message: `Leaderboard unlocked for ${event.name}`, event });
+  } catch (error) {
+    console.error('Error unlocking leaderboard:', error);
+    res.status(500).json({ success: false, error: 'Failed to unlock leaderboard' });
   }
 }
 
@@ -1562,5 +1613,107 @@ export async function deleteTeam(req: Request, res: Response) {
       success: false,
       error: 'Failed to delete team',
     });
+  }
+}
+
+export async function exportStandingsCsv(req: Request, res: Response) {
+  try {
+    const userRole = req.user?.role;
+    if (!userRole || (userRole !== 'event_admin' && userRole !== 'platform_admin')) {
+      res.status(403).json({ success: false, error: 'Admin access required' });
+      return;
+    }
+
+    const requestedEventId = req.query.eventId as string | undefined;
+    const isPlatformAdmin = userRole === 'platform_admin';
+    const eventId = isPlatformAdmin
+      ? requestedEventId || req.user?.eventId || req.event?.id
+      : req.user?.eventId;
+
+    if (!eventId) {
+      res.status(400).json({ success: false, error: 'Event context is required' });
+      return;
+    }
+
+    // Resolve event and inject request context for standings controller
+    const event = await Event.findByPk(eventId);
+    if (!event) {
+      res.status(404).json({ success: false, error: 'Event not found' });
+      return;
+    }
+
+    const reqAny = req as any;
+    reqAny.event = {
+      id: event.id,
+      code: (event as any).code,
+      name: (event as any).name,
+      subdomain: (event as any).subdomain,
+      defaultLocale: (event as any).defaultLocale,
+      allowedLocales: (event as any).allowedLocales,
+      customerPrefix: (event as any).customerPrefix,
+      legalPrivacyUrl: (event as any).legalPrivacyUrl || undefined,
+      legalTermsUrl: (event as any).legalTermsUrl || undefined,
+      legalCookieUrl: (event as any).legalCookieUrl || undefined,
+    };
+
+    // Request full standings list for CSV export
+    reqAny.query = {
+      ...(reqAny.query || {}),
+      limit: '10000',
+      offset: '0',
+    };
+
+    let standingsPayload: any = null;
+    const fakeRes: any = {
+      json: (payload: any) => {
+        standingsPayload = payload;
+        return payload;
+      },
+      status: (_status: number) => fakeRes,
+    };
+
+    await getIndividualStandings(req as any, fakeRes as any);
+
+    if (!standingsPayload?.standings) {
+      res.status(500).json({ success: false, error: 'Failed to generate standings export data' });
+      return;
+    }
+
+    const header = [
+      'rank',
+      'username',
+      'totalPoints',
+      'exactScores',
+      'correctWinners',
+      'bonusPoints',
+      'championPredictionCorrect',
+      'registrationDate',
+    ];
+
+    const escapeCsv = (value: any) => {
+      const text = value === undefined || value === null ? '' : String(value);
+      return `"${text.replace(/"/g, '""')}"`;
+    };
+
+    const lines = standingsPayload.standings.map((item: any) => [
+      item.rank,
+      item.username,
+      item.totalPoints,
+      item.exactScores,
+      item.correctWinners,
+      item.bonusPoints,
+      item.championPredictionCorrect ? 'true' : 'false',
+      item.registrationDate || '',
+    ].map(escapeCsv).join(','));
+
+    const csv = [header.join(','), ...lines].join('\n');
+
+    const fileName = `standings-${(event as any).code}-${new Date().toISOString().slice(0, 10)}.csv`;
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+    res.status(200).send(csv);
+  } catch (error) {
+    console.error('Error exporting standings CSV:', error);
+    res.status(500).json({ success: false, error: 'Failed to export standings CSV' });
   }
 }

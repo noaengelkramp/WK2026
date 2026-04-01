@@ -8,6 +8,7 @@ import { testConnection, syncDatabase } from './config/database';
 import { initRedis, closeRedis, isRedisAvailable } from './config/redis';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { resolveEvent } from './middleware/eventContext';
+import { startLeaderboardSchedulers } from './services/leaderboardScheduler';
 
 // Import models to ensure they're registered with Sequelize before sync
 import './models';
@@ -178,6 +179,11 @@ const initializeConnections = async () => {
     }
 
     console.log('✅ Database and connections initialized');
+
+    // Start background schedulers only on long-running server process
+    if (!isNetlify) {
+      startLeaderboardSchedulers();
+    }
   } catch (error) {
     console.error('❌ Failed to initialize connections:', error);
     throw error;

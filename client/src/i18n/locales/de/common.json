@@ -23,7 +23,11 @@
     "forgotPassword": "Passwort vergessen?",
     "heroTag": "KRAMP TIPPSPIEL",
     "heroTitle": "Weltmeisterschaft 2026",
-    "heroDescription": "Nimm am offiziellen Kramp-Tippspiel teil. Miss dich mit anderen Teilnehmenden in Europa, verfolge deine Platzierung und gewinne exklusive Preise."
+    "heroDescription": "Nimm am offiziellen Kramp-Tippspiel teil. Miss dich mit anderen Teilnehmenden in Europa, verfolge deine Platzierung und gewinne exklusive Preise.",
+    "whyParticipate": "Warum teilnehmen?",
+    "benefit1": "Gewinne hochwertige Technik und professionelles Fußball-Equipment",
+    "benefit2": "Echtzeit-Ranglisten und Expertenstatistiken",
+    "benefit3": "Einfache Tippverwaltung für alle 104 Spiele"
   },
   "register": {
     "title": "Registrieren",
@@ -39,7 +43,32 @@
     "createAccount": "Konto erstellen",
     "alreadyHaveAccount": "Du hast bereits ein Konto? Anmelden",
     "internalPolicy": "Internes Event: @kramp.com E-Mail erforderlich",
-    "externalPolicy": "Externes Event: max. 5 Konten pro Kundennummer"
+    "externalPolicy": "Externes Event: max. 5 Konten pro Kundennummer",
+    "heroTag": "JETZT MITMACHEN",
+    "heroTitle": "Konto erstellen",
+    "heroDescription": "Erhalte Zugriff auf Spiele, Ranglisten und exklusive Preise durch deine Teilnahme an der Kramp Prediction Challenge.",
+    "benefitsTitle": "Vorteile",
+    "benefit1": "Verfolge deinen Fortschritt über alle 104 Spiele",
+    "benefit2": "Sammle Punkte und klettere in der Rangliste",
+    "benefit3": "Wetteifere um die Bereichswertung",
+    "usernameHint": "Dieser Name wird öffentlich in den Ranglisten angezeigt",
+    "passwordHint": "Mindestens 8 Zeichen",
+    "successTitle": "Registrierung erfolgreich",
+    "successRedirect": "Weiterleitung zur Startseite..."
+  },
+  "selector": {
+    "title": "Wähle dein Länderevent",
+    "subtitle": "Jedes Land hat eine eigene Teilnehmerbasis, Preise und Rangliste.",
+    "subdomain": "Subdomain",
+    "languages": "Sprachen",
+    "enter": "{{eventName}} öffnen",
+    "noEvents": "Keine aktiven Länderevents gefunden.",
+    "loadError": "Länderliste konnte nicht geladen werden.",
+    "termsNotice": "Mit dem Betreten eines Events stimmst du den geltenden Bedingungen und Datenschutzbestimmungen zu.",
+    "privacy": "Datenschutz",
+    "cookie": "Cookie-Richtlinie",
+    "privacyCookie": "Datenschutz & Cookies",
+    "terms": "Nutzungsbedingungen"
   },
   "home": {
     "title": "WM 2026 Tippspiel",

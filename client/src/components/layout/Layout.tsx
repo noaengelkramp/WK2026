@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   AppBar,
   Box,
@@ -36,6 +36,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { getEventCodeFromPath, withEventPrefix } from '../../utils/eventRouting';
 import { useTranslation } from 'react-i18next';
+import { eventService } from '../../services/eventService';
+import { buildLocaleOptions, type LocaleOption } from '../../utils/locales';
+import { normalizeLocaleToLanguage } from '../../i18n';
 
 const drawerWidth = 240;
 
@@ -43,24 +46,46 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
-// Available languages (European languages for World Cup 2026)
-const languages = [
-  { code: 'en', name: 'English' },
-  { code: 'nl', name: 'Nederlands' },
-  { code: 'de', name: 'Deutsch' },
-];
-
 export default function Layout({ children }: LayoutProps) {
   const { t, i18n } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [languageMenuAnchor, setLanguageMenuAnchor] = useState<null | HTMLElement>(null);
   const [selectedLanguage, setSelectedLanguage] = useState(i18n.language || 'en');
+  const [languageOptions, setLanguageOptions] = useState<LocaleOption[]>([
+    { code: 'en', languageCode: 'en', label: 'English', flag: '🇬🇧' },
+  ]);
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { user, logout } = useAuth();
+
+  useEffect(() => {
+    eventService.getCurrent()
+      .then((response) => {
+        if (response.mode === 'event' && response.event) {
+          const options = buildLocaleOptions(response.event.allowedLocales);
+          setLanguageOptions(options);
+
+          const preferredLocale = user?.languagePreference;
+          const preferredOption = preferredLocale
+            ? options.find((option) => option.code.toLowerCase() === preferredLocale.toLowerCase())
+            : undefined;
+
+          const fallbackOption = options.find(
+            (option) => option.code.toLowerCase() === response.event?.defaultLocale.toLowerCase()
+          ) || options[0];
+
+          const nextLanguage = normalizeLocaleToLanguage((preferredOption || fallbackOption)?.code);
+          setSelectedLanguage(nextLanguage);
+          i18n.changeLanguage(nextLanguage);
+        }
+      })
+      .catch(() => {
+        // Keep default language options
+      });
+  }, [i18n, user?.languagePreference]);
 
   if (!user) {
     return null; // Or redirect to login
@@ -97,7 +122,7 @@ export default function Layout({ children }: LayoutProps) {
     console.log(`Language changed to: ${langCode}`);
   };
 
-  const currentLanguage = languages.find(lang => lang.code === selectedLanguage) || languages[0];
+  const currentLanguage = languageOptions.find(lang => lang.languageCode === selectedLanguage) || languageOptions[0];
 
   const menuItems = [
     { text: t('nav.home'), icon: <HomeIcon />, path: '/' },
@@ -209,7 +234,8 @@ export default function Layout({ children }: LayoutProps) {
             <MenuItem onClick={handleLanguageMenuOpen}>
               <LanguageIcon sx={{ mr: 1 }} />
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <span>{currentLanguage.name}</span>
+                <span>{currentLanguage?.flag}</span>
+                <span>{currentLanguage?.label}</span>
               </Box>
             </MenuItem>
             <MenuItem onClick={handleLogout}>
@@ -237,11 +263,11 @@ export default function Layout({ children }: LayoutProps) {
               {t('nav.selectLanguage')}
             </MenuItem>
             <Divider />
-            {languages.map((lang) => (
+            {languageOptions.map((lang) => (
               <MenuItem
                 key={lang.code}
-                onClick={() => handleLanguageSelect(lang.code)}
-                selected={lang.code === selectedLanguage}
+                onClick={() => handleLanguageSelect(lang.languageCode)}
+                selected={lang.languageCode === selectedLanguage}
                 sx={{
                   '&.Mui-selected': {
                     backgroundColor: '#F5E5E4',
@@ -249,7 +275,8 @@ export default function Layout({ children }: LayoutProps) {
                 }}
               >
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, width: '100%' }}>
-                  <Typography>{lang.name}</Typography>
+                  <Typography>{lang.flag}</Typography>
+                  <Typography>{lang.label}</Typography>
                 </Box>
               </MenuItem>
             ))}

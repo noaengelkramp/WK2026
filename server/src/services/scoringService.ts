@@ -1,4 +1,5 @@
 import { Match, Prediction, ScoringRule, UserStatistics, User } from '../models';
+import { isLeaderboardLocked } from './leaderboardLockService';
 
 /**
  * Calculate points for a single prediction based on match result
@@ -123,6 +124,11 @@ async function updateUserStatistics(
   isCorrectScore: boolean,
   isCorrectWinner: boolean
 ): Promise<void> {
+  if (await isLeaderboardLocked(eventId)) {
+    console.log(`🔒 Skipping statistics update for locked event ${eventId}`);
+    return;
+  }
+
   const stats = await UserStatistics.findOne({
     where: { userId, eventId },
   });

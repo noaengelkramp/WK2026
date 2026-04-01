@@ -16,9 +16,12 @@ const statements: string[] = [
     allowed_locales JSONB NOT NULL DEFAULT '["en"]'::jsonb,
     timezone VARCHAR(100) NOT NULL DEFAULT 'Europe/Amsterdam',
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    leaderboard_locked_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
   );`,
+
+  `ALTER TABLE events ADD COLUMN IF NOT EXISTS leaderboard_locked_at TIMESTAMP WITH TIME ZONE;`,
 
   `INSERT INTO events (
       id, code, name, subdomain, customer_prefix, default_locale, allowed_locales, timezone, is_active

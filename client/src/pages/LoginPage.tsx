@@ -112,13 +112,13 @@ export default function LoginPage() {
 
                 <Box sx={{ mt: 6 }}>
                   <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 700, textTransform: 'uppercase', color: '#212121' }}>
-                    Why participate?
+                    {t('login.whyParticipate')}
                   </Typography>
                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                     {[
-                      'Win high-end tech and professional football gear',
-                      'Real-time leaderboards and expert statistics',
-                      'Easy prediction management for all 104 matches',
+                      t('login.benefit1'),
+                      t('login.benefit2'),
+                      t('login.benefit3'),
                     ].map((item) => (
                       <Box key={item} sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                         <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#9B1915' }} />

@@ -27,6 +27,8 @@ import { adminService } from '../../services/adminService';
 import type { CreateEventData, Event } from '../../services/adminService';
 import BuildIcon from '@mui/icons-material/Build';
 import EditIcon from '@mui/icons-material/Edit';
+import LockIcon from '@mui/icons-material/Lock';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
 
 const defaultEventForm: CreateEventData = {
   code: '',
@@ -50,6 +52,7 @@ export default function EventManagement() {
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [formData, setFormData] = useState<CreateEventData>(defaultEventForm);
   const [bootstrappingEventId, setBootstrappingEventId] = useState<string | null>(null);
+  const [lockUpdatingEventId, setLockUpdatingEventId] = useState<string | null>(null);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
 
   const loadEvents = async () => {
@@ -142,6 +145,25 @@ export default function EventManagement() {
     }
   };
 
+  const handleToggleLeaderboardLock = async (event: Event) => {
+    try {
+      setError(null);
+      setLockUpdatingEventId(event.id);
+      if (event.leaderboardLockedAt) {
+        await adminService.unlockEventLeaderboard(event.id);
+        setSuccess(`Leaderboard unlocked for ${event.name}`);
+      } else {
+        await adminService.lockEventLeaderboard(event.id);
+        setSuccess(`Leaderboard locked for ${event.name}`);
+      }
+      await loadEvents();
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Failed to update leaderboard lock');
+    } finally {
+      setLockUpdatingEventId(null);
+    }
+  };
+
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
@@ -166,6 +188,7 @@ export default function EventManagement() {
               <TableCell>Customer Prefix</TableCell>
               <TableCell>Locales</TableCell>
               <TableCell>Status</TableCell>
+              <TableCell>Leaderboard</TableCell>
               <TableCell>Edit</TableCell>
               <TableCell>Bootstrap</TableCell>
             </TableRow>
@@ -180,6 +203,25 @@ export default function EventManagement() {
                 <TableCell>{event.allowedLocales.join(', ')}</TableCell>
                 <TableCell>
                   <Chip label={event.isActive ? 'Active' : 'Inactive'} color={event.isActive ? 'success' : 'default'} size="small" />
+                </TableCell>
+                <TableCell>
+                  <Tooltip title={event.leaderboardLockedAt ? 'Unlock leaderboard' : 'Lock leaderboard'}>
+                    <span>
+                      <IconButton
+                        color={event.leaderboardLockedAt ? 'error' : 'default'}
+                        onClick={() => handleToggleLeaderboardLock(event)}
+                        disabled={lockUpdatingEventId === event.id}
+                      >
+                        {lockUpdatingEventId === event.id ? (
+                          <CircularProgress size={20} />
+                        ) : event.leaderboardLockedAt ? (
+                          <LockIcon fontSize="small" />
+                        ) : (
+                          <LockOpenIcon fontSize="small" />
+                        )}
+                      </IconButton>
+                    </span>
+                  </Tooltip>
                 </TableCell>
                 <TableCell>
                   <Tooltip title="Edit event configuration">

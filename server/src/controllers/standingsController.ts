@@ -1,8 +1,38 @@
 import { Request, Response } from 'express';
-import { UserStatistics, User, Customer } from '../models';
+import { UserStatistics, User, Customer, BonusAnswer, BonusQuestion } from '../models';
 import { AppError } from '../middleware/errorHandler';
 import { Op } from 'sequelize';
 import { getCache, setCache, CACHE_TTL, CACHE_KEYS } from '../config/redis';
+import { sortByTieBreak } from '../utils/tieBreak';
+
+const attachChampionTieBreak = async (eventId: string, rows: any[]) => {
+  if (!rows.length) return [];
+
+  const championQuestion = await BonusQuestion.findOne({
+    where: { eventId, questionType: 'champion' },
+    attributes: ['id'],
+  });
+
+  if (!championQuestion) {
+    return rows.map((row) => ({ ...row, championPredictionCorrect: false }));
+  }
+
+  const answers = await BonusAnswer.findAll({
+    where: {
+      eventId,
+      bonusQuestionId: championQuestion.id,
+      isCorrect: true,
+    },
+    attributes: ['userId'],
+  });
+
+  const usersWithCorrectChampion = new Set(answers.map((answer) => answer.userId));
+
+  return rows.map((row) => ({
+    ...row,
+    championPredictionCorrect: usersWithCorrectChampion.has(row.userId),
+  }));
+};
 
 /**
  * Get individual user standings (leaderboard) with anonymization
@@ -86,6 +116,7 @@ export const getIndividualStandings = async (req: Request, res: Response) => {
         companyName: statJSON.user?.customer?.companyName,
         firstName: statJSON.user?.firstName,
         lastName: statJSON.user?.lastName,
+        registrationDate: statJSON.user?.createdAt,
         totalPoints: stat.totalPoints,
         exactScores: stat.exactScores,
         correctWinners: stat.correctWinners,
@@ -94,8 +125,14 @@ export const getIndividualStandings = async (req: Request, res: Response) => {
       };
     });
 
+    const withChampionTieBreak = await attachChampionTieBreak(currentEventId, standingsWithRank);
+    const sortedWithTieBreak = sortByTieBreak(withChampionTieBreak).map((standing, index) => ({
+      ...standing,
+      rank: offsetNum + index + 1,
+    }));
+
     const response = {
-      standings: standingsWithRank,
+      standings: sortedWithTieBreak,
       total,
       limit: limitNum,
       offset: offsetNum,
@@ -105,7 +142,7 @@ export const getIndividualStandings = async (req: Request, res: Response) => {
     await setCache(cacheKey, response, CACHE_TTL.LEADERBOARD);
 
     // Apply anonymization based on current user
-    const anonymized = anonymizeStandings(standingsWithRank, currentUserId);
+    const anonymized = anonymizeStandings(sortedWithTieBreak, currentUserId);
 
     res.json({ ...response, standings: anonymized });
   } catch (error) {
@@ -137,6 +174,7 @@ function anonymizeStandings(standings: any[], currentUserId?: string) {
         correctWinners: standing.correctWinners,
         predictionsMade: standing.predictionsMade,
         bonusPoints: standing.bonusPoints,
+        championPredictionCorrect: standing.championPredictionCorrect,
         isCurrentUser: false,
       };
     }
@@ -192,15 +230,30 @@ export const getTopUsers = async (req: Request, res: Response) => {
       limit: limitNum,
     });
 
-    // Show usernames for homepage - remove customerNumber
-    const topUsersAnonymized = topUsers.map((stat, index) => {
+    const topUsersRaw = topUsers.map((stat) => {
       const statJSON: any = stat.toJSON();
       return {
-        rank: index + 1,
+        userId: statJSON.user?.id,
         username: statJSON.user?.username,
+        registrationDate: statJSON.user?.createdAt,
         totalPoints: stat.totalPoints,
         exactScores: stat.exactScores,
         correctWinners: stat.correctWinners,
+      };
+    });
+
+    const topUsersWithChampion = await attachChampionTieBreak(currentEventId, topUsersRaw);
+    const topUsersSorted = sortByTieBreak(topUsersWithChampion);
+
+    // Show usernames for homepage - remove customerNumber
+    const topUsersAnonymized = topUsersSorted.map((stat, index) => {
+      return {
+        rank: index + 1,
+        username: stat.username,
+        totalPoints: stat.totalPoints,
+        exactScores: stat.exactScores,
+        correctWinners: stat.correctWinners,
+        championPredictionCorrect: stat.championPredictionCorrect,
       };
     });
 
@@ -301,15 +354,43 @@ export const getMyRanking = async (req: Request, res: Response) => {
       limit: 3,
     });
 
-    // Anonymize context users - use username instead of customerNumber
-    const anonymizeContext = (users: any[]) => {
-      return users.map((stat) => {
+    const [contextAboveWithChampion, contextBelowWithChampion] = await Promise.all([
+      attachChampionTieBreak(eventId, contextAbove.map((stat) => {
         const statJSON: any = stat.toJSON();
         return {
+          userId: statJSON.user?.id,
           username: statJSON.user?.username,
+          registrationDate: statJSON.user?.createdAt,
           totalPoints: stat.totalPoints,
           exactScores: stat.exactScores,
           correctWinners: stat.correctWinners,
+        };
+      })),
+      attachChampionTieBreak(eventId, contextBelow.map((stat) => {
+        const statJSON: any = stat.toJSON();
+        return {
+          userId: statJSON.user?.id,
+          username: statJSON.user?.username,
+          registrationDate: statJSON.user?.createdAt,
+          totalPoints: stat.totalPoints,
+          exactScores: stat.exactScores,
+          correctWinners: stat.correctWinners,
+        };
+      })),
+    ]);
+
+    const sortedAbove = sortByTieBreak(contextAboveWithChampion).slice(0, 3);
+    const sortedBelow = sortByTieBreak(contextBelowWithChampion).slice(0, 3);
+
+    // Anonymize context users - use username instead of customerNumber
+    const anonymizeContext = (users: any[]) => {
+      return users.map((stat) => {
+        return {
+          username: stat.username,
+          totalPoints: stat.totalPoints,
+          exactScores: stat.exactScores,
+          correctWinners: stat.correctWinners,
+          championPredictionCorrect: stat.championPredictionCorrect,
         };
       });
     };
@@ -318,8 +399,8 @@ export const getMyRanking = async (req: Request, res: Response) => {
       rank,
       totalParticipants,
       userStats,
-      contextAbove: anonymizeContext(contextAbove),
-      contextBelow: anonymizeContext(contextBelow),
+      contextAbove: anonymizeContext(sortedAbove),
+      contextBelow: anonymizeContext(sortedBelow),
     });
   } catch (error) {
     if (error instanceof AppError) {

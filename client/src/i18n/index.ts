@@ -6,6 +6,9 @@ import de from './locales/de/common.json';
 export const normalizeLocaleToLanguage = (locale?: string): 'en' | 'de' => {
   const value = (locale || '').toLowerCase();
   if (value.startsWith('de')) return 'de';
+  if (value.startsWith('en')) return 'en';
+
+  // Not translated yet in app; fallback to English until locale packs are added.
   return 'en';
 };
 

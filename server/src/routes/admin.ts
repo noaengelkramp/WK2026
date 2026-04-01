@@ -26,6 +26,9 @@ import {
   createEvent,
   updateEvent,
   bootstrapEventDefaults,
+  exportStandingsCsv,
+  lockEventLeaderboard,
+  unlockEventLeaderboard,
 } from '../controllers/adminController';
 import { authenticate, requireAdmin } from '../middleware/auth';
 import { populateMatchesFromApi } from '../utils/populateMatches';
@@ -123,6 +126,15 @@ router.put('/events/:id', updateEvent);
 
 // POST /api/admin/events/:id/bootstrap - Initialize event defaults
 router.post('/events/:id/bootstrap', bootstrapEventDefaults);
+
+// POST /api/admin/events/:id/leaderboard-lock - Lock leaderboard updates
+router.post('/events/:id/leaderboard-lock', lockEventLeaderboard);
+
+// DELETE /api/admin/events/:id/leaderboard-lock - Unlock leaderboard updates
+router.delete('/events/:id/leaderboard-lock', unlockEventLeaderboard);
+
+// GET /api/admin/standings/export?eventId=<id> - Export standings CSV (admin only)
+router.get('/standings/export', exportStandingsCsv);
 
 // ==================== TESTING & HISTORIC DATA ====================
 /**

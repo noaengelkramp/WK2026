@@ -181,6 +181,7 @@ export interface Event {
   legalTermsUrl?: string;
   legalCookieUrl?: string;
   isActive: boolean;
+  leaderboardLockedAt?: string | null;
 }
 
 export interface CreateEventData {
@@ -310,5 +311,15 @@ export const adminService = {
         prizes: number;
       };
     };
+  },
+
+  async lockEventLeaderboard(id: string) {
+    const response = await api.post(`/admin/events/${id}/leaderboard-lock`);
+    return response.data;
+  },
+
+  async unlockEventLeaderboard(id: string) {
+    const response = await api.delete(`/admin/events/${id}/leaderboard-lock`);
+    return response.data;
   },
 };
