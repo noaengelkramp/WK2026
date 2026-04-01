@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { theme } from './utils/theme';
@@ -26,7 +26,8 @@ import { eventService } from './services/eventService';
 // Protected routes component
 const ProtectedRoutes = () => {
   const { isAuthenticated, isLoading } = useAuth();
-  const eventCode = getEventCodeFromPath();
+  const location = useLocation();
+  const eventCode = getEventCodeFromPath(location.pathname);
 
   if (isLoading) {
     return (
@@ -64,7 +65,9 @@ const isRootSelectorDomain = () => {
 };
 
 const RootRoute = () => {
-  if (isRootSelectorDomain() || window.location.pathname === '/') {
+  const location = useLocation();
+
+  if (isRootSelectorDomain() && location.pathname === '/') {
     return <CountrySelectorPage />;
   }
 
@@ -85,10 +88,12 @@ function App() {
   }, []);
 
   const EventAppRouter = () => {
-    const eventCode = getEventCodeFromPath();
+    const location = useLocation();
+    const params = useParams<{ eventCode?: string }>();
+    const eventCode = params.eventCode || getEventCodeFromPath(location.pathname);
     if (!eventCode) return <Navigate to="/" replace />;
 
-    const appPath = stripEventPrefix(window.location.pathname);
+    const appPath = stripEventPrefix(location.pathname);
     if (isPublicEventRoute(appPath)) {
       if (appPath === '/login') return <LoginPage />;
       if (appPath === '/register') return <RegisterPage />;

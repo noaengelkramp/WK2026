@@ -2,6 +2,8 @@ import axios, { AxiosError } from 'axios';
 import type { AxiosInstance } from 'axios';
 import { getEventCodeFromPath, withEventPrefix } from '../utils/eventRouting';
 
+const API_PATH_REGEX = /^\/api(?:\/|$)/;
+
 // API base URL - use environment variable or default to relative path
 // In production (Netlify), uses relative path which gets redirected to function via netlify.toml
 // In development, Vite proxy handles the redirect to localhost:5000
@@ -25,7 +27,10 @@ apiClient.interceptors.request.use(
     }
 
     const eventCode = getEventCodeFromPath();
-    if (eventCode) {
+    const requestUrl = `${config.url || ''}`;
+    const shouldAttachEventHeader = API_PATH_REGEX.test(requestUrl) || requestUrl.startsWith('http');
+
+    if (eventCode && shouldAttachEventHeader) {
       config.headers['x-event-code'] = eventCode;
     }
 
