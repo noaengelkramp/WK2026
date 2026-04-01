@@ -11,6 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 import PublicIcon from '@mui/icons-material/Public';
+import { useNavigate } from 'react-router-dom';
 import type { EventContext } from '../services/eventService';
 import { eventService } from '../services/eventService';
 
@@ -67,7 +68,12 @@ const buildTargetUrl = (subdomain: string): string => {
   return `${protocol}//${subdomain}.${normalizedHost}`;
 };
 
+const isPathRoutingMode = (): boolean => {
+  return (import.meta.env.VITE_EVENT_ROUTING_MODE || 'path').toLowerCase() === 'path';
+};
+
 export default function CountrySelectorPage() {
+  const navigate = useNavigate();
   const [events, setEvents] = useState<EventContext[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -80,8 +86,12 @@ export default function CountrySelectorPage() {
         const response = await eventService.getCurrent();
 
         if (response.mode === 'event' && response.event) {
-          const destination = buildTargetUrl(response.event.subdomain);
-          window.location.href = destination;
+          if (isPathRoutingMode()) {
+            navigate(`/${response.event.subdomain}`);
+          } else {
+            const destination = buildTargetUrl(response.event.subdomain);
+            window.location.href = destination;
+          }
           return;
         }
 
@@ -150,9 +160,13 @@ export default function CountrySelectorPage() {
                   <Button
                     fullWidth
                     variant="contained"
-                    onClick={() => {
+                  onClick={() => {
                       localStorage.setItem('preferredEventSubdomain', event.subdomain);
-                      window.location.href = buildTargetUrl(event.subdomain);
+                      if (isPathRoutingMode()) {
+                        navigate(`/${event.subdomain}`);
+                      } else {
+                        window.location.href = buildTargetUrl(event.subdomain);
+                      }
                     }}
                   >
                     Enter {event.name}
