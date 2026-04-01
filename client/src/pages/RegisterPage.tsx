@@ -36,10 +36,13 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [isInternalEvent, setIsInternalEvent] = useState(false);
+  const [isInternalEvent, setIsInternalEvent] = useState(eventCode === 'internal');
   const [eventName, setEventName] = useState<string>('');
 
   useEffect(() => {
+    // Fast path: infer from URL immediately to avoid wrong form flash
+    setIsInternalEvent(eventCode === 'internal');
+
     eventService.getCurrent()
       .then((response) => {
         if (response.mode === 'event' && response.event) {
