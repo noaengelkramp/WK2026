@@ -110,10 +110,10 @@ function App() {
             <Route path="/:eventCode/*" element={<EventAppRouter />} />
 
             {/* Backward compatibility for non-prefixed routes */}
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/verify-email" element={<VerifyEmailPage />} />
-            <Route path="/*" element={<ProtectedRoutes />} />
+            <Route path="/login" element={<Navigate to="/internal/login" replace />} />
+            <Route path="/register" element={<Navigate to="/internal/register" replace />} />
+            <Route path="/verify-email" element={<Navigate to="/internal/verify-email" replace />} />
+            <Route path="/*" element={<Navigate to="/" replace />} />
           </Routes>
         </Router>
       </AuthProvider>

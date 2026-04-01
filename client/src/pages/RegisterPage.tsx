@@ -13,7 +13,7 @@ import {
   CircularProgress,
   Grid,
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { getErrorMessage } from '../services/api';
@@ -24,8 +24,9 @@ import { withEventPrefix, getEventCodeFromPath } from '../utils/eventRouting';
 export default function RegisterPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const params = useParams<{ eventCode?: string }>();
   const { register } = useAuth();
-  const eventCode = getEventCodeFromPath();
+  const eventCode = params.eventCode || getEventCodeFromPath() || localStorage.getItem('preferredEventSubdomain') || null;
   const [formData, setFormData] = useState({
     username: '',
     email: '',

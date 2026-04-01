@@ -13,7 +13,7 @@ import {
   Grid,
   Divider,
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { getErrorMessage } from '../services/api';
@@ -25,12 +25,13 @@ import { useEffect } from 'react';
 export default function LoginPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const params = useParams<{ eventCode?: string }>();
   const { login } = useAuth();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const eventCode = getEventCodeFromPath();
+  const eventCode = params.eventCode || getEventCodeFromPath() || localStorage.getItem('preferredEventSubdomain') || null;
 
   useEffect(() => {
     eventService.getCurrent()
