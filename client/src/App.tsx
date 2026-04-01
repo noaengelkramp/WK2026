@@ -18,6 +18,7 @@ import StatisticsPage from './pages/StatisticsPage';
 import AdminPanel from './pages/AdminPanel';
 import CountrySelectorPage from './pages/CountrySelectorPage';
 import { CircularProgress, Box } from '@mui/material';
+import { getEventCodeFromPath, isPublicEventRoute, stripEventPrefix, withEventPrefix } from './utils/eventRouting';
 
 // Protected routes component
 const ProtectedRoutes = () => {
@@ -32,7 +33,8 @@ const ProtectedRoutes = () => {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    const eventCode = getEventCodeFromPath();
+    return <Navigate to={withEventPrefix(eventCode, '/login')} replace />;
   }
 
   return (
@@ -59,7 +61,7 @@ const isRootSelectorDomain = () => {
 };
 
 const RootRoute = () => {
-  if (isRootSelectorDomain()) {
+  if (isRootSelectorDomain() || window.location.pathname === '/') {
     return <CountrySelectorPage />;
   }
 
@@ -67,6 +69,20 @@ const RootRoute = () => {
 };
 
 function App() {
+  const EventAppRouter = () => {
+    const eventCode = getEventCodeFromPath();
+    if (!eventCode) return <Navigate to="/" replace />;
+
+    const appPath = stripEventPrefix(window.location.pathname);
+    if (isPublicEventRoute(appPath)) {
+      if (appPath === '/login') return <LoginPage />;
+      if (appPath === '/register') return <RegisterPage />;
+      if (appPath === '/verify-email') return <VerifyEmailPage />;
+    }
+
+    return <ProtectedRoutes />;
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -75,12 +91,13 @@ function App() {
           <Routes>
             <Route path="/" element={<RootRoute />} />
 
-            {/* Public routes */}
+            {/* Event-scoped routes (path-based) */}
+            <Route path="/:eventCode/*" element={<EventAppRouter />} />
+
+            {/* Backward compatibility for non-prefixed routes */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/verify-email" element={<VerifyEmailPage />} />
-
-            {/* Protected routes with layout */}
             <Route path="/*" element={<ProtectedRoutes />} />
           </Routes>
         </Router>

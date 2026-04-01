@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import type { User } from '../types';
 import { authService } from '../services/authService';
 import type { LoginCredentials, RegisterData } from '../services/authService';
+import { getEventCodeFromPath } from '../utils/eventRouting';
 
 interface AuthContextType {
   user: User | null;
@@ -70,7 +71,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     const host = window.location.hostname.toLowerCase();
-    const isRootSelector = host === 'poules.kramp.com' || host === 'www.poules.kramp.com';
+    const isRootSelectorHost = host === 'poules.kramp.com' || host === 'www.poules.kramp.com';
+    const hasEventPath = !!getEventCodeFromPath(window.location.pathname);
+    const isRootSelector = isRootSelectorHost && !hasEventPath;
     if (isRootSelector && user) {
       logout();
     }

@@ -34,6 +34,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { getEventCodeFromPath, withEventPrefix } from '../../utils/eventRouting';
 
 const drawerWidth = 240;
 
@@ -106,6 +107,9 @@ export default function Layout({ children }: LayoutProps) {
     { text: 'Rules', icon: <RulesIcon />, path: '/rules' },
   ];
 
+  const eventCode = getEventCodeFromPath();
+  const eventPath = (path: string) => withEventPrefix(eventCode, path);
+
   if (user.isAdmin || user.role === 'event_admin' || user.role === 'platform_admin') {
     menuItems.push({ text: 'Admin Panel', icon: <AdminIcon />, path: '/admin' });
   }
@@ -113,7 +117,7 @@ export default function Layout({ children }: LayoutProps) {
   const handleLogout = () => {
     handleUserMenuClose();
     logout();
-    navigate('/login');
+    navigate(eventPath('/login'));
   };
 
   const drawer = (
@@ -136,11 +140,11 @@ export default function Layout({ children }: LayoutProps) {
         {menuItems.map((item) => (
           <ListItem key={item.text} disablePadding>
             <ListItemButton
-              selected={location.pathname === item.path}
-              onClick={() => {
-                navigate(item.path);
-                if (isMobile) setMobileOpen(false);
-              }}
+               selected={location.pathname === eventPath(item.path)}
+               onClick={() => {
+                 navigate(eventPath(item.path));
+                 if (isMobile) setMobileOpen(false);
+               }}
               sx={{
                 '&.Mui-selected': {
                   backgroundColor: '#F5E5E4', // Light red tint for selected

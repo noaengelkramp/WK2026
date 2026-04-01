@@ -1,5 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import type { AxiosInstance } from 'axios';
+import { getEventCodeFromPath, withEventPrefix } from '../utils/eventRouting';
 
 // API base URL - use environment variable or default to relative path
 // In production (Netlify), uses relative path which gets redirected to function via netlify.toml
@@ -22,6 +23,12 @@ apiClient.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    const eventCode = getEventCodeFromPath();
+    if (eventCode) {
+      config.headers['x-event-code'] = eventCode;
+    }
+
     return config;
   },
   (error) => {
@@ -40,7 +47,8 @@ apiClient.interceptors.response.use(
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('user');
-      window.location.href = '/login';
+      const eventCode = getEventCodeFromPath();
+      window.location.href = withEventPrefix(eventCode, '/login');
     }
     
     // Handle other errors

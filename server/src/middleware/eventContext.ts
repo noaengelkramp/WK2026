@@ -56,26 +56,41 @@ const getSubdomain = (host: string): string | null => {
   return parts[0];
 };
 
+const getEventCodeFromPath = (path: string): string | null => {
+  const parts = (path || '/').split('/').filter(Boolean);
+  return parts.length ? parts[0].toLowerCase() : null;
+};
+
 /**
  * Resolve active event from subdomain and attach it to req.event
  */
 export const resolveEvent = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
+    const eventCodeHeader = (req.headers['x-event-code'] as string | undefined)?.toLowerCase();
+    const pathEventCode = getEventCodeFromPath(req.path);
     const host = getHostWithoutPort(req.headers.host);
     const subdomain = getSubdomain(host);
+    const requestedEventCode = eventCodeHeader || pathEventCode || subdomain;
 
     // Root domain splash (no event context)
-    if (!subdomain) {
+    if (!requestedEventCode) {
       next();
       return;
     }
 
-    const event = await Event.findOne({ where: { subdomain, isActive: true } });
+    const event = await Event.findOne({
+      where: {
+        isActive: true,
+        ...(requestedEventCode === subdomain
+          ? { subdomain: requestedEventCode }
+          : { code: requestedEventCode }),
+      },
+    });
 
     if (!event) {
       res.status(404).json({
-        error: 'Event not found for subdomain',
-        subdomain,
+        error: 'Event not found for requested context',
+        requestedEventCode,
       });
       return;
     }

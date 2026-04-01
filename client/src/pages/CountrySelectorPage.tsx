@@ -29,8 +29,16 @@ const buildTargetUrl = (subdomain: string): string => {
   const protocol = window.location.protocol;
   const host = window.location.hostname;
 
+  const usePathRouting = (import.meta.env.VITE_EVENT_ROUTING_MODE || 'path').toLowerCase() === 'path';
+  if (usePathRouting) {
+    return `${protocol}//${host}/${subdomain}`;
+  }
+
   // Local development convenience: use subdomain.localhost
   if (host === 'localhost' || host.endsWith('.localhost')) {
+    if (usePathRouting) {
+      return `${protocol}//${host}${window.location.port ? `:${window.location.port}` : ''}/${subdomain}`;
+    }
     return `${protocol}//${subdomain}.localhost${window.location.port ? `:${window.location.port}` : ''}`;
   }
 
