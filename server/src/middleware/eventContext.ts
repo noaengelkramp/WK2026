@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { Event } from '../models';
+import { Op } from 'sequelize';
 
 declare global {
   namespace Express {
@@ -81,9 +82,10 @@ export const resolveEvent = async (req: Request, res: Response, next: NextFuncti
     const event = await Event.findOne({
       where: {
         isActive: true,
-        ...(requestedEventCode === subdomain
-          ? { subdomain: requestedEventCode }
-          : { code: requestedEventCode }),
+        [Op.or]: [
+          { code: requestedEventCode },
+          { subdomain: requestedEventCode },
+        ],
       },
     });
 
