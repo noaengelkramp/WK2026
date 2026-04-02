@@ -58,16 +58,6 @@ export const config = {
     tournamentEnd: new Date(process.env.TOURNAMENT_END || '2026-07-19T23:59:59Z'),
   },
 
-  // Email (SMTP)
-  smtp: {
-    host: process.env.SMTP_HOST || 'smtp.gmail.com',
-    port: parseInt(process.env.SMTP_PORT || '587'),
-    secure: process.env.SMTP_SECURE === 'true',
-    user: process.env.SMTP_USER || '',
-    password: process.env.SMTP_PASSWORD || '',
-    from: process.env.EMAIL_FROM || 'noreply@wk2026.com',
-  },
-
   // Redis (optional, for caching)
   redis: {
     host: process.env.REDIS_HOST || 'localhost',
