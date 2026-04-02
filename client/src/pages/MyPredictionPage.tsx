@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Box,
   Card,
@@ -18,18 +18,15 @@ import {
   AccordionSummary,
   AccordionDetails,
   CircularProgress,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
+  Chip,
 } from '@mui/material';
 import {
   ExpandMoreOutlined as ExpandIcon,
   SaveOutlined as SaveIcon,
   CheckCircleOutlined as CheckIcon,
-  SendOutlined as SendIcon,
   EmojiEventsOutlined as TrophyIcon,
   InfoOutlined as InfoIcon,
+  LockOutlined as LockIcon,
 } from '@mui/icons-material';
 import { dataService } from '../services/dataService';
 import { predictionService } from '../services/predictionService';
@@ -53,8 +50,8 @@ export default function MyPredictionPage() {
   const [topScorerOptions, setTopScorerOptions] = useState<Array<{ label: string; value: string }>>([]);
   
   // UI states
-  const [submitDialogOpen, setSubmitDialogOpen] = useState(false);
   const [expandedStage, setExpandedStage] = useState<string | false>(false);
+  const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   const stageOrder: Match['stage'][] = ['group', 'round32', 'round16', 'quarter', 'semi', 'third_place', 'final'];
   const stageLabels: Record<Match['stage'], string> = {
@@ -92,6 +89,27 @@ export default function MyPredictionPage() {
       return { stage, label: stageLabels[stage], total, predicted, progress: stageProgressValue, status, matches: stageMatches };
     })
     .filter((entry) => entry.total > 0);
+
+  const now = new Date();
+  const stageDeadlines = stageOrder.reduce((acc, stage) => {
+    const stageMatches = matches.filter((m) => m.stage === stage);
+    if (!stageMatches.length) return acc;
+
+    const earliestDate = stageMatches
+      .map((m) => new Date(m.matchDate))
+      .sort((a, b) => a.getTime() - b.getTime())[0];
+
+    acc[stage] = earliestDate;
+    return acc;
+  }, {} as Record<Match['stage'], Date>);
+
+  const isStageLocked = (stage: Match['stage']) => {
+    const deadline = stageDeadlines[stage];
+    return deadline ? now >= deadline : false;
+  };
+
+  const knockoutStartDeadline = stageDeadlines.round32 || stageDeadlines.round16 || stageDeadlines.quarter || null;
+  const isBonusLocked = knockoutStartDeadline ? now >= knockoutStartDeadline : false;
 
   const getCurrentStage = (): Match['stage'] => {
     const liveStage = stageProgress.find((s) => s.status === 'live');
@@ -198,6 +216,33 @@ export default function MyPredictionPage() {
         away: team === 'away' ? numValue : (predictions[matchId]?.away ?? undefined),
       },
     });
+  };
+
+  const registerInputRef = (matchId: string, team: 'home' | 'away') => (el: HTMLInputElement | null) => {
+    inputRefs.current[`${matchId}:${team}`] = el;
+  };
+
+  const focusInput = (matchId: string, team: 'home' | 'away') => {
+    const key = `${matchId}:${team}`;
+    const target = inputRefs.current[key];
+    if (target) {
+      target.focus();
+      target.select?.();
+    }
+  };
+
+  const handleScoreKeyDown = (matchId: string, team: 'home' | 'away') => (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'ArrowRight' && team === 'home') {
+      event.preventDefault();
+      focusInput(matchId, 'away');
+      return;
+    }
+
+    if (event.key === 'ArrowLeft' && team === 'away') {
+      event.preventDefault();
+      focusInput(matchId, 'home');
+      return;
+    }
   };
 
   // Auto-save prediction
@@ -311,17 +356,6 @@ export default function MyPredictionPage() {
     }
   };
 
-  // Submit final predictions
-  const handleFinalSubmit = () => {
-    setSubmitDialogOpen(true);
-  };
-
-  const confirmFinalSubmit = async () => {
-    await handleSaveAll();
-    setSubmitDialogOpen(false);
-    // In a real app, this would lock the predictions
-  };
-
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
@@ -401,7 +435,10 @@ export default function MyPredictionPage() {
                 <Box sx={{ border: '1px solid #E0E0E0', p: 1.5 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.8 }}>
                     <Typography variant="caption" sx={{ fontWeight: 700 }}>{stage.label}</Typography>
-                    <Typography variant="caption" sx={{ fontWeight: 700 }}>{stage.predicted}/{stage.total}</Typography>
+                    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                      <Typography variant="caption" sx={{ fontWeight: 700 }}>{stage.predicted}/{stage.total}</Typography>
+                      {isStageLocked(stage.stage) && <LockIcon sx={{ fontSize: 14, color: '#9B1915' }} />}
+                    </Box>
                   </Box>
                   <LinearProgress variant="determinate" value={stage.progress} />
                 </Box>
@@ -420,15 +457,6 @@ export default function MyPredictionPage() {
             >
               {saving ? 'Saving...' : 'Save All'}
             </Button>
-            <Button
-              variant="outlined"
-              size="small"
-              startIcon={<SendIcon />}
-              onClick={handleFinalSubmit}
-              disabled={saving || predictedMatches === 0}
-            >
-              Final Submit
-            </Button>
           </Box>
         </CardContent>
       </Card>
@@ -443,9 +471,27 @@ export default function MyPredictionPage() {
           onChange={handleStageAccordionChange(stage.stage)}
         >
           <AccordionSummary expandIcon={<ExpandIcon />}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-              {stage.label} ({stage.predicted}/{stage.total})
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+                {stage.label} ({stage.predicted}/{stage.total})
+              </Typography>
+              {isStageLocked(stage.stage) ? (
+                <Chip size="small" color="default" icon={<LockIcon />} label="Locked" />
+              ) : (
+                <Chip
+                  size="small"
+                  color="success"
+                  label={stageDeadlines[stage.stage]
+                    ? `Open until ${stageDeadlines[stage.stage].toLocaleString('en-GB', {
+                        day: '2-digit',
+                        month: 'short',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}`
+                    : 'Open'}
+                />
+              )}
+            </Box>
           </AccordionSummary>
           <AccordionDetails sx={{ p: 3, backgroundColor: '#F9F9F9' }}>
             <Grid container spacing={2}>
@@ -511,6 +557,9 @@ export default function MyPredictionPage() {
                               value={predictions[match.id]?.home ?? ''}
                               onChange={(e) => handlePredictionChange(match.id, 'home', e.target.value)}
                               onBlur={() => handleSavePrediction(match.id)}
+                              onKeyDown={handleScoreKeyDown(match.id, 'home')}
+                              inputRef={registerInputRef(match.id, 'home')}
+                              disabled={isStageLocked(match.stage)}
                               inputProps={{
                                 min: 0,
                                 max: 20,
@@ -539,6 +588,9 @@ export default function MyPredictionPage() {
                               value={predictions[match.id]?.away ?? ''}
                               onChange={(e) => handlePredictionChange(match.id, 'away', e.target.value)}
                               onBlur={() => handleSavePrediction(match.id)}
+                              onKeyDown={handleScoreKeyDown(match.id, 'away')}
+                              inputRef={registerInputRef(match.id, 'away')}
+                              disabled={isStageLocked(match.stage)}
                               inputProps={{
                                 min: 0,
                                 max: 20,
@@ -634,9 +686,27 @@ export default function MyPredictionPage() {
       {/* Bonus Questions */}
       <Accordion defaultExpanded variant="outlined" sx={{ borderRadius: 0 }}>
         <AccordionSummary expandIcon={<ExpandIcon />}>
-          <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-            Bonus Questions
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+              Bonus Questions
+            </Typography>
+            {isBonusLocked ? (
+              <Chip size="small" color="default" icon={<LockIcon />} label="Locked" />
+            ) : (
+              <Chip
+                size="small"
+                color="success"
+                label={knockoutStartDeadline
+                  ? `Open until ${knockoutStartDeadline.toLocaleString('en-GB', {
+                      day: '2-digit',
+                      month: 'short',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}`
+                  : 'Open'}
+              />
+            )}
+          </Box>
         </AccordionSummary>
         <AccordionDetails sx={{ p: 3 }}>
           <Grid container spacing={3}>
@@ -665,10 +735,11 @@ export default function MyPredictionPage() {
                           value={
                             teamOptions.find((option) => option.value === bonusAnswers[question.id]) || null
                           }
-                          onChange={(_, newValue) =>
-                            handleBonusAnswerChange(question.id, newValue?.value || '')
-                          }
-                          inputValue={bonusInputValues[question.id] || ''}
+                            onChange={(_, newValue) =>
+                              handleBonusAnswerChange(question.id, newValue?.value || '')
+                            }
+                            disabled={isBonusLocked}
+                            inputValue={bonusInputValues[question.id] || ''}
                           onInputChange={(_, newInputValue) =>
                             setBonusInputValues({
                               ...bonusInputValues,
@@ -692,10 +763,11 @@ export default function MyPredictionPage() {
                           value={
                             topScorerOptions.find((option) => option.value === bonusAnswers[question.id]) || null
                           }
-                          onChange={(_, newValue) =>
-                            handleBonusAnswerChange(question.id, newValue?.value || '')
-                          }
-                          inputValue={bonusInputValues[question.id] || ''}
+                            onChange={(_, newValue) =>
+                              handleBonusAnswerChange(question.id, newValue?.value || '')
+                            }
+                            disabled={isBonusLocked}
+                            inputValue={bonusInputValues[question.id] || ''}
                           onInputChange={(_, newInputValue) =>
                             setBonusInputValues({
                               ...bonusInputValues,
@@ -719,6 +791,7 @@ export default function MyPredictionPage() {
                           variant="outlined"
                           value={bonusAnswers[question.id] || ''}
                           onChange={(e) => handleBonusAnswerChange(question.id, e.target.value)}
+                          disabled={isBonusLocked}
                           sx={{ mt: 1, '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
                         />
                       )}
@@ -727,7 +800,7 @@ export default function MyPredictionPage() {
                         size="small"
                         sx={{ mt: 2 }}
                         onClick={() => handleSaveBonusAnswer(question.id)}
-                        disabled={!isValidBonusAnswer(question)}
+                        disabled={!isValidBonusAnswer(question) || isBonusLocked}
                       >
                         Save
                       </Button>
@@ -740,28 +813,6 @@ export default function MyPredictionPage() {
         </AccordionDetails>
       </Accordion>
 
-      {/* Submit Confirmation Dialog */}
-      <Dialog 
-        open={submitDialogOpen} 
-        onClose={() => setSubmitDialogOpen(false)}
-        PaperProps={{ sx: { borderRadius: 0 } }}
-      >
-        <DialogTitle sx={{ fontWeight: 700 }}>Confirm Final Submission</DialogTitle>
-        <DialogContent>
-          <Typography variant="body2">
-            You have predicted <strong>{predictedMatches}</strong> out of <strong>{totalMatches}</strong> matches.
-          </Typography>
-          <Typography variant="body2" sx={{ mt: 2 }}>
-            You can still update your predictions until the deadline on June 11, 2026.
-          </Typography>
-        </DialogContent>
-        <DialogActions sx={{ p: 3 }}>
-          <Button onClick={() => setSubmitDialogOpen(false)} size="small">Cancel</Button>
-          <Button onClick={confirmFinalSubmit} variant="contained" color="primary" size="small">
-            Confirm Submit
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 }
