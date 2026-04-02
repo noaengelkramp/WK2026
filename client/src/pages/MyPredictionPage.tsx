@@ -54,11 +54,69 @@ export default function MyPredictionPage() {
   
   // UI states
   const [submitDialogOpen, setSubmitDialogOpen] = useState(false);
+  const [expandedStage, setExpandedStage] = useState<string | false>(false);
 
-  // Calculate progress
-  const totalMatches = 104;
-  const predictedMatches = Object.keys(predictions).length;
-  const progress = (predictedMatches / totalMatches) * 100;
+  const stageOrder: Match['stage'][] = ['group', 'round32', 'round16', 'quarter', 'semi', 'third_place', 'final'];
+  const stageLabels: Record<Match['stage'], string> = {
+    group: 'Group Stage',
+    round32: 'Round of 32',
+    round16: 'Round of 16',
+    quarter: 'Quarter-finals',
+    semi: 'Semi-finals',
+    third_place: 'Third-place Match',
+    final: 'Final',
+  };
+
+  const isCompletePrediction = (prediction?: { home: number | undefined; away: number | undefined }) =>
+    !!prediction && prediction.home !== undefined && prediction.away !== undefined;
+
+  const matchIdSet = new Set(matches.map((m) => m.id));
+  const predictedMatches = Object.entries(predictions).filter(
+    ([matchId, prediction]) => matchIdSet.has(matchId) && isCompletePrediction(prediction)
+  ).length;
+  const totalMatches = matches.length;
+  const progress = totalMatches > 0 ? (predictedMatches / totalMatches) * 100 : 0;
+
+  const stageProgress = stageOrder
+    .map((stage) => {
+      const stageMatches = matches.filter((m) => m.stage === stage);
+      const total = stageMatches.length;
+      const predicted = stageMatches.filter((m) => isCompletePrediction(predictions[m.id])).length;
+      const stageProgressValue = total > 0 ? (predicted / total) * 100 : 0;
+
+      let status: 'live' | 'upcoming' | 'completed' | 'open' = 'open';
+      if (stageMatches.some((m) => m.status === 'live')) status = 'live';
+      else if (stageMatches.length > 0 && stageMatches.every((m) => m.status === 'finished')) status = 'completed';
+      else if (stageMatches.some((m) => m.status === 'scheduled')) status = 'upcoming';
+
+      return { stage, label: stageLabels[stage], total, predicted, progress: stageProgressValue, status, matches: stageMatches };
+    })
+    .filter((entry) => entry.total > 0);
+
+  const getCurrentStage = (): Match['stage'] => {
+    const liveStage = stageProgress.find((s) => s.status === 'live');
+    if (liveStage) return liveStage.stage;
+
+    const upcomingStage = stageProgress.find((s) => s.status === 'upcoming');
+    if (upcomingStage) return upcomingStage.stage;
+
+    const completedStages = stageProgress.filter((s) => s.status === 'completed');
+    if (completedStages.length > 0) {
+      return completedStages[completedStages.length - 1].stage;
+    }
+
+    return 'group';
+  };
+
+  useEffect(() => {
+    if (matches.length > 0) {
+      setExpandedStage(getCurrentStage());
+    }
+  }, [matches.length]);
+
+  const handleStageAccordionChange = (stage: Match['stage']) => (_event: React.SyntheticEvent, isExpanded: boolean) => {
+    setExpandedStage(isExpanded ? stage : false);
+  };
 
   // Fetch initial data
   useEffect(() => {
@@ -264,9 +322,6 @@ export default function MyPredictionPage() {
     // In a real app, this would lock the predictions
   };
 
-  // Group matches by stage
-  const groupMatches = matches.filter(m => m.stage === 'group');
-
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
@@ -337,8 +392,23 @@ export default function MyPredictionPage() {
           <LinearProgress 
             variant="determinate" 
             value={progress} 
-            sx={{ mb: 3 }} 
+            sx={{ mb: 3 }}
           />
+
+          <Grid container spacing={2} sx={{ mb: 3 }}>
+            {stageProgress.map((stage) => (
+              <Grid key={stage.stage} size={{ xs: 12, md: 6 }}>
+                <Box sx={{ border: '1px solid #E0E0E0', p: 1.5 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.8 }}>
+                    <Typography variant="caption" sx={{ fontWeight: 700 }}>{stage.label}</Typography>
+                    <Typography variant="caption" sx={{ fontWeight: 700 }}>{stage.predicted}/{stage.total}</Typography>
+                  </Box>
+                  <LinearProgress variant="determinate" value={stage.progress} />
+                </Box>
+              </Grid>
+            ))}
+          </Grid>
+
           <Box sx={{ display: 'flex', gap: 2 }}>
             <Button
               variant="contained"
@@ -363,143 +433,137 @@ export default function MyPredictionPage() {
         </CardContent>
       </Card>
 
-      {/* Group Stage Predictions */}
-      <Accordion defaultExpanded variant="outlined" sx={{ borderRadius: 0, mb: 2 }}>
-        <AccordionSummary expandIcon={<ExpandIcon />}>
-          <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-            Group Stage ({groupMatches.length} Matches)
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails sx={{ p: 3, backgroundColor: '#F9F9F9' }}>
-          <Grid container spacing={2}>
-            {groupMatches.map((match) => (
-              <Grid size={{ xs: 12, lg: 6 }} key={match.id}>
-                <Card variant="outlined" sx={{ borderRadius: 0, '&:hover': { borderColor: '#9B1915' } }}>
-                  <CardContent sx={{ p: 2 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                      <Typography variant="caption" sx={{ fontWeight: 700, color: '#999' }}>
-                        MATCH #{match.matchNumber} • GROUP {match.groupLetter}
-                      </Typography>
-                      <Typography variant="caption" sx={{ fontWeight: 700, color: '#666' }}>
-                        {new Date(match.matchDate).toLocaleDateString('en-GB', { 
-                          day: 'numeric',
-                          month: 'short',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                      </Typography>
-                    </Box>
+      {/* Stage-based Predictions */}
+      {stageProgress.map((stage) => (
+        <Accordion
+          key={stage.stage}
+          variant="outlined"
+          sx={{ borderRadius: 0, mb: 2 }}
+          expanded={expandedStage === stage.stage}
+          onChange={handleStageAccordionChange(stage.stage)}
+        >
+          <AccordionSummary expandIcon={<ExpandIcon />}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+              {stage.label} ({stage.predicted}/{stage.total})
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails sx={{ p: 3, backgroundColor: '#F9F9F9' }}>
+            <Grid container spacing={2}>
+              {stage.matches.map((match) => (
+                <Grid size={{ xs: 12, lg: 6 }} key={match.id}>
+                  <Card variant="outlined" sx={{ borderRadius: 0, '&:hover': { borderColor: '#9B1915' } }}>
+                    <CardContent sx={{ p: 2 }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                        <Typography variant="caption" sx={{ fontWeight: 700, color: '#999' }}>
+                          MATCH #{match.matchNumber}{match.groupLetter ? ` • GROUP ${match.groupLetter}` : ''}
+                        </Typography>
+                        <Typography variant="caption" sx={{ fontWeight: 700, color: '#666' }}>
+                          {new Date(match.matchDate).toLocaleDateString('en-GB', {
+                            day: 'numeric',
+                            month: 'short',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </Typography>
+                      </Box>
 
-                    <Grid container spacing={1} alignItems="center">
-                      <Grid size={4}>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                          <Box
-                            component="img"
-                            src={match.homeTeam.flagUrl}
-                            alt={match.homeTeam.name}
-                            sx={{ width: 40, height: 30, objectFit: 'cover', border: '1px solid #EEE', mb: 1 }}
-                          />
-                          <Typography variant="body2" sx={{ fontWeight: 700, textAlign: 'center' }}>
-                            {match.homeTeam.name}
-                          </Typography>
-                        </Box>
+                      <Grid container spacing={1} alignItems="center">
+                        <Grid size={4}>
+                          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                            <Box
+                              component="img"
+                              src={match.homeTeam.flagUrl}
+                              alt={match.homeTeam.name}
+                              sx={{ width: 40, height: 30, objectFit: 'cover', border: '1px solid #EEE', mb: 1 }}
+                            />
+                            <Typography variant="body2" sx={{ fontWeight: 700, textAlign: 'center' }}>
+                              {match.homeTeam.name}
+                            </Typography>
+                          </Box>
+                        </Grid>
+
+                        <Grid size={4}>
+                          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', justifyContent: 'center' }}>
+                            <TextField
+                              type="number"
+                              value={predictions[match.id]?.home ?? ''}
+                              onChange={(e) => handlePredictionChange(match.id, 'home', e.target.value)}
+                              onBlur={() => handleSavePrediction(match.id)}
+                              inputProps={{
+                                min: 0,
+                                max: 20,
+                                style: {
+                                  textAlign: 'center',
+                                  fontWeight: 700,
+                                  padding: '8px 4px'
+                                }
+                              }}
+                              sx={{
+                                width: { xs: 45, sm: 50 },
+                                '& .MuiOutlinedInput-root': { borderRadius: 0 },
+                                '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
+                                  '-webkit-appearance': 'none',
+                                  margin: 0,
+                                },
+                                '& input[type=number]': {
+                                  '-moz-appearance': 'textfield',
+                                },
+                              }}
+                              size="small"
+                            />
+                            <Typography variant="body2" sx={{ fontWeight: 700 }}>:</Typography>
+                            <TextField
+                              type="number"
+                              value={predictions[match.id]?.away ?? ''}
+                              onChange={(e) => handlePredictionChange(match.id, 'away', e.target.value)}
+                              onBlur={() => handleSavePrediction(match.id)}
+                              inputProps={{
+                                min: 0,
+                                max: 20,
+                                style: {
+                                  textAlign: 'center',
+                                  fontWeight: 700,
+                                  padding: '8px 4px'
+                                }
+                              }}
+                              sx={{
+                                width: { xs: 45, sm: 50 },
+                                '& .MuiOutlinedInput-root': { borderRadius: 0 },
+                                '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
+                                  '-webkit-appearance': 'none',
+                                  margin: 0,
+                                },
+                                '& input[type=number]': {
+                                  '-moz-appearance': 'textfield',
+                                },
+                              }}
+                              size="small"
+                            />
+                          </Box>
+                        </Grid>
+
+                        <Grid size={4}>
+                          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                            <Box
+                              component="img"
+                              src={match.awayTeam.flagUrl}
+                              alt={match.awayTeam.name}
+                              sx={{ width: 40, height: 30, objectFit: 'cover', border: '1px solid #EEE', mb: 1 }}
+                            />
+                            <Typography variant="body2" sx={{ fontWeight: 700, textAlign: 'center' }}>
+                              {match.awayTeam.name}
+                            </Typography>
+                          </Box>
+                        </Grid>
                       </Grid>
-
-                      <Grid size={4}>
-                        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', justifyContent: 'center' }}>
-                          <TextField
-                            type="number"
-                            value={predictions[match.id]?.home ?? ''}
-                            onChange={(e) => handlePredictionChange(match.id, 'home', e.target.value)}
-                            onBlur={() => handleSavePrediction(match.id)}
-                            inputProps={{ 
-                              min: 0, 
-                              max: 20, 
-                              style: { 
-                                textAlign: 'center', 
-                                fontWeight: 700,
-                                padding: '8px 4px'
-                              } 
-                            }}
-                            sx={{ 
-                              width: { xs: 45, sm: 50 },
-                              '& .MuiOutlinedInput-root': { borderRadius: 0 },
-                              '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
-                                '-webkit-appearance': 'none',
-                                margin: 0,
-                              },
-                              '& input[type=number]': {
-                                '-moz-appearance': 'textfield',
-                              },
-                            }}
-                            size="small"
-                          />
-                          <Typography variant="body2" sx={{ fontWeight: 700 }}>:</Typography>
-                          <TextField
-                            type="number"
-                            value={predictions[match.id]?.away ?? ''}
-                            onChange={(e) => handlePredictionChange(match.id, 'away', e.target.value)}
-                            onBlur={() => handleSavePrediction(match.id)}
-                            inputProps={{ 
-                              min: 0, 
-                              max: 20, 
-                              style: { 
-                                textAlign: 'center', 
-                                fontWeight: 700,
-                                padding: '8px 4px'
-                              } 
-                            }}
-                            sx={{ 
-                              width: { xs: 45, sm: 50 },
-                              '& .MuiOutlinedInput-root': { borderRadius: 0 },
-                              '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
-                                '-webkit-appearance': 'none',
-                                margin: 0,
-                              },
-                              '& input[type=number]': {
-                                '-moz-appearance': 'textfield',
-                              },
-                            }}
-                            size="small"
-                          />
-                        </Box>
-                      </Grid>
-
-                      <Grid size={4}>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                          <Box
-                            component="img"
-                            src={match.awayTeam.flagUrl}
-                            alt={match.awayTeam.name}
-                            sx={{ width: 40, height: 30, objectFit: 'cover', border: '1px solid #EEE', mb: 1 }}
-                          />
-                          <Typography variant="body2" sx={{ fontWeight: 700, textAlign: 'center' }}>
-                            {match.awayTeam.name}
-                          </Typography>
-                        </Box>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-        </AccordionDetails>
-      </Accordion>
-
-      {/* Knockout Stage Predictions */}
-      <Accordion variant="outlined" sx={{ borderRadius: 0, mb: 2 }}>
-        <AccordionSummary expandIcon={<ExpandIcon />}>
-          <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-            Knockout Rounds
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails sx={{ p: 3 }}>
-          <Alert severity="info" variant="outlined" sx={{ borderRadius: 0 }}>
-            Knockout matches will be available for prediction once group stage results are confirmed.
-          </Alert>
-        </AccordionDetails>
-      </Accordion>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          </AccordionDetails>
+        </Accordion>
+      ))}
 
       {/* Champion Prediction */}
       <Accordion variant="outlined" sx={{ borderRadius: 0, mb: 2 }}>
@@ -545,7 +609,7 @@ export default function MyPredictionPage() {
       </Accordion>
 
       {/* Bonus Questions */}
-      <Accordion variant="outlined" sx={{ borderRadius: 0 }}>
+      <Accordion defaultExpanded variant="outlined" sx={{ borderRadius: 0 }}>
         <AccordionSummary expandIcon={<ExpandIcon />}>
           <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
             Bonus Questions

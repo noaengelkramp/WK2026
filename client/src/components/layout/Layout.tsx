@@ -52,6 +52,7 @@ export default function Layout({ children }: LayoutProps) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [languageMenuAnchor, setLanguageMenuAnchor] = useState<null | HTMLElement>(null);
   const [selectedLanguage, setSelectedLanguage] = useState(i18n.language || 'en');
+  const [selectedLocaleCode, setSelectedLocaleCode] = useState('en');
   const [languageOptions, setLanguageOptions] = useState<LocaleOption[]>([
     { code: 'en', languageCode: 'en', label: 'English', flag: '🇬🇧' },
   ]);
@@ -68,17 +69,35 @@ export default function Layout({ children }: LayoutProps) {
           const options = buildLocaleOptions(response.event.allowedLocales);
           setLanguageOptions(options);
 
+          const storedLocale = (() => {
+            try {
+              return localStorage.getItem(`locale:${response.event.code}`) || null;
+            } catch {
+              return null;
+            }
+          })();
+
           const preferredLocale = user?.languagePreference;
-          const preferredOption = preferredLocale
-            ? options.find((option) => option.code.toLowerCase() === preferredLocale.toLowerCase())
-            : undefined;
+          const preferredOption = (storedLocale
+            ? options.find((option) => option.code.toLowerCase() === storedLocale.toLowerCase())
+            : undefined)
+            || (preferredLocale
+              ? options.find((option) => option.code.toLowerCase() === preferredLocale.toLowerCase())
+              : undefined);
 
           const fallbackOption = options.find(
             (option) => option.code.toLowerCase() === response.event?.defaultLocale.toLowerCase()
           ) || options[0];
 
           const nextLanguage = normalizeLocaleToLanguage((preferredOption || fallbackOption)?.code);
+          const nextLocaleCode = (preferredOption || fallbackOption)?.code || 'en';
           setSelectedLanguage(nextLanguage);
+          setSelectedLocaleCode(nextLocaleCode);
+          try {
+            localStorage.setItem(`locale:${response.event.code}`, nextLocaleCode);
+          } catch {
+            // ignore storage errors
+          }
           i18n.changeLanguage(nextLanguage);
         }
       })
@@ -112,17 +131,30 @@ export default function Layout({ children }: LayoutProps) {
     setLanguageMenuAnchor(null);
   };
 
-  const handleLanguageSelect = (langCode: string) => {
-    setSelectedLanguage(langCode);
-    i18n.changeLanguage(langCode);
+  const handleLanguageSelect = (localeCode: string, languageCode: string) => {
+    setSelectedLocaleCode(localeCode);
+    setSelectedLanguage(languageCode);
+    i18n.changeLanguage(languageCode);
+
+    try {
+      const eventCode = getEventCodeFromPath(location.pathname);
+      if (eventCode) {
+        localStorage.setItem(`locale:${eventCode}`, localeCode);
+      }
+    } catch {
+      // ignore storage errors
+    }
+
     handleLanguageMenuClose();
     handleUserMenuClose();
     // TODO: In production, this would call an API to update user preference
     // and reload the app with translated content
-    console.log(`Language changed to: ${langCode}`);
+    console.log(`Language changed to: ${localeCode} (${languageCode})`);
   };
 
-  const currentLanguage = languageOptions.find(lang => lang.languageCode === selectedLanguage) || languageOptions[0];
+  const currentLanguage = languageOptions.find(lang => lang.code === selectedLocaleCode)
+    || languageOptions.find(lang => lang.languageCode === selectedLanguage)
+    || languageOptions[0];
 
   const menuItems = [
     { text: t('nav.home'), icon: <HomeIcon />, path: '/' },
@@ -266,8 +298,8 @@ export default function Layout({ children }: LayoutProps) {
             {languageOptions.map((lang) => (
               <MenuItem
                 key={lang.code}
-                onClick={() => handleLanguageSelect(lang.languageCode)}
-                selected={lang.languageCode === selectedLanguage}
+                onClick={() => handleLanguageSelect(lang.code, lang.languageCode)}
+                selected={lang.code === selectedLocaleCode}
                 sx={{
                   '&.Mui-selected': {
                     backgroundColor: '#F5E5E4',
@@ -280,10 +312,6 @@ export default function Layout({ children }: LayoutProps) {
                 </Box>
               </MenuItem>
             ))}
-            <Divider sx={{ mt: 1 }} />
-            <MenuItem disabled sx={{ fontSize: '0.75rem', fontStyle: 'italic' }}>
-              💡 More languages coming soon
-            </MenuItem>
           </Menu>
         </Toolbar>
       </AppBar>
