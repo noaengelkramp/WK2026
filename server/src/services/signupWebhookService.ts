@@ -18,7 +18,6 @@ class SignupWebhookService {
     email: string;
     eventCode: string;
     languagePreference?: string;
-    customerNumber?: string;
   }): Promise<void> {
     const url = config.webhooks.signupDataHookUrl;
     if (!url) {
@@ -38,7 +37,6 @@ class SignupWebhookService {
       email: payload.email,
       eventCode: payload.eventCode,
       languagePreference: payload.languagePreference || null,
-      customerNumber: payload.customerNumber || null,
       source: 'wk2026-signup',
       createdAt: new Date().toISOString(),
     };

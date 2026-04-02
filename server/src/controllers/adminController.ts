@@ -221,6 +221,7 @@ export async function getAllUsers(req: Request, res: Response) {
 
     const usersWithVisibleCustomer = users.map((user: any) => ({
       ...user.toJSON(),
+      customerNumber: undefined,
       visibleCustomerNumber: getVisibleCustomerNumber(user.customerNumber),
     }));
 
@@ -274,7 +275,11 @@ export async function getUserById(req: Request, res: Response) {
 
     res.status(200).json({
       success: true,
-      user,
+      user: {
+        ...user.toJSON(),
+        customerNumber: undefined,
+        visibleCustomerNumber: getVisibleCustomerNumber((user as any).customerNumber),
+      },
     });
   } catch (error) {
     console.error('Error fetching user:', error);
@@ -649,6 +654,7 @@ export async function getAllCustomers(req: Request, res: Response) {
 
     const customersWithVisible = customers.map((customer: any) => ({
       ...customer.toJSON(),
+      customerNumber: undefined,
       visibleCustomerNumber: getVisibleCustomerNumber(customer.customerNumber),
     }));
 

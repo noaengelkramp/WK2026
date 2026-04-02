@@ -118,7 +118,6 @@ export const register = async (req: Request, res: Response, next: NextFunction):
       email: user.email,
       eventCode: req.event.code,
       languagePreference: user.languagePreference,
-      customerNumber: user.customerNumber,
     }).catch(err => {
       console.error('Failed to send signup webhook:', err);
     });

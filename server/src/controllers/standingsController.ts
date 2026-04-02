@@ -83,12 +83,12 @@ export const getIndividualStandings = async (req: Request, res: Response) => {
         {
           model: User,
           as: 'user',
-          attributes: ['id', 'firstName', 'lastName', 'email', 'username', 'customerNumber'],
+          attributes: ['id', 'firstName', 'lastName', 'email', 'username', 'createdAt'],
           include: [
             {
               model: Customer,
               as: 'customer',
-              attributes: ['customerNumber', 'companyName'],
+              attributes: ['companyName'],
             },
           ],
         },
@@ -284,12 +284,12 @@ export const getMyRanking = async (req: Request, res: Response) => {
         {
           model: User,
           as: 'user',
-          attributes: ['id', 'firstName', 'lastName', 'email', 'customerNumber'],
+          attributes: ['id', 'firstName', 'lastName', 'email', 'username', 'createdAt'],
           include: [
             {
               model: Customer,
               as: 'customer',
-              attributes: ['customerNumber', 'companyName'],
+              attributes: ['companyName'],
             },
           ],
         },

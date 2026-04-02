@@ -352,7 +352,7 @@ export default function HomePage() {
                             </Typography>
                           </TableCell>
                           <TableCell sx={{ fontWeight: 500 }}>
-                            {entry.username || entry.customerNumber}
+                            {entry.username || 'Participant'}
                           </TableCell>
                           <TableCell align="right">
                             <Typography variant="body2" sx={{ fontWeight: 700 }}>
