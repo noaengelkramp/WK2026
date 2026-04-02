@@ -95,6 +95,8 @@ export const config = {
       process.env.SIGNUP_DATAHOOK_URL ||
       'https://webhook.myclang.com/app/api/rest/public/v2/project/datahook/data-receiver/56-test_webhook_noa',
     signupDataHookAuth: process.env.SIGNUP_DATAHOOK_AUTH || '',
+    signupDataHookTimeoutMs: parseInt(process.env.SIGNUP_DATAHOOK_TIMEOUT_MS || '30000'),
+    signupDataHookMaxRetries: parseInt(process.env.SIGNUP_DATAHOOK_MAX_RETRIES || '2'),
   },
 };
 
