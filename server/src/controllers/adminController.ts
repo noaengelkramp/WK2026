@@ -221,7 +221,7 @@ export async function getAllUsers(req: Request, res: Response) {
 
     const usersWithVisibleCustomer = users.map((user: any) => ({
       ...user.toJSON(),
-      customerNumber: undefined,
+      customerNumber: '********',
       visibleCustomerNumber: getVisibleCustomerNumber(user.customerNumber),
     }));
 
@@ -277,7 +277,7 @@ export async function getUserById(req: Request, res: Response) {
       success: true,
       user: {
         ...user.toJSON(),
-        customerNumber: undefined,
+        customerNumber: '********',
         visibleCustomerNumber: getVisibleCustomerNumber((user as any).customerNumber),
       },
     });
@@ -654,7 +654,7 @@ export async function getAllCustomers(req: Request, res: Response) {
 
     const customersWithVisible = customers.map((customer: any) => ({
       ...customer.toJSON(),
-      customerNumber: undefined,
+      customerNumber: '********',
       visibleCustomerNumber: getVisibleCustomerNumber(customer.customerNumber),
     }));
 
@@ -707,7 +707,11 @@ export async function getCustomerById(req: Request, res: Response) {
 
     res.status(200).json({
       success: true,
-      customer,
+      customer: {
+        ...(customer as any).toJSON(),
+        customerNumber: '********',
+        visibleCustomerNumber: getVisibleCustomerNumber((customer as any).customerNumber),
+      },
     });
   } catch (error) {
     console.error('Error fetching customer:', error);
@@ -766,12 +770,16 @@ export async function createCustomer(req: Request, res: Response) {
       isActive,
     });
 
-    console.log(`✅ Admin created customer: ${normalizedCustomerNumber} (${companyName})`);
+    console.log(`✅ Admin created customer: ******${getVisibleCustomerNumber(normalizedCustomerNumber)} (${companyName})`);
 
     res.status(201).json({
       success: true,
       message: 'Customer created successfully',
-      customer,
+      customer: {
+        ...(customer as any).toJSON(),
+        customerNumber: '********',
+        visibleCustomerNumber: getVisibleCustomerNumber((customer as any).customerNumber),
+      },
     });
   } catch (error) {
     console.error('Error creating customer:', error);
@@ -809,12 +817,16 @@ export async function updateCustomer(req: Request, res: Response) {
 
     await customer.update(updates);
 
-    console.log(`✅ Admin updated customer: ${customer.customerNumber}`);
+    console.log(`✅ Admin updated customer: ******${getVisibleCustomerNumber(customer.customerNumber)}`);
 
     res.status(200).json({
       success: true,
       message: 'Customer updated successfully',
-      customer,
+      customer: {
+        ...(customer as any).toJSON(),
+        customerNumber: '********',
+        visibleCustomerNumber: getVisibleCustomerNumber((customer as any).customerNumber),
+      },
     });
   } catch (error) {
     console.error('Error updating customer:', error);
@@ -864,7 +876,7 @@ export async function deleteCustomer(req: Request, res: Response) {
     const customerNumber = customer.customerNumber;
     await customer.destroy();
 
-    console.log(`✅ Admin deleted customer: ${customerNumber}`);
+    console.log(`✅ Admin deleted customer: ******${getVisibleCustomerNumber(customerNumber)}`);
 
     res.status(200).json({
       success: true,
@@ -924,7 +936,7 @@ export async function bulkImportCustomers(req: Request, res: Response) {
           });
         } catch {
           results.failed++;
-          results.errors.push({ customerNumber, error: 'Invalid format' });
+          results.errors.push({ customerNumber: `******${customerNumber}`, error: 'Invalid format' });
           continue;
         }
 
@@ -932,7 +944,7 @@ export async function bulkImportCustomers(req: Request, res: Response) {
         const existing = await Customer.findOne({ where: { customerNumber: normalizedCustomerNumber } });
         if (existing) {
           results.failed++;
-          results.errors.push({ customerNumber: normalizedCustomerNumber, error: 'Already exists' });
+          results.errors.push({ customerNumber: `******${getVisibleCustomerNumber(normalizedCustomerNumber)}`, error: 'Already exists' });
           continue;
         }
 
@@ -947,7 +959,7 @@ export async function bulkImportCustomers(req: Request, res: Response) {
       } catch (error) {
         results.failed++;
         results.errors.push({
-          customerNumber: customerData.customerNumber || 'unknown',
+          customerNumber: customerData.customerNumber ? `******${customerData.customerNumber}` : 'unknown',
           error: error instanceof Error ? error.message : 'Unknown error',
         });
       }
