@@ -451,6 +451,28 @@ export default function MyPredictionPage() {
             <Grid container spacing={2}>
               {stage.matches.map((match) => (
                 <Grid size={{ xs: 12, lg: 6 }} key={match.id}>
+                  {(!match.homeTeam || !match.awayTeam) ? (
+                    <Card variant="outlined" sx={{ borderRadius: 0 }}>
+                      <CardContent sx={{ p: 2 }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
+                          <Typography variant="caption" sx={{ fontWeight: 700, color: '#999' }}>
+                            MATCH #{match.matchNumber}{match.groupLetter ? ` • GROUP ${match.groupLetter}` : ''}
+                          </Typography>
+                          <Typography variant="caption" sx={{ fontWeight: 700, color: '#666' }}>
+                            {new Date(match.matchDate).toLocaleDateString('en-GB', {
+                              day: 'numeric',
+                              month: 'short',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </Typography>
+                        </Box>
+                        <Alert severity="info" variant="outlined" sx={{ borderRadius: 0 }}>
+                          Teams are not confirmed yet for this match. Prediction will open once participants are known.
+                        </Alert>
+                      </CardContent>
+                    </Card>
+                  ) : (
                   <Card variant="outlined" sx={{ borderRadius: 0, '&:hover': { borderColor: '#9B1915' } }}>
                     <CardContent sx={{ p: 2 }}>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
@@ -472,7 +494,7 @@ export default function MyPredictionPage() {
                           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                             <Box
                               component="img"
-                              src={match.homeTeam.flagUrl}
+                              src={match.homeTeam?.flagUrl}
                               alt={match.homeTeam.name}
                               sx={{ width: 40, height: 30, objectFit: 'cover', border: '1px solid #EEE', mb: 1 }}
                             />
@@ -546,7 +568,7 @@ export default function MyPredictionPage() {
                           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                             <Box
                               component="img"
-                              src={match.awayTeam.flagUrl}
+                              src={match.awayTeam?.flagUrl}
                               alt={match.awayTeam.name}
                               sx={{ width: 40, height: 30, objectFit: 'cover', border: '1px solid #EEE', mb: 1 }}
                             />
@@ -558,6 +580,7 @@ export default function MyPredictionPage() {
                       </Grid>
                     </CardContent>
                   </Card>
+                  )}
                 </Grid>
               ))}
             </Grid>
