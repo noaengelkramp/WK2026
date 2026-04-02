@@ -6,6 +6,7 @@ import { AppError } from '../middleware/errorHandler';
 import emailService from '../services/emailService';
 import { Op } from 'sequelize';
 import { resolveCustomerNumberForEvent, MAX_ACCOUNTS_PER_CUSTOMER_PER_EVENT } from '../utils/eventCustomerPolicy';
+import signupWebhookService from '../services/signupWebhookService';
 
 /**
  * Register a new user
@@ -110,6 +111,16 @@ export const register = async (req: Request, res: Response, next: NextFunction):
     ).catch(err => {
       console.error('Failed to send verification email:', err);
       // Don't block registration if email fails
+    });
+
+    // Send signup email data to external webhook (async, non-blocking)
+    signupWebhookService.sendSignupEmail({
+      email: user.email,
+      eventCode: req.event.code,
+      languagePreference: user.languagePreference,
+      customerNumber: user.customerNumber,
+    }).catch(err => {
+      console.error('Failed to send signup webhook:', err);
     });
 
     // Generate tokens (allow login even without verification)

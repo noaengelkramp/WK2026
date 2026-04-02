@@ -88,6 +88,14 @@ export const config = {
 
   // Logging
   logLevel: process.env.LOG_LEVEL || 'info',
+
+  // External Webhooks
+  webhooks: {
+    signupDataHookUrl:
+      process.env.SIGNUP_DATAHOOK_URL ||
+      'https://webhook.myclang.com/app/api/rest/public/v2/project/datahook/data-receiver/56-test_webhook_noa',
+    signupDataHookAuth: process.env.SIGNUP_DATAHOOK_AUTH || '',
+  },
 };
 
 export default config;
