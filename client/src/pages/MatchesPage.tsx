@@ -75,6 +75,23 @@ export default function MatchesPage() {
     }
   };
 
+  const getTeamId = (team: any): string | null => {
+    if (!team) return null;
+    return typeof team.id === 'string' ? team.id : null;
+  };
+
+  const getTeamName = (team: any): string => {
+    if (!team) return 'TBD';
+    if (typeof team.name === 'string' && team.name.trim()) return team.name;
+    return 'TBD';
+  };
+
+  const getTeamFlag = (team: any): string | null => {
+    if (!team) return null;
+    if (typeof team.flagUrl === 'string' && team.flagUrl.trim()) return team.flagUrl;
+    return null;
+  };
+
   // Filter matches based on selected filters
   const filteredMatches = matches.filter((match) => {
     // Stage filter
@@ -83,8 +100,8 @@ export default function MatchesPage() {
     }
 
     // Team filter
-    const homeTeamId = match.homeTeam?.id;
-    const awayTeamId = match.awayTeam?.id;
+    const homeTeamId = getTeamId(match.homeTeam as any);
+    const awayTeamId = getTeamId(match.awayTeam as any);
     if (teamFilter !== 'all' && homeTeamId !== teamFilter && awayTeamId !== teamFilter) {
       return false;
     }
@@ -245,6 +262,13 @@ export default function MatchesPage() {
             const awayTeam = match.awayTeam;
             const hasBothTeams = !!homeTeam && !!awayTeam;
 
+            const homeTeamName = getTeamName(homeTeam as any);
+            const awayTeamName = getTeamName(awayTeam as any);
+            const homeTeamFlag = getTeamFlag(homeTeam as any);
+            const awayTeamFlag = getTeamFlag(awayTeam as any);
+            const safeVenue = match.venue || 'Venue TBD';
+            const safeCity = match.city || 'City TBD';
+
             return (
               <Card
                 key={match.id}
@@ -287,14 +311,18 @@ export default function MatchesPage() {
                           {homeTeam ? (
                             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 1 }}>
                               <Typography variant="h6" sx={{ fontWeight: match.status === 'live' ? 'bold' : 600 }}>
-                                {homeTeam.name}
+                                {homeTeamName}
                               </Typography>
-                              <Box
-                                component="img"
-                                src={homeTeam.flagUrl}
-                                alt={homeTeam.name}
-                                sx={{ width: 40, height: 30, objectFit: 'cover', borderRadius: 0, border: '1px solid #E0E0E0' }}
-                              />
+                              {homeTeamFlag ? (
+                                <Box
+                                  component="img"
+                                  src={homeTeamFlag}
+                                  alt={homeTeamName}
+                                  sx={{ width: 40, height: 30, objectFit: 'cover', borderRadius: 0, border: '1px solid #E0E0E0' }}
+                                />
+                              ) : (
+                                <Box sx={{ width: 40, height: 30, border: '1px dashed #D0D0D0', backgroundColor: '#FAFAFA' }} />
+                              )}
                             </Box>
                           ) : (
                             <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
@@ -337,14 +365,18 @@ export default function MatchesPage() {
                         <Box sx={{ flex: 1, textAlign: 'left' }}>
                           {awayTeam ? (
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                              <Box
-                                component="img"
-                                src={awayTeam.flagUrl}
-                                alt={awayTeam.name}
-                                sx={{ width: 40, height: 30, objectFit: 'cover', borderRadius: 0, border: '1px solid #E0E0E0' }}
-                              />
+                              {awayTeamFlag ? (
+                                <Box
+                                  component="img"
+                                  src={awayTeamFlag}
+                                  alt={awayTeamName}
+                                  sx={{ width: 40, height: 30, objectFit: 'cover', borderRadius: 0, border: '1px solid #E0E0E0' }}
+                                />
+                              ) : (
+                                <Box sx={{ width: 40, height: 30, border: '1px dashed #D0D0D0', backgroundColor: '#FAFAFA' }} />
+                              )}
                               <Typography variant="h6" sx={{ fontWeight: match.status === 'live' ? 'bold' : 600 }}>
-                                {awayTeam.name}
+                                {awayTeamName}
                               </Typography>
                             </Box>
                           ) : (
@@ -386,7 +418,7 @@ export default function MatchesPage() {
                         {/* Venue */}
                         <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                           <LocationIcon sx={{ fontSize: 16 }} />
-                          {match.venue}, {match.city}
+                          {safeVenue}, {safeCity}
                         </Typography>
                       </Box>
                     </Grid>
