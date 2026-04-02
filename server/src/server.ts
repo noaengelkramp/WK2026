@@ -27,6 +27,20 @@ import eventRoutes from './routes/event';
 
 const app: Application = express();
 
+// Trust proxy headers (required for correct req.ip behind Netlify/proxies)
+app.set('trust proxy', 1);
+
+const getClientIp = (req: express.Request): string => {
+  const xff = req.headers['x-forwarded-for'];
+  if (typeof xff === 'string' && xff.length > 0) {
+    const first = xff.split(',')[0].trim();
+    if (first) return first;
+  }
+
+  if (req.ip && req.ip.trim()) return req.ip;
+  return 'unknown';
+};
+
 // Body parser - MUST be before any routes or rate limiters that use req.body
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -41,6 +55,10 @@ const limiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: 'Too many requests from this IP, please try again after 15 minutes',
+  keyGenerator: (req) => getClientIp(req),
+  validate: {
+    xForwardedForHeader: false,
+  },
 });
 
 // Apply rate limiter to all requests
@@ -53,6 +71,10 @@ const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: 'Too many login/register attempts, please try again after 15 minutes',
+  keyGenerator: (req) => getClientIp(req),
+  validate: {
+    xForwardedForHeader: false,
+  },
 });
 
 app.use('/api/auth', authLimiter);

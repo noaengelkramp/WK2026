@@ -42,8 +42,20 @@ export const CACHE_KEYS = {
  */
 export const initRedis = async (): Promise<void> => {
   try {
+    const isNetlify = process.env.NETLIFY === 'true';
+    const isServerless = process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.NETLIFY === 'true';
+    const isLocalHostRedis = !config.redis.host || config.redis.host === 'localhost' || config.redis.host === '127.0.0.1';
+
     // Skip Redis if not configured or explicitly disabled (graceful degradation)
-    if (!config.redis.host || process.env.REDIS_URL === 'skip' || process.env.SKIP_REDIS === 'true') {
+    if (
+      !config.redis.host ||
+      process.env.REDIS_URL === 'skip' ||
+      process.env.SKIP_REDIS === 'true' ||
+      (isServerless && isLocalHostRedis)
+    ) {
+      if (isNetlify && isLocalHostRedis) {
+        console.log('⚠️  Redis disabled on Netlify serverless (localhost Redis is unavailable)');
+      }
       console.log('⚠️  Redis not configured - caching disabled (will use database only)');
       return;
     }
