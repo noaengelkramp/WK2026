@@ -83,7 +83,9 @@ export default function MatchesPage() {
     }
 
     // Team filter
-    if (teamFilter !== 'all' && match.homeTeam.id !== teamFilter && match.awayTeam.id !== teamFilter) {
+    const homeTeamId = match.homeTeam?.id;
+    const awayTeamId = match.awayTeam?.id;
+    if (teamFilter !== 'all' && homeTeamId !== teamFilter && awayTeamId !== teamFilter) {
       return false;
     }
 
@@ -239,6 +241,9 @@ export default function MatchesPage() {
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           {paginatedMatches.map((match) => {
             const statusInfo = getStatusInfo(match.status);
+            const homeTeam = match.homeTeam;
+            const awayTeam = match.awayTeam;
+            const hasBothTeams = !!homeTeam && !!awayTeam;
 
             return (
               <Card
@@ -279,17 +284,23 @@ export default function MatchesPage() {
                       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
                         {/* Home Team */}
                         <Box sx={{ flex: 1, textAlign: 'right' }}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 1 }}>
-                            <Typography variant="h6" sx={{ fontWeight: match.status === 'live' ? 'bold' : 600 }}>
-                              {match.homeTeam.name}
+                          {homeTeam ? (
+                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 1 }}>
+                              <Typography variant="h6" sx={{ fontWeight: match.status === 'live' ? 'bold' : 600 }}>
+                                {homeTeam.name}
+                              </Typography>
+                              <Box
+                                component="img"
+                                src={homeTeam.flagUrl}
+                                alt={homeTeam.name}
+                                sx={{ width: 40, height: 30, objectFit: 'cover', borderRadius: 0, border: '1px solid #E0E0E0' }}
+                              />
+                            </Box>
+                          ) : (
+                            <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                              TBD
                             </Typography>
-                            <Box
-                              component="img"
-                              src={match.homeTeam.flagUrl}
-                              alt={match.homeTeam.name}
-                              sx={{ width: 40, height: 30, objectFit: 'cover', borderRadius: 0, border: '1px solid #E0E0E0' }}
-                            />
-                          </Box>
+                          )}
                         </Box>
 
                         {/* Score or VS */}
@@ -305,7 +316,7 @@ export default function MatchesPage() {
                             borderColor: match.status === 'live' ? 'primary.main' : '#E0E0E0',
                           }}
                         >
-                          {match.status === 'finished' || match.status === 'live' ? (
+                          {hasBothTeams && (match.status === 'finished' || match.status === 'live') ? (
                             <Typography
                               variant="h5"
                               sx={{
@@ -324,17 +335,23 @@ export default function MatchesPage() {
 
                         {/* Away Team */}
                         <Box sx={{ flex: 1, textAlign: 'left' }}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Box
-                              component="img"
-                              src={match.awayTeam.flagUrl}
-                              alt={match.awayTeam.name}
-                              sx={{ width: 40, height: 30, objectFit: 'cover', borderRadius: 0, border: '1px solid #E0E0E0' }}
-                            />
-                            <Typography variant="h6" sx={{ fontWeight: match.status === 'live' ? 'bold' : 600 }}>
-                              {match.awayTeam.name}
+                          {awayTeam ? (
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                              <Box
+                                component="img"
+                                src={awayTeam.flagUrl}
+                                alt={awayTeam.name}
+                                sx={{ width: 40, height: 30, objectFit: 'cover', borderRadius: 0, border: '1px solid #E0E0E0' }}
+                              />
+                              <Typography variant="h6" sx={{ fontWeight: match.status === 'live' ? 'bold' : 600 }}>
+                                {awayTeam.name}
+                              </Typography>
+                            </Box>
+                          ) : (
+                            <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                              TBD
                             </Typography>
-                          </Box>
+                          )}
                         </Box>
                       </Box>
                     </Grid>
