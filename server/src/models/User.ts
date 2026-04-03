@@ -10,7 +10,7 @@ interface UserAttributes {
   passwordHash: string;
   firstName: string;
   lastName: string;
-  customerNumber: string;
+  customerNumber: string | null;
   role: 'user' | 'event_admin' | 'platform_admin';
   isEmailVerified: boolean;
   emailVerificationToken?: string;
@@ -30,7 +30,7 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public passwordHash!: string;
   public firstName!: string;
   public lastName!: string;
-  public customerNumber!: string;
+  public customerNumber!: string | null;
   public role!: 'user' | 'event_admin' | 'platform_admin';
   public isEmailVerified!: boolean;
   public emailVerificationToken?: string;
@@ -98,7 +98,7 @@ User.init(
     },
     customerNumber: {
       type: DataTypes.STRING(50),
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'customers',
         key: 'customer_number',

@@ -47,21 +47,23 @@ export const register = async (req: Request, res: Response, next: NextFunction):
     }
 
     // Check per-event customer account limit
-    const existingCustomerUsersCount = await User.count({
-      where: { customerNumber: normalizedCustomerNumber, eventId: req.event.id },
-    });
-    if (existingCustomerUsersCount >= MAX_ACCOUNTS_PER_CUSTOMER_PER_EVENT) {
-      throw new AppError(`Maximum ${MAX_ACCOUNTS_PER_CUSTOMER_PER_EVENT} accounts reached for this customer number in this event.`, 409);
-    }
+    if (normalizedCustomerNumber) {
+      const existingCustomerUsersCount = await User.count({
+        where: { customerNumber: normalizedCustomerNumber, eventId: req.event.id },
+      });
+      if (existingCustomerUsersCount >= MAX_ACCOUNTS_PER_CUSTOMER_PER_EVENT) {
+        throw new AppError(`Maximum ${MAX_ACCOUNTS_PER_CUSTOMER_PER_EVENT} accounts reached for this customer number in this event.`, 409);
+      }
 
-    // Validate customer exists and is active
-    const customer = await Customer.findOne({ where: { customerNumber: normalizedCustomerNumber } });
-    if (!customer) {
-      throw new AppError('Customer number not found in our system. Please contact support.', 404);
-    }
+      // Validate customer exists and is active
+      const customer = await Customer.findOne({ where: { customerNumber: normalizedCustomerNumber } });
+      if (!customer) {
+        throw new AppError('Customer number not found in our system. Please contact support.', 404);
+      }
 
-    if (!customer.isActive) {
-      throw new AppError('This customer account is not active. Please contact support.', 403);
+      if (!customer.isActive) {
+        throw new AppError('This customer account is not active. Please contact support.', 403);
+      }
     }
 
     // Hash password

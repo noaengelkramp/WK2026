@@ -39,6 +39,7 @@ const statements: string[] = [
 
   `ALTER TABLE users ADD COLUMN IF NOT EXISTS event_id UUID;`,
   `ALTER TABLE users ADD COLUMN IF NOT EXISTS role enum_users_role;`,
+  `ALTER TABLE users ALTER COLUMN customer_number DROP NOT NULL;`,
   `UPDATE users SET event_id='${INTERNAL_EVENT_ID}' WHERE event_id IS NULL;`,
   `UPDATE users SET role = CASE WHEN COALESCE(is_admin, false)=true THEN 'event_admin'::enum_users_role ELSE 'user'::enum_users_role END WHERE role IS NULL;`,
   `ALTER TABLE users ALTER COLUMN event_id SET NOT NULL;`,

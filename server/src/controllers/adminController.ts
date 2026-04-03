@@ -327,6 +327,11 @@ export async function createUser(req: Request, res: Response) {
       customerNumberInput: customerNumber,
     });
 
+    if (!normalizedCustomerNumber) {
+      res.status(400).json({ success: false, error: 'Customer number is required for non-internal admin-created users' });
+      return;
+    }
+
     // Check if email already exists
     const existingEmail = await User.findOne({ where: { email, eventId: targetEventId } });
     if (existingEmail) {
@@ -445,6 +450,11 @@ export async function updateUser(req: Request, res: Response) {
         email: updates.email || user.email,
         customerNumberInput: updates.customerNumber,
       });
+
+      if (!updates.customerNumber) {
+        res.status(400).json({ success: false, error: 'Customer number is required for this event' });
+        return;
+      }
 
       const customer = await Customer.findOne({ where: { customerNumber: updates.customerNumber } });
       if (!customer) {
@@ -733,7 +743,7 @@ export async function createCustomer(req: Request, res: Response) {
       return;
     }
 
-    let normalizedCustomerNumber: string;
+    let normalizedCustomerNumber: string | null;
     try {
       normalizedCustomerNumber = await resolveCustomerNumberForEvent({
         eventCode: req.event?.code || 'internal',
@@ -741,6 +751,10 @@ export async function createCustomer(req: Request, res: Response) {
         email: 'internal@kramp.com',
         customerNumberInput: customerNumber,
       });
+
+      if (!normalizedCustomerNumber) {
+        throw new Error('Customer number cannot be empty');
+      }
     } catch (e: any) {
       res.status(400).json({ success: false, error: e.message || 'Invalid customer number' });
       return;
@@ -915,7 +929,7 @@ export async function bulkImportCustomers(req: Request, res: Response) {
           continue;
         }
 
-        let normalizedCustomerNumber: string;
+        let normalizedCustomerNumber: string | null;
         try {
           normalizedCustomerNumber = await resolveCustomerNumberForEvent({
             eventCode: req.event?.code || 'internal',
@@ -923,6 +937,10 @@ export async function bulkImportCustomers(req: Request, res: Response) {
             email: 'internal@kramp.com',
             customerNumberInput: customerNumber,
           });
+
+          if (!normalizedCustomerNumber) {
+            throw new Error('Customer number cannot be empty');
+          }
         } catch {
           results.failed++;
           results.errors.push({ customerNumber: `******${customerNumber}`, error: 'Invalid format' });
