@@ -1,5 +1,7 @@
 import { getVisibleCustomerNumber } from './customerNumber';
 
+const INTERNAL_EVENT_ID = '00000000-0000-4000-8000-000000000001';
+
 const stripVerificationFields = (user: any) => {
   if (!user) return user;
   const clone = { ...user };
@@ -25,13 +27,25 @@ export const sanitizeUser = (input: any) => {
   const cleaned = stripVerificationFields(raw);
   const fullCustomerNumber = cleaned.customerNumber as string | undefined;
 
+  const isInternalUser = cleaned.eventId === INTERNAL_EVENT_ID;
+  const hasCustomer = !!cleaned.customer;
+
   return {
     ...cleaned,
     customerNumber: '********',
     visibleCustomerNumber: fullCustomerNumber
       ? getVisibleCustomerNumber(fullCustomerNumber)
       : cleaned.visibleCustomerNumber,
-    customer: sanitizeNestedCustomer(cleaned.customer),
+    customer: hasCustomer
+      ? sanitizeNestedCustomer(cleaned.customer)
+      : (isInternalUser
+        ? {
+            customerNumber: '********',
+            visibleCustomerNumber: undefined,
+            companyName: 'Kramp',
+            isActive: true,
+          }
+        : cleaned.customer),
   };
 };
 
