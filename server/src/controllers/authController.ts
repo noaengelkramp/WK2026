@@ -7,19 +7,7 @@ import emailService from '../services/emailService';
 import { Op } from 'sequelize';
 import { resolveCustomerNumberForEvent, MAX_ACCOUNTS_PER_CUSTOMER_PER_EVENT } from '../utils/eventCustomerPolicy';
 import signupWebhookService from '../services/signupWebhookService';
-import { getVisibleCustomerNumber } from '../utils/customerNumber';
-
-const sanitizeUserResponse = (user: any) => {
-  const raw = user?.toJSON ? user.toJSON() : user;
-  if (!raw) return raw;
-
-  const fullCustomerNumber = raw.customerNumber as string | undefined;
-  return {
-    ...raw,
-    customerNumber: undefined,
-    visibleCustomerNumber: fullCustomerNumber ? getVisibleCustomerNumber(fullCustomerNumber) : undefined,
-  };
-};
+import { sanitizeUser } from '../utils/responseSanitizers';
 
 /**
  * Register a new user
@@ -145,7 +133,7 @@ export const register = async (req: Request, res: Response, next: NextFunction):
 
     res.status(201).json({
       message: 'Registration successful. Please check your email to verify your account.',
-      user: sanitizeUserResponse(user),
+      user: sanitizeUser(user),
       emailVerificationSent: true,
       ...tokens,
     });
@@ -205,7 +193,7 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
 
     res.json({
       message: 'Login successful',
-      user: sanitizeUserResponse(user),
+      user: sanitizeUser(user),
       ...tokens,
     });
   } catch (error) {
@@ -234,7 +222,7 @@ export const getProfile = async (req: Request, res: Response, next: NextFunction
       throw new AppError('User not found', 404);
     }
 
-    res.json({ user: sanitizeUserResponse(user) });
+    res.json({ user: sanitizeUser(user) });
   } catch (error) {
     next(error);
   }
@@ -273,7 +261,7 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
 
     res.json({
       message: 'Profile updated successfully',
-      user: sanitizeUserResponse(user),
+      user: sanitizeUser(user),
     });
   } catch (error) {
     next(error);
@@ -311,7 +299,7 @@ export const verifyEmail = async (req: Request, res: Response, next: NextFunctio
     if (user.isEmailVerified) {
       res.json({
         message: 'Email already verified',
-        user: sanitizeUserResponse(user),
+        user: sanitizeUser(user),
       });
       return;
     }
@@ -334,7 +322,7 @@ export const verifyEmail = async (req: Request, res: Response, next: NextFunctio
 
     res.json({
       message: 'Email verified successfully!',
-      user: sanitizeUserResponse(user),
+      user: sanitizeUser(user),
     });
   } catch (error) {
     next(error);

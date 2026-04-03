@@ -7,6 +7,7 @@ import { MAX_ACCOUNTS_PER_CUSTOMER_PER_EVENT, resolveCustomerNumberForEvent } fr
 import { getVisibleCustomerNumber } from '../utils/customerNumber';
 import { getIndividualStandings } from './standingsController';
 import { resolveBonusQuestionsForEvent } from '../services/bonusScoringService';
+import { sanitizeCustomer, sanitizeUser } from '../utils/responseSanitizers';
 
 const requirePlatformAdmin = (req: Request, res: Response): boolean => {
   if (req.user?.role !== 'platform_admin') {
@@ -220,9 +221,7 @@ export async function getAllUsers(req: Request, res: Response) {
     });
 
     const usersWithVisibleCustomer = users.map((user: any) => ({
-      ...user.toJSON(),
-      customerNumber: '********',
-      visibleCustomerNumber: getVisibleCustomerNumber(user.customerNumber),
+      ...sanitizeUser(user),
     }));
 
     res.status(200).json({
@@ -276,9 +275,7 @@ export async function getUserById(req: Request, res: Response) {
     res.status(200).json({
       success: true,
       user: {
-        ...user.toJSON(),
-        customerNumber: '********',
-        visibleCustomerNumber: getVisibleCustomerNumber((user as any).customerNumber),
+        ...sanitizeUser(user),
       },
     });
   } catch (error) {
@@ -653,9 +650,7 @@ export async function getAllCustomers(req: Request, res: Response) {
     });
 
     const customersWithVisible = customers.map((customer: any) => ({
-      ...customer.toJSON(),
-      customerNumber: '********',
-      visibleCustomerNumber: getVisibleCustomerNumber(customer.customerNumber),
+      ...sanitizeCustomer(customer),
     }));
 
     res.status(200).json({
@@ -708,9 +703,7 @@ export async function getCustomerById(req: Request, res: Response) {
     res.status(200).json({
       success: true,
       customer: {
-        ...(customer as any).toJSON(),
-        customerNumber: '********',
-        visibleCustomerNumber: getVisibleCustomerNumber((customer as any).customerNumber),
+        ...sanitizeCustomer(customer),
       },
     });
   } catch (error) {
@@ -776,9 +769,7 @@ export async function createCustomer(req: Request, res: Response) {
       success: true,
       message: 'Customer created successfully',
       customer: {
-        ...(customer as any).toJSON(),
-        customerNumber: '********',
-        visibleCustomerNumber: getVisibleCustomerNumber((customer as any).customerNumber),
+        ...sanitizeCustomer(customer),
       },
     });
   } catch (error) {
@@ -823,9 +814,7 @@ export async function updateCustomer(req: Request, res: Response) {
       success: true,
       message: 'Customer updated successfully',
       customer: {
-        ...(customer as any).toJSON(),
-        customerNumber: '********',
-        visibleCustomerNumber: getVisibleCustomerNumber((customer as any).customerNumber),
+        ...sanitizeCustomer(customer),
       },
     });
   } catch (error) {
