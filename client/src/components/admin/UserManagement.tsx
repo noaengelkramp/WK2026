@@ -305,12 +305,12 @@ export default function UserManagement() {
                   <TableCell>{`${user.firstName} ${user.lastName}`}</TableCell>
                   <TableCell>
                     <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
-                      {(user as any).visibleCustomerNumber || user.customerNumber}
+                      {(user as any).visibleCustomerNumber || '********'}
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    {user.customer?.companyName || '-'}
-                    {user.customer && !user.customer.isActive && (
+                    {user.customer?.companyName || 'Kramp'}
+                    {user.customer?.isActive === false && (
                       <Chip label="Inactive" size="small" color="error" sx={{ ml: 1 }} />
                     )}
                   </TableCell>

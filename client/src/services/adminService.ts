@@ -17,6 +17,7 @@ export interface User {
   updatedAt: string;
   customer?: {
     customerNumber: string;
+    visibleCustomerNumber?: string;
     companyName: string;
     isActive: boolean;
   };

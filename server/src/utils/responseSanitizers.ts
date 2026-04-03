@@ -1,5 +1,3 @@
-import { getVisibleCustomerNumber } from './customerNumber';
-
 const INTERNAL_EVENT_ID = '00000000-0000-4000-8000-000000000001';
 
 const stripVerificationFields = (user: any) => {
@@ -15,9 +13,7 @@ const sanitizeNestedCustomer = (customer: any) => {
   return {
     ...customer,
     customerNumber: '********',
-    visibleCustomerNumber: customer.customerNumber
-      ? getVisibleCustomerNumber(customer.customerNumber)
-      : undefined,
+    visibleCustomerNumber: '********',
   };
 };
 
@@ -25,23 +21,19 @@ export const sanitizeUser = (input: any) => {
   if (!input) return input;
   const raw = input?.toJSON ? input.toJSON() : input;
   const cleaned = stripVerificationFields(raw);
-  const fullCustomerNumber = cleaned.customerNumber as string | undefined;
-
   const isInternalUser = cleaned.eventId === INTERNAL_EVENT_ID;
   const hasCustomer = !!cleaned.customer;
 
   return {
     ...cleaned,
     customerNumber: '********',
-    visibleCustomerNumber: fullCustomerNumber
-      ? getVisibleCustomerNumber(fullCustomerNumber)
-      : cleaned.visibleCustomerNumber,
+    visibleCustomerNumber: '********',
     customer: hasCustomer
       ? sanitizeNestedCustomer(cleaned.customer)
       : (isInternalUser
         ? {
             customerNumber: '********',
-            visibleCustomerNumber: undefined,
+            visibleCustomerNumber: '********',
             companyName: 'Kramp',
             isActive: true,
           }
@@ -52,14 +44,11 @@ export const sanitizeUser = (input: any) => {
 export const sanitizeCustomer = (input: any) => {
   if (!input) return input;
   const raw = input?.toJSON ? input.toJSON() : input;
-  const fullCustomerNumber = raw.customerNumber as string | undefined;
 
   return {
     ...raw,
     customerNumber: '********',
-    visibleCustomerNumber: fullCustomerNumber
-      ? getVisibleCustomerNumber(fullCustomerNumber)
-      : raw.visibleCustomerNumber,
+    visibleCustomerNumber: '********',
     user: raw.user ? sanitizeUser(raw.user) : raw.user,
   };
 };
