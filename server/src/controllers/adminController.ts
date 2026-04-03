@@ -4,7 +4,6 @@ import { processMatchScoring } from '../services/scoringService';
 import footballApiService from '../services/footballApiService';
 import { Op } from 'sequelize';
 import { MAX_ACCOUNTS_PER_CUSTOMER_PER_EVENT, resolveCustomerNumberForEvent } from '../utils/eventCustomerPolicy';
-import { getVisibleCustomerNumber } from '../utils/customerNumber';
 import { getIndividualStandings } from './standingsController';
 import { resolveBonusQuestionsForEvent } from '../services/bonusScoringService';
 import { sanitizeCustomer, sanitizeUser } from '../utils/responseSanitizers';
@@ -777,7 +776,7 @@ export async function createCustomer(req: Request, res: Response) {
       isActive,
     });
 
-    console.log(`✅ Admin created customer: ******${getVisibleCustomerNumber(normalizedCustomerNumber)} (${companyName})`);
+    console.log(`✅ Admin created customer: [redacted] (${companyName})`);
 
     res.status(201).json({
       success: true,
@@ -822,7 +821,7 @@ export async function updateCustomer(req: Request, res: Response) {
 
     await customer.update(updates);
 
-    console.log(`✅ Admin updated customer: ******${getVisibleCustomerNumber(customer.customerNumber)}`);
+    console.log('✅ Admin updated customer: [redacted]');
 
     res.status(200).json({
       success: true,
@@ -876,10 +875,9 @@ export async function deleteCustomer(req: Request, res: Response) {
       return;
     }
 
-    const customerNumber = customer.customerNumber;
     await customer.destroy();
 
-    console.log(`✅ Admin deleted customer: ******${getVisibleCustomerNumber(customerNumber)}`);
+    console.log('✅ Admin deleted customer: [redacted]');
 
     res.status(200).json({
       success: true,
@@ -925,7 +923,7 @@ export async function bulkImportCustomers(req: Request, res: Response) {
         // Validation
         if (!customerNumber || !companyName) {
           results.failed++;
-          results.errors.push({ customerNumber: customerNumber || 'unknown', error: 'Missing required fields' });
+          results.errors.push({ customerNumber: '[redacted]', error: 'Missing required fields' });
           continue;
         }
 
@@ -943,7 +941,7 @@ export async function bulkImportCustomers(req: Request, res: Response) {
           }
         } catch {
           results.failed++;
-          results.errors.push({ customerNumber: `******${customerNumber}`, error: 'Invalid format' });
+          results.errors.push({ customerNumber: '[redacted]', error: 'Invalid format' });
           continue;
         }
 
@@ -951,7 +949,7 @@ export async function bulkImportCustomers(req: Request, res: Response) {
         const existing = await Customer.findOne({ where: { customerNumber: normalizedCustomerNumber } });
         if (existing) {
           results.failed++;
-          results.errors.push({ customerNumber: `******${getVisibleCustomerNumber(normalizedCustomerNumber)}`, error: 'Already exists' });
+          results.errors.push({ customerNumber: '[redacted]', error: 'Already exists' });
           continue;
         }
 
@@ -966,7 +964,7 @@ export async function bulkImportCustomers(req: Request, res: Response) {
       } catch (error) {
         results.failed++;
         results.errors.push({
-          customerNumber: customerData.customerNumber ? `******${customerData.customerNumber}` : 'unknown',
+          customerNumber: '[redacted]',
           error: error instanceof Error ? error.message : 'Unknown error',
         });
       }

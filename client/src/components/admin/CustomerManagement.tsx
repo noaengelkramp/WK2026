@@ -288,7 +288,7 @@ export default function CustomerManagement() {
                 <TableRow key={customer.id} hover>
                   <TableCell>
                     <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
-                      {customer.visibleCustomerNumber || customer.customerNumber}
+                      {customer.visibleCustomerNumber || '********'}
                     </Typography>
                   </TableCell>
                   <TableCell>{customer.companyName}</TableCell>
@@ -432,7 +432,7 @@ export default function CustomerManagement() {
         <DialogTitle>Delete Customer</DialogTitle>
         <DialogContent>
           <Typography>
-            Are you sure you want to delete customer <strong>{selectedCustomer?.customerNumber}</strong> (
+            Are you sure you want to delete customer <strong>{selectedCustomer?.visibleCustomerNumber || '********'}</strong> (
             {selectedCustomer?.companyName})?
           </Typography>
           <Typography color="error" sx={{ mt: 2 }}>
